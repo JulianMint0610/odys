@@ -100,7 +100,7 @@ compile-time typing과 runtime validation을 함께 사용한다.
 
 | Runtime Validation | To be selected | Deferred |
 
-| Test Runner | To be selected | Deferred |
+| Test Runner | Vitest | Adopted |
 
 | Deployment Provider | To be selected | Deferred |
 
@@ -759,7 +759,9 @@ lint rule은 실제 source code가 증가하면서 필요한 rule을 단계적�
 
 ## 29. Testing
 
-자동 테스트는 ODYS architecture의 중요한 부분이지만 concrete test runner는 아직 선택하지 않았다.
+자동 테스트는 ODYS architecture의 중요한 부분이다.
+
+IMPLEMENTATION-001에서 Vitest 4.1.10을 initial TypeScript test runner로 채택했다.
 
 Test Runner 선택 기준:
 
@@ -780,8 +782,6 @@ workspace support
 framework compatibility
 
 ```
-
-Application framework와 Core 첫 구현이 결정된 뒤 함께 선택한다.
 
 ---
 
@@ -933,11 +933,17 @@ pnpm lint
 
 pnpm check
 
+pnpm typecheck
+
+pnpm test
+
+pnpm build
+
 ```
 
 `pnpm check`는 현재 formatting과 lint를 검증한다.
 
-TypeScript application source가 생성된 뒤 typecheck command를 추가한다.
+IMPLEMENTATION-001에서 `@odys/core` package가 추가되면서 `pnpm typecheck`, `pnpm test`, `pnpm build`가 활성화되었다.
 
 ---
 
@@ -1556,8 +1562,6 @@ specific Web framework
 specific UI library
 
 specific CSS framework
-
-specific test runner
 
 specific runtime validation library
 
