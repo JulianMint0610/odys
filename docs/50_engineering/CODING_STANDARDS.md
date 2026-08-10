@@ -44,8 +44,6 @@ Python이나 다른 언어를 추가하는 경우에도 ODYS의 공통 아키텍
 
 ---
 
-
-
 ## 03. Source of Truth
 
 코딩 규칙이 충돌할 경우 우선순위는 다음과 같다.
@@ -68,8 +66,6 @@ Repository 설정의 예:
 
 ---
 
-
-
 ## 04. TypeScript First
 
 ODYS의 기본 애플리케이션 언어는 TypeScript다.
@@ -85,8 +81,6 @@ TypeScript에서는 strict type checking을 유지한다.
 
 ---
 
-
-
 ## 05. Formatting
 
 Formatting은 자동화된 formatter를 source of truth로 사용한다.
@@ -100,8 +94,6 @@ Formatting은 자동화된 formatter를 source of truth로 사용한다.
 - formatting 논쟁보다 architecture와 correctness에 review 시간을 사용한다.
 
 ---
-
-
 
 ## 06. Naming
 
@@ -123,37 +115,29 @@ const data2 = await repo.get(id);
 
 ---
 
-
-
 ## 07. Naming Convention
-
-
 
 ### Variables / Functions
 
 `camelCase`
 
 ```ts
-userId
-agentRunId
-validateToolInput()
-resolveModelProvider()
+userId;
+agentRunId;
+validateToolInput();
+resolveModelProvider();
 ```
-
-
 
 ### Types / Classes
 
 `PascalCase`
 
 ```ts
-AgentRun
-ToolDefinition
-PermissionDecision
-ModelProviderAdapter
+AgentRun;
+ToolDefinition;
+PermissionDecision;
+ModelProviderAdapter;
 ```
-
-
 
 ### Constants
 
@@ -173,8 +157,6 @@ const MAX_AGENT_STEPS = 12;
 
 ---
 
-
-
 ## 08. Boolean Names
 
 Boolean은 질문처럼 읽히게 작성한다.
@@ -182,25 +164,23 @@ Boolean은 질문처럼 읽히게 작성한다.
 권장:
 
 ```ts
-isAuthenticated
-hasPermission
-canExecute
-shouldRetry
-wasConfirmed
+isAuthenticated;
+hasPermission;
+canExecute;
+shouldRetry;
+wasConfirmed;
 ```
 
 피해야 할 예:
 
 ```ts
-auth
-permission
-flag
-check
+auth;
+permission;
+flag;
+check;
 ```
 
 ---
-
-
 
 ## 09. Function Responsibility
 
@@ -230,8 +210,6 @@ normalize
 
 ---
 
-
-
 ## 10. Function Arguments
 
 인자가 많아지면 object parameter를 고려한다.
@@ -257,8 +235,6 @@ executeTool({
 
 ---
 
-
-
 ## 11. Return Types
 
 반환값의 의미가 호출자에게 명확해야 한다.
@@ -273,14 +249,12 @@ return null;
 
 ```ts
 type ToolExecutionResult =
-  | { status: "success"; output: ToolOutput }
-  | { status: "denied"; reason: string }
-  | { status: "failed"; error: ToolExecutionError };
+  | { status: 'success'; output: ToolOutput }
+  | { status: 'denied'; reason: string }
+  | { status: 'failed'; error: ToolExecutionError };
 ```
 
 ---
-
-
 
 ## 12. Avoid `any`
 
@@ -298,8 +272,6 @@ function parseResult(value: unknown) {
 
 ---
 
-
-
 ## 13. Type Assertions
 
 다음 코드는 runtime validation이 아니다.
@@ -315,8 +287,6 @@ const payload = toolPayloadSchema.parse(request.body);
 ```
 
 ---
-
-
 
 ## 14. Non-Null Assertion
 
@@ -340,8 +310,6 @@ if (!user) {
 
 ---
 
-
-
 ## 15. Domain Types
 
 외부 시스템의 type을 ODYS Domain Entity와 동일하게 취급하지 않는다.
@@ -362,8 +330,6 @@ Provider 또는 BaaS의 type이 Core 전체로 퍼지지 않도록 한다.
 
 ---
 
-
-
 ## 16. Validation Boundary
 
 다음 값은 기본적으로 신뢰하지 않는다.
@@ -381,8 +347,6 @@ Provider 또는 BaaS의 type이 Core 전체로 퍼지지 않도록 한다.
 가능한 한 boundary에서 빠르게 검증한다.
 
 ---
-
-
 
 ## 17. Error Types
 
@@ -408,8 +372,6 @@ ModelOutputValidationError
 
 ---
 
-
-
 ## 18. Error Messages
 
 사용자-facing 메시지와 내부 debug 정보를 분리한다.
@@ -426,8 +388,6 @@ ModelOutputValidationError
 
 ---
 
-
-
 ## 19. Async Operations
 
 외부 비동기 호출은 다음 실패를 고려한다.
@@ -441,8 +401,6 @@ ModelOutputValidationError
 중요한 외부 호출을 무기한 대기 상태로 방치하지 않는다.
 
 ---
-
-
 
 ## 20. Retry
 
@@ -465,8 +423,6 @@ write operation은 idempotency를 검토한다.
 
 ---
 
-
-
 ## 21. Null and Undefined
 
 `null`과 `undefined`의 의미를 무분별하게 혼용하지 않는다.
@@ -481,8 +437,6 @@ null      -> explicitly empty
 ```
 
 ---
-
-
 
 ## 22. Comments
 
@@ -505,8 +459,6 @@ const decision = await permissionService.evaluate(input);
 
 ---
 
-
-
 ## 23. TODO
 
 의미 없는 TODO를 남기지 않는다.
@@ -526,8 +478,6 @@ const decision = await permissionService.evaluate(input);
 중요한 장기 작업은 issue 또는 task로 추적한다.
 
 ---
-
-
 
 ## 24. Core / Pack Boundary
 
@@ -551,8 +501,6 @@ Core -> Pack-specific domain entity
 
 ---
 
-
-
 ## 25. Modular Monolith Boundary
 
 ADR-003을 따른다.
@@ -568,8 +516,6 @@ ADR-003을 따른다.
 
 ---
 
-
-
 ## 26. Imports
 
 가능하면 public entry point를 통해 import한다.
@@ -577,20 +523,18 @@ ADR-003을 따른다.
 피해야 할 예:
 
 ```ts
-import { saveMemory } from "../../../core/memory/internal/repository";
+import { saveMemory } from '../../../core/memory/internal/repository';
 ```
 
 권장 개념:
 
 ```ts
-import { memoryService } from "@odys/core-memory";
+import { memoryService } from '@odys/core-memory';
 ```
 
 실제 alias는 repository 설정을 따른다.
 
 ---
-
-
 
 ## 27. Model Provider Boundary
 
@@ -615,8 +559,6 @@ Provider Adapter
 
 ---
 
-
-
 ## 28. Supabase Boundary
 
 Supabase SDK는 data access / infrastructure 영역에 집중시킨다.
@@ -626,8 +568,6 @@ Supabase SDK는 data access / infrastructure 영역에 집중시킨다.
 - client code에 privileged credential을 넣지 않는다.
 
 ---
-
-
 
 ## 29. Agent Code
 
@@ -649,8 +589,6 @@ Agent가 행동이 필요하다고 판단했다는 이유만으로 권한이 자
 
 ---
 
-
-
 ## 30. Tool Code
 
 각 Tool은 가능한 한 다음 contract를 가진다.
@@ -668,14 +606,12 @@ Tool의 side effect는 명확해야 한다.
 
 ---
 
-
-
 ## 31. Secrets
 
 금지:
 
 ```ts
-const apiKey = "real-secret-value";
+const apiKey = 'real-secret-value';
 ```
 
 Secret은 환경 또는 secret manager를 통해 주입한다.
@@ -683,8 +619,6 @@ Secret은 환경 또는 secret manager를 통해 주입한다.
 `.env.example`에는 실제 값이 아니라 변수 이름만 기록한다.
 
 ---
-
-
 
 ## 32. Logging
 
@@ -712,8 +646,6 @@ errorCode
 
 ---
 
-
-
 ## 33. Configuration
 
 magic number와 magic string이 여러 위치에 흩어지지 않도록 한다.
@@ -734,8 +666,6 @@ const timeoutMs = config.toolExecution.timeoutMs;
 
 ---
 
-
-
 ## 34. Environment Variables
 
 환경 변수는 startup 단계에서 검증하고 typed configuration으로 변환하는 방식을 선호한다.
@@ -752,8 +682,6 @@ Application
 
 ---
 
-
-
 ## 35. API Handlers
 
 API handler에는 다음 경계를 명확히 한다.
@@ -769,8 +697,6 @@ route handler에 business logic 전체를 넣지 않는다.
 
 ---
 
-
-
 ## 36. Database Access
 
 database query를 UI, prompt 또는 Agent reasoning layer에 직접 배치하지 않는다.
@@ -780,8 +706,6 @@ Repository 또는 명확한 data-access layer를 사용한다.
 Transaction이 필요한 작업은 boundary를 명시한다.
 
 ---
-
-
 
 ## 37. Tests
 
@@ -805,8 +729,6 @@ Arrange / Act / Assert 구조를 권장한다.
 
 ---
 
-
-
 ## 38. Mocking
 
 Mock은 외부 의존성을 격리하는 데 사용한다.
@@ -824,8 +746,6 @@ Mock은 외부 의존성을 격리하는 데 사용한다.
 
 ---
 
-
-
 ## 39. Dead Code
 
 사용하지 않는 코드와 import는 제거한다.
@@ -835,8 +755,6 @@ Mock은 외부 의존성을 격리하는 데 사용한다.
 Git history가 과거 코드를 보존한다.
 
 ---
-
-
 
 ## 40. Duplication
 
@@ -853,8 +771,6 @@ Git history가 과거 코드를 보존한다.
 
 ---
 
-
-
 ## 41. Complexity
 
 다음은 리팩터링 신호다.
@@ -869,8 +785,6 @@ Git history가 과거 코드를 보존한다.
 복잡성이 실제 domain 복잡성인지 구현이 만든 우발적 복잡성인지 구분한다.
 
 ---
-
-
 
 ## 42. Performance
 
@@ -887,8 +801,6 @@ Git history가 과거 코드를 보존한다.
 
 ---
 
-
-
 ## 43. Security-Critical Code
 
 다음 영역은 편의보다 명시성을 우선한다.
@@ -902,8 +814,6 @@ Git history가 과거 코드를 보존한다.
 - external input validation
 
 ---
-
-
 
 ## 44. AI-Generated Code
 
@@ -919,8 +829,6 @@ AI가 작성한 코드도 동일한 기준을 적용한다.
 - security regression이 없는가
 
 ---
-
-
 
 ## 45. Required Local Checks
 
@@ -947,11 +855,7 @@ pnpm build
 
 ---
 
-
-
 ## 46. Code Review Checklist
-
-
 
 ### Readability
 
@@ -959,30 +863,22 @@ pnpm build
 - 함수 책임이 명확한가
 - 불필요한 복잡성이 없는가
 
-
-
 ### Types
 
 - `any`로 문제를 숨기지 않았는가
 - 외부 입력을 검증하는가
 - assertion이 과도하지 않은가
 
-
-
 ### Architecture
 
 - Core / Pack 경계를 지키는가
 - Provider / Supabase SDK가 adapter 내부에 있는가
-
-
 
 ### Reliability
 
 - timeout과 오류가 처리되는가
 - retry가 안전한가
 - side effect가 명확한가
-
-
 
 ### Security
 
@@ -991,8 +887,6 @@ pnpm build
 - 사용자 데이터 격리가 유지되는가
 
 ---
-
-
 
 ## 47. Exceptions
 
@@ -1006,8 +900,6 @@ pnpm build
 반복적인 예외는 규칙 또는 아키텍처 재검토 신호다.
 
 ---
-
-
 
 ## 48. Related Documents
 
@@ -1024,8 +916,6 @@ pnpm build
 - `../20_architecture/SECURITY_ARCHITECTURE.md`
 
 ---
-
-
 
 ## 49. Final Rule
 

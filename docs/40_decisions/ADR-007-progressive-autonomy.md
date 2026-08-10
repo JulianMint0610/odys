@@ -53,24 +53,18 @@ Level 4 — Scoped Autonomous
 
 ---
 
-
-
 ## 04. Risk-Based Permission
 
 Autonomy Level만으로 실행 여부를 결정하지 않는다. 각 Tool action은 별도의 위험 수준을 가진다.
 
-
-| Risk     | Example                              | Default Behavior |
-| -------- | ------------------------------------ | ---------------- |
-| Low      | public data read                     | 자동 허용 가능         |
-| Medium   | private data read                    | 권한 확인            |
-| High     | external write                       | 사용자 확인 기본        |
-| Critical | delete, payment, irreversible action | 강한 확인 또는 금지      |
-
+| Risk     | Example                              | Default Behavior    |
+| -------- | ------------------------------------ | ------------------- |
+| Low      | public data read                     | 자동 허용 가능      |
+| Medium   | private data read                    | 권한 확인           |
+| High     | external write                       | 사용자 확인 기본    |
+| Critical | delete, payment, irreversible action | 강한 확인 또는 금지 |
 
 ---
-
-
 
 ## 05. Confirmation Boundary
 
@@ -88,8 +82,6 @@ Autonomy Level만으로 실행 여부를 결정하지 않는다. 각 Tool action
 
 ---
 
-
-
 ## 06. Rationale
 
 Progressive Autonomy는 다음 목표를 동시에 만족한다.
@@ -104,11 +96,7 @@ ODYS의 목표는 `최대한 많이 자동화`가 아니라 `사용자가 통제
 
 ---
 
-
-
 ## 07. Alternatives Considered
-
-
 
 ### Alternative A — Always Ask
 
@@ -121,8 +109,6 @@ ODYS의 목표는 `최대한 많이 자동화`가 아니라 `사용자가 통제
 채택하지 않는다.
 
 ---
-
-
 
 ## 08. Auditability
 
@@ -142,8 +128,6 @@ ODYS의 목표는 `최대한 많이 자동화`가 아니라 `사용자가 통제
 
 ---
 
-
-
 ## 09. Revocation
 
 사용자는 허용한 자율 권한을 철회할 수 있어야 한다.
@@ -162,11 +146,7 @@ Scoped Autonomous 권한에는 최소한 다음 정보가 포함되어야 한다
 
 ---
 
-
-
 ## 10. Consequences
-
-
 
 ### Positive
 
@@ -175,8 +155,6 @@ Scoped Autonomous 권한에는 최소한 다음 정보가 포함되어야 한다
 - Agent 행동을 감사 가능하게 만들 수 있다.
 - 사용자별로 다른 자율성 수준을 지원할 수 있다.
 
-
-
 ### Negative
 
 - Permission System이 복잡해진다.
@@ -184,8 +162,6 @@ Scoped Autonomous 권한에는 최소한 다음 정보가 포함되어야 한다
 - 일부 작업의 사용자 경험이 느려질 수 있다.
 
 ---
-
-
 
 ## 11. Constraints
 
@@ -199,8 +175,6 @@ Scoped Autonomous 권한에는 최소한 다음 정보가 포함되어야 한다
 
 ---
 
-
-
 ## 12. Revisit Conditions
 
 - Tool 실행 정확도가 충분히 검증된 경우
@@ -210,8 +184,6 @@ Scoped Autonomous 권한에는 최소한 다음 정보가 포함되어야 한다
 - 장기간의 운영 데이터로 안전성이 확인된 경우
 
 ---
-
-
 
 ## 13. Related Documents
 
@@ -223,8 +195,6 @@ Scoped Autonomous 권한에는 최소한 다음 정보가 포함되어야 한다
 - `../50_engineering/TEST_STRATEGY.md`
 
 ---
-
-
 
 ## 14. Development Rule
 

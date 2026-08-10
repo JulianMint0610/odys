@@ -48,8 +48,6 @@ ODYS의 기능을 **Core**와 **Pack**으로 명확하게 분리한다.
 
 ---
 
-
-
 ## 03. Core Rule
 
 Core에 기능을 넣기 전에 다음 질문을 한다.
@@ -81,8 +79,6 @@ Core는 다음과 같은 범용 개념을 알 수 있다.
 
 ---
 
-
-
 ## 04. Pack Contract
 
 Pack은 Core의 내부 구현에 직접 의존하지 않는다.
@@ -111,8 +107,6 @@ Pack은 다음을 정의할 수 있다.
 
 ---
 
-
-
 ## 05. Pack Isolation
 
 Pack 간 직접적인 내부 의존성을 최소화한다.
@@ -137,8 +131,6 @@ Career Pack
 
 ---
 
-
-
 ## 06. Rationale
 
 Core / Pack 분리는 ODYS의 범용성을 유지하는 핵심 아키텍처 경계다.
@@ -153,11 +145,7 @@ Core / Pack 분리는 ODYS의 범용성을 유지하는 핵심 아키텍처 경�
 
 ---
 
-
-
 ## 07. Alternatives Considered
-
-
 
 ### Alternative A — 모든 기능을 하나의 Application Layer에 배치
 
@@ -173,11 +161,7 @@ Core / Pack 분리는 ODYS의 범용성을 유지하는 핵심 아키텍처 경�
 
 ---
 
-
-
 ## 08. Consequences
-
-
 
 ### Positive
 
@@ -186,16 +170,12 @@ Core / Pack 분리는 ODYS의 범용성을 유지하는 핵심 아키텍처 경�
 - 도메인별 변경의 영향 범위를 줄인다.
 - 테스트 경계가 명확해진다.
 
-
-
 ### Negative
 
 - 초기 단계에서도 인터페이스와 경계를 설계해야 한다.
 - 지나친 추상화가 발생하지 않도록 주의해야 한다.
 
 ---
-
-
 
 ## 09. Constraints
 
@@ -207,8 +187,6 @@ Core / Pack 분리는 ODYS의 범용성을 유지하는 핵심 아키텍처 경�
 
 ---
 
-
-
 ## 10. Revisit Conditions
 
 - 외부 개발자가 Pack을 설치하는 Plugin Ecosystem을 구축할 때
@@ -217,8 +195,6 @@ Core / Pack 분리는 ODYS의 범용성을 유지하는 핵심 아키텍처 경�
 - 특정 Pack이 독립 제품으로 발전할 때
 
 ---
-
-
 
 ## 11. Related Documents
 
@@ -230,8 +206,6 @@ Core / Pack 분리는 ODYS의 범용성을 유지하는 핵심 아키텍처 경�
 - `../30_pack/README.md`
 
 ---
-
-
 
 ## 12. Development Rule
 

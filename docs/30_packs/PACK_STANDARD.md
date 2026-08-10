@@ -718,11 +718,10 @@ Agent는 Pack의 전문성을 실제 Task 수행으로 연결한다.
 
 그리고 최종 권한은 사용자에게 있다.
 
-> Core provides capability.  
+> Core provides capability.
 
-> Pack provides specialization.  
+> Pack provides specialization.
 
-> Agent performs domain work.  
+> Agent performs domain work.
 
 > User retains authority.
-

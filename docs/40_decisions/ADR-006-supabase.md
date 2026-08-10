@@ -32,8 +32,6 @@ ODYS의 초기 데이터 플랫폼으로 **Supabase**를 사용한다.
 
 ---
 
-
-
 ## 03. Data Ownership Principle
 
 ODYS의 핵심 데이터 모델은 Supabase가 아니라 **PostgreSQL schema**를 기준으로 설계한다.
@@ -52,8 +50,6 @@ PostgreSQL
 
 ---
 
-
-
 ## 04. Authentication
 
 Supabase Auth를 초기 인증 기반으로 사용할 수 있다.
@@ -69,8 +65,6 @@ Core / Pack
 Pack이 Supabase user object에 직접 의존하지 않도록 한다.
 
 ---
-
-
 
 ## 05. Row Level Security
 
@@ -88,8 +82,6 @@ RLS는 application-level authorization을 완전히 대체하지 않는다.
 
 ---
 
-
-
 ## 06. Migration Policy
 
 스키마 변경은 재현 가능한 migration으로 관리한다.
@@ -104,11 +96,7 @@ RLS는 application-level authorization을 완전히 대체하지 않는다.
 
 ---
 
-
-
 ## 07. Rationale
-
-
 
 ### 7.1 PostgreSQL Foundation
 
@@ -128,11 +116,7 @@ RLS와 인증 기능을 활용해 초기 보안 구조를 빠르게 구축할 �
 
 ---
 
-
-
 ## 08. Alternatives Considered
-
-
 
 ### Alternative A — Raw PostgreSQL + Custom Auth
 
@@ -154,11 +138,7 @@ RLS와 인증 기능을 활용해 초기 보안 구조를 빠르게 구축할 �
 
 ---
 
-
-
 ## 09. Consequences
-
-
 
 ### Positive
 
@@ -167,8 +147,6 @@ RLS와 인증 기능을 활용해 초기 보안 구조를 빠르게 구축할 �
 - 인증과 Storage를 빠르게 연결할 수 있다.
 - RLS를 활용할 수 있다.
 
-
-
 ### Negative
 
 - Supabase API와 운영 방식에 일부 종속된다.
@@ -176,8 +154,6 @@ RLS와 인증 기능을 활용해 초기 보안 구조를 빠르게 구축할 �
 - BaaS의 pricing / limit 변화 영향을 받을 수 있다.
 
 ---
-
-
 
 ## 10. Constraints
 
@@ -190,8 +166,6 @@ RLS와 인증 기능을 활용해 초기 보안 구조를 빠르게 구축할 �
 
 ---
 
-
-
 ## 11. Revisit Conditions
 
 - Supabase 비용이 서비스 규모에 비해 비효율적이 될 때
@@ -200,8 +174,6 @@ RLS와 인증 기능을 활용해 초기 보안 구조를 빠르게 구축할 �
 - 독립적인 Database / Auth / Storage 서비스가 필요해질 때
 
 ---
-
-
 
 ## 12. Related Documents
 
@@ -212,8 +184,6 @@ RLS와 인증 기능을 활용해 초기 보안 구조를 빠르게 구축할 �
 - `../20_architecture/TECH_STACK.md`
 
 ---
-
-
 
 ## 13. Development Rule
 

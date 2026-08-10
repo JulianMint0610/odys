@@ -37,8 +37,6 @@ Application / Agent / Pack
 
 ---
 
-
-
 ## 03. Model Gateway Responsibilities
 
 - provider selection
@@ -54,8 +52,6 @@ Application / Agent / Pack
 - observability hooks
 
 ---
-
-
 
 ## 04. Capability-Based Selection
 
@@ -75,8 +71,6 @@ Model Strategy가 이 요구에 적합한 모델을 선택한다.
 
 ---
 
-
-
 ## 05. Direct Provider Access
 
 기본적으로 다음 구조를 금지한다.
@@ -95,8 +89,6 @@ Career Pack -> Model Gateway
 
 ---
 
-
-
 ## 06. Rationale
 
 목적은 모든 모델을 완전히 동일하게 취급하는 것이 아니라 모델별 차이가 애플리케이션 전체로 확산되지 않도록 하는 것이다.
@@ -112,11 +104,7 @@ Career Pack -> Model Gateway
 
 ---
 
-
-
 ## 07. Alternatives Considered
-
-
 
 ### Alternative A — One Provider Only
 
@@ -132,8 +120,6 @@ prototype은 빠르지만 모델 관련 코드가 전체 시스템에 퍼지고 
 
 ---
 
-
-
 ## 08. Prompt Ownership
 
 Prompt는 가능한 한 다음 위치에서 관리한다.
@@ -146,8 +132,6 @@ Prompt는 가능한 한 다음 위치에서 관리한다.
 Provider Adapter는 비즈니스 의미를 가진 prompt를 소유하지 않는다.
 
 ---
-
-
 
 ## 09. Structured Output
 
@@ -165,11 +149,7 @@ AI 모델 출력은 신뢰된 내부 데이터로 간주하지 않는다.
 
 ---
 
-
-
 ## 10. Consequences
-
-
 
 ### Positive
 
@@ -178,8 +158,6 @@ AI 모델 출력은 신뢰된 내부 데이터로 간주하지 않는다.
 - 공통 observability와 usage tracking이 가능하다.
 - 테스트에서 모델 호출을 쉽게 대체할 수 있다.
 
-
-
 ### Negative
 
 - 추상화 계층을 관리해야 한다.
@@ -187,8 +165,6 @@ AI 모델 출력은 신뢰된 내부 데이터로 간주하지 않는다.
 - 가장 단순한 prototype보다 초기 코드가 증가한다.
 
 ---
-
-
 
 ## 11. Constraints
 
@@ -202,8 +178,6 @@ AI 모델 출력은 신뢰된 내부 데이터로 간주하지 않는다.
 
 ---
 
-
-
 ## 12. Revisit Conditions
 
 - 특정 Provider의 고유 기능이 ODYS의 핵심 기능이 될 때
@@ -212,8 +186,6 @@ AI 모델 출력은 신뢰된 내부 데이터로 간주하지 않는다.
 - Model Gateway가 별도 서비스로 분리될 필요가 생길 때
 
 ---
-
-
 
 ## 13. Related Documents
 
@@ -225,8 +197,6 @@ AI 모델 출력은 신뢰된 내부 데이터로 간주하지 않는다.
 - `../20_architecture/SECURITY_ARCHITECTURE.md`
 
 ---
-
-
 
 ## 14. Development Rule
 

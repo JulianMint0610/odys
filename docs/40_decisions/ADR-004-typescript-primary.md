@@ -35,8 +35,6 @@ Python은 금지하지 않는다. Python이 명확히 더 적합한 영역에서
 
 ---
 
-
-
 ## 03. Language Selection Rule
 
 ```text
@@ -58,8 +56,6 @@ Specialized need    -> Best-fit language
 
 ---
 
-
-
 ## 04. Python Exception
 
 Python 사용이 정당화될 수 있는 예:
@@ -80,11 +76,7 @@ Python을 도입할 때는 다음 질문을 확인한다.
 
 ---
 
-
-
 ## 05. Rationale
-
-
 
 ### 5.1 End-to-End Type Safety
 
@@ -108,11 +100,7 @@ pnpm workspace와 TypeScript 기반 모듈 구성에 적합하다.
 
 ---
 
-
-
 ## 06. Alternatives Considered
-
-
 
 ### Alternative A — Python Primary
 
@@ -127,8 +115,6 @@ AI / ML과 데이터 처리에는 강하지만 Web frontend와 타입을 직접 
 현재는 채택하지 않는다.
 
 ---
-
-
 
 ## 07. Runtime and Package Management
 
@@ -146,8 +132,6 @@ AI / ML과 데이터 처리에는 강하지만 Web frontend와 타입을 직접 
 
 ---
 
-
-
 ## 08. Type Safety Rules
 
 - `strict` TypeScript 설정을 기본으로 한다.
@@ -159,11 +143,7 @@ AI / ML과 데이터 처리에는 강하지만 Web frontend와 타입을 직접 
 
 ---
 
-
-
 ## 09. Consequences
-
-
 
 ### Positive
 
@@ -172,16 +152,12 @@ AI / ML과 데이터 처리에는 강하지만 Web frontend와 타입을 직접 
 - Frontend / Backend 계약을 관리하기 쉽다.
 - 개발 환경과 CI가 단순해진다.
 
-
-
 ### Negative
 
 - 일부 AI / Data 라이브러리는 Python이 더 강하다.
 - 수치 계산이나 ML 워크로드에서 추가 런타임이 필요할 수 있다.
 
 ---
-
-
 
 ## 10. Constraints
 
@@ -192,8 +168,6 @@ AI / ML과 데이터 처리에는 강하지만 Web frontend와 타입을 직접 
 
 ---
 
-
-
 ## 11. Revisit Conditions
 
 - ML / Data Processing이 제품의 핵심 워크로드가 될 때
@@ -201,8 +175,6 @@ AI / ML과 데이터 처리에는 강하지만 Web frontend와 타입을 직접 
 - 일부 기능이 별도 서비스로 분리되고 독립적인 언어 선택이 합리적일 때
 
 ---
-
-
 
 ## 12. Related Documents
 
@@ -213,8 +185,6 @@ AI / ML과 데이터 처리에는 강하지만 Web frontend와 타입을 직접 
 - `../50_engineering/DEVELOPMENT_WORKFLOW.md`
 
 ---
-
-
 
 ## 13. Development Rule
 

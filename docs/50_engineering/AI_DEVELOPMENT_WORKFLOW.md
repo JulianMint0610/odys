@@ -59,8 +59,6 @@ Commit
 
 ---
 
-
-
 ## 03. AI Role
 
 AI는 다음 역할을 수행할 수 있다.
@@ -82,8 +80,6 @@ AI는 다음 역할을 최종적으로 소유하지 않는다.
 
 ---
 
-
-
 ## 04. Source of Truth
 
 AI의 답변보다 다음 소스가 우선한다.
@@ -99,8 +95,6 @@ AI의 답변보다 다음 소스가 우선한다.
 AI가 프로젝트 구조에 대해 추측하지 않도록 관련 파일을 먼저 읽게 한다.
 
 ---
-
-
 
 ## 05. Before Coding
 
@@ -128,8 +122,6 @@ AI에게 작업을 요청하기 전에 가능한 한 다음 정보를 제공한�
 
 ---
 
-
-
 ## 06. Context Loading
 
 AI가 변경 전 읽어야 하는 파일을 명확히 지정한다.
@@ -148,8 +140,6 @@ Read first:
 
 ---
 
-
-
 ## 07. Planning Rule
 
 중간 이상 크기의 변경은 AI에게 바로 수정하게 하지 않는다.
@@ -165,8 +155,6 @@ Read first:
 작은 typo 또는 명확한 단일-line fix는 이 단계를 생략할 수 있다.
 
 ---
-
-
 
 ## 08. Patch Size Rule
 
@@ -189,8 +177,6 @@ AI 변경은 가능한 한 작은 patch 단위로 만든다.
 
 ---
 
-
-
 ## 09. No Blind Rewrite
 
 기존 파일을 전체 재작성하기 전에 이유가 있어야 한다.
@@ -206,8 +192,6 @@ AI 변경은 가능한 한 작은 patch 단위로 만든다.
 문서 전체 개편처럼 전체 재작성 자체가 작업 목표인 경우는 예외다.
 
 ---
-
-
 
 ## 10. Hallucination Control
 
@@ -225,8 +209,6 @@ AI가 다음을 임의로 가정하지 않도록 한다.
 
 ---
 
-
-
 ## 11. Dependency Rule
 
 AI가 새로운 dependency를 제안하거나 추가하는 경우 검토한다.
@@ -239,8 +221,6 @@ AI가 새로운 dependency를 제안하거나 추가하는 경우 검토한다.
 - package size / runtime cost는 적절한가
 
 ---
-
-
 
 ## 12. Architecture Guardrails
 
@@ -259,8 +239,6 @@ AI-generated code도 기존 ADR을 따라야 한다.
 AI가 `빠른 구현`을 이유로 아키텍처 경계를 우회하지 않도록 한다.
 
 ---
-
-
 
 ## 13. Security Guardrails
 
@@ -287,8 +265,6 @@ AI-generated code에서 반드시 확인한다.
 
 ---
 
-
-
 ## 14. Tool Execution Guardrail
 
 ODYS 자체의 Tool 실행 코드를 AI가 수정할 때는 특히 엄격하게 검토한다.
@@ -304,8 +280,6 @@ ODYS 자체의 Tool 실행 코드를 AI가 수정할 때는 특히 엄격하게 
 - destructive action이 명확한가
 
 ---
-
-
 
 ## 15. AI Output Validation
 
@@ -329,8 +303,6 @@ pnpm build
 
 ---
 
-
-
 ## 16. Test Generation
 
 AI는 테스트 생성에 적극 활용할 수 있다.
@@ -348,8 +320,6 @@ AI는 테스트 생성에 적극 활용할 수 있다.
 AI가 만든 테스트가 구현을 그대로 복사해 같은 오류를 반복하지 않는지 확인한다.
 
 ---
-
-
 
 ## 17. Debugging Workflow
 
@@ -373,8 +343,6 @@ AI에게 오류 메시지, stack trace, 재현 조건을 제공한다.
 
 ---
 
-
-
 ## 18. Refactoring Workflow
 
 AI refactoring 전에 다음을 확인한다.
@@ -386,8 +354,6 @@ AI refactoring 전에 다음을 확인한다.
 refactor 후에는 behavior-preserving 여부를 테스트한다.
 
 ---
-
-
 
 ## 19. Documentation Workflow
 
@@ -404,8 +370,6 @@ AI는 문서 초안을 작성할 수 있지만 실제 코드와 일치해야 한
 존재하지 않는 기능을 미래 계획처럼 써야 한다면 `planned`임을 명확히 표시한다.
 
 ---
-
-
 
 ## 20. Prompt Pattern
 
@@ -433,8 +397,6 @@ Verify:
 
 ---
 
-
-
 ## 21. AI Review Pass
 
 구현을 만든 AI와 별도로 `review mode`를 사용한다.
@@ -453,11 +415,7 @@ Verify:
 
 ---
 
-
-
 ## 22. Human Review Checklist
-
-
 
 ### Code
 
@@ -465,14 +423,10 @@ Verify:
 - 불필요한 코드가 없는가
 - naming이 프로젝트와 일치하는가
 
-
-
 ### Architecture
 
 - 책임이 올바른 모듈에 있는가
 - 새로운 coupling이 생기지 않았는가
-
-
 
 ### Security
 
@@ -480,22 +434,16 @@ Verify:
 - secret이 없는가
 - 외부 입력 검증이 있는가
 
-
-
 ### Operations
 
 - 오류가 관찰 가능한가
 - migration 또는 config 변경이 필요한가
-
-
 
 ### Verification
 
 - 테스트를 실제로 실행했는가
 
 ---
-
-
 
 ## 23. Commit Ownership
 
@@ -507,11 +455,7 @@ Commit은 다음 의미를 가진다.
 
 ---
 
-
-
 ## 24. AI Autonomy in Development
-
-
 
 ### Stage 1
 
@@ -519,22 +463,16 @@ Commit은 다음 의미를 가진다.
 - 코드 제안
 - diff 제안
 
-
-
 ### Stage 2
 
 - 제한된 파일 수정
 - 테스트 작성
-
-
 
 ### Stage 3
 
 - 로컬 명령 실행
 - 테스트 반복
 - refactor 수행
-
-
 
 ### Stage 4
 
@@ -551,8 +489,6 @@ Commit은 다음 의미를 가진다.
 
 ---
 
-
-
 ## 25. Prohibited Practices
 
 - AI 결과를 읽지 않고 commit
@@ -565,8 +501,6 @@ Commit은 다음 의미를 가진다.
 - 실패 원인을 모른 채 반복적인 random patch 적용
 
 ---
-
-
 
 ## 26. Definition of Done
 
@@ -581,8 +515,6 @@ Commit은 다음 의미를 가진다.
 
 ---
 
-
-
 ## 27. Related Documents
 
 - `DEVELOPMENT_WORKFLOW.md`
@@ -594,8 +526,6 @@ Commit은 다음 의미를 가진다.
 - `../20_architecture/SECURITY_ARCHITECTURE.md`
 
 ---
-
-
 
 ## 28. Final Rule
 

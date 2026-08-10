@@ -46,8 +46,6 @@ Application
 
 ---
 
-
-
 ## 03. Module Boundary
 
 각 모듈은 다음을 가진다.
@@ -61,8 +59,6 @@ Application
 외부 모듈은 public API만 사용한다.
 
 ---
-
-
 
 ## 04. Dependency Direction
 
@@ -80,8 +76,6 @@ Supabase SDK, AI Provider SDK, HTTP Client 같은 인프라 구현이 비즈니�
 
 ---
 
-
-
 ## 05. Rationale
 
 Modular Monolith는 현재 ODYS에 다음 이점을 제공한다.
@@ -97,11 +91,7 @@ Modular Monolith는 현재 ODYS에 다음 이점을 제공한다.
 
 ---
 
-
-
 ## 06. Alternatives Considered
-
-
 
 ### Alternative A — Microservices from Day One
 
@@ -117,11 +107,7 @@ Modular Monolith는 현재 ODYS에 다음 이점을 제공한다.
 
 ---
 
-
-
 ## 07. Consequences
-
-
 
 ### Positive
 
@@ -130,8 +116,6 @@ Modular Monolith는 현재 ODYS에 다음 이점을 제공한다.
 - 초기 실험과 리팩터링에 유리하다.
 - 미래의 서비스 분리 가능성을 유지한다.
 
-
-
 ### Negative
 
 - 모듈 경계를 개발 규칙과 테스트로 강제해야 한다.
@@ -139,8 +123,6 @@ Modular Monolith는 현재 ODYS에 다음 이점을 제공한다.
 - 일부 모듈만 독립 확장하기 어렵다.
 
 ---
-
-
 
 ## 08. Extraction Rule
 
@@ -157,8 +139,6 @@ Modular Monolith는 현재 ODYS에 다음 이점을 제공한다.
 
 ---
 
-
-
 ## 09. Constraints
 
 - 모듈 간 circular dependency를 허용하지 않는다.
@@ -169,8 +149,6 @@ Modular Monolith는 현재 ODYS에 다음 이점을 제공한다.
 
 ---
 
-
-
 ## 10. Revisit Conditions
 
 - 사용자 규모 증가로 독립 확장이 필요한 경우
@@ -180,8 +158,6 @@ Modular Monolith는 현재 ODYS에 다음 이점을 제공한다.
 - 보안 또는 규제 요구가 별도 실행 환경을 요구하는 경우
 
 ---
-
-
 
 ## 11. Related Documents
 
@@ -194,8 +170,6 @@ Modular Monolith는 현재 ODYS에 다음 이점을 제공한다.
 - `../50_engineering/DEVELOPMENT_WORKFLOW.md`
 
 ---
-
-
 
 ## 12. Development Rule
 

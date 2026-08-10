@@ -64,26 +64,20 @@ chore/update-dependencies
 
 ---
 
-
-
 ## 04. Work Item Types
 
-
-| Prefix     | Meaning           |
-| ---------- | ----------------- |
-| `feat`     | 새로운 기능            |
-| `fix`      | 버그 수정             |
-| `refactor` | 동작 변경 없는 구조 개선    |
-| `test`     | 테스트 추가 또는 개선      |
-| `docs`     | 문서 변경             |
+| Prefix     | Meaning                      |
+| ---------- | ---------------------------- |
+| `feat`     | 새로운 기능                  |
+| `fix`      | 버그 수정                    |
+| `refactor` | 동작 변경 없는 구조 개선     |
+| `test`     | 테스트 추가 또는 개선        |
+| `docs`     | 문서 변경                    |
 | `chore`    | 빌드, 설정, 의존성, 유지보수 |
-| `perf`     | 성능 개선             |
-| `security` | 보안 관련 변경          |
-
+| `perf`     | 성능 개선                    |
+| `security` | 보안 관련 변경               |
 
 ---
-
-
 
 ## 05. Development Flow
 
@@ -109,8 +103,6 @@ Merge
 
 ---
 
-
-
 ## 06. Step 1 — Understand
 
 코드를 수정하기 전에 먼저 문제를 이해한다.
@@ -126,8 +118,6 @@ Merge
 아키텍처 결정과 충돌하는 경우 구현보다 결정 검토가 먼저다.
 
 ---
-
-
 
 ## 07. Step 2 — Scope
 
@@ -149,8 +139,6 @@ Improve AI system
 
 ---
 
-
-
 ## 08. Step 3 — Design
 
 다음 변경은 구현 전에 설계를 검토한다.
@@ -169,11 +157,7 @@ Improve AI system
 
 ---
 
-
-
 ## 09. Step 4 — Implement
-
-
 
 ### 9.1 Small Changes
 
@@ -202,8 +186,6 @@ Core / Pack / Infrastructure의 책임을 섞지 않는다.
 timeout, retry, fallback 또는 명시적 오류 처리를 설계한다.
 
 ---
-
-
 
 ## 10. Step 5 — Test
 
@@ -235,11 +217,7 @@ pnpm build
 
 ---
 
-
-
 ## 11. Step 6 — Review
-
-
 
 ### Correctness
 
@@ -247,15 +225,11 @@ pnpm build
 - edge case를 놓치지 않았는가
 - 오류 처리가 있는가
 
-
-
 ### Architecture
 
 - Core / Pack 경계를 지키는가
 - private implementation을 침범하지 않는가
 - 새로운 coupling을 만들지 않는가
-
-
 
 ### Security
 
@@ -263,8 +237,6 @@ pnpm build
 - 사용자 권한을 확인하는가
 - 외부 입력을 검증하는가
 - destructive action이 안전한가
-
-
 
 ### Maintainability
 
@@ -274,8 +246,6 @@ pnpm build
 - 테스트가 변경 의도를 설명하는가
 
 ---
-
-
 
 ## 12. Step 7 — Documentation
 
@@ -293,8 +263,6 @@ pnpm build
 코드와 문서가 충돌하면 문서를 방치하지 않는다.
 
 ---
-
-
 
 ## 13. Commit Convention
 
@@ -318,8 +286,6 @@ test(agent): add execution permission cases
 
 ---
 
-
-
 ## 14. Commit Rules
 
 - 의미 없는 `update`, `fix`, `changes` 같은 메시지를 피한다.
@@ -330,8 +296,6 @@ test(agent): add execution permission cases
 - 대규모 formatting 변경과 기능 변경을 가능하면 분리한다.
 
 ---
-
-
 
 ## 15. Pull Request
 
@@ -349,8 +313,6 @@ Risk
 
 ---
 
-
-
 ## 16. Merge Rule
 
 `main` 병합 전 확인한다.
@@ -367,8 +329,6 @@ Risk
 초기 개인 개발 단계에서는 직접 commit할 수 있지만 동일한 체크리스트를 적용한다.
 
 ---
-
-
 
 ## 17. Database Change Workflow
 
@@ -397,8 +357,6 @@ Production apply
 
 ---
 
-
-
 ## 18. Dependency Change Workflow
 
 새 dependency를 추가하기 전에 확인한다.
@@ -423,8 +381,6 @@ pnpm add -D <package>
 ```
 
 ---
-
-
 
 ## 19. Configuration and Secrets
 
@@ -451,8 +407,6 @@ Secret 규칙:
 
 ---
 
-
-
 ## 20. Error Handling
 
 오류를 숨기지 않는다.
@@ -468,8 +422,6 @@ Secret 규칙:
 외부 Provider 오류를 그대로 전체 시스템에 노출하지 않고 내부 공통 오류 형태로 변환한다.
 
 ---
-
-
 
 ## 21. Observability
 
@@ -489,8 +441,6 @@ Secret 규칙:
 
 ---
 
-
-
 ## 22. Definition of Done
 
 작업은 다음 조건을 만족할 때 완료된 것으로 본다.
@@ -506,8 +456,6 @@ Secret 규칙:
 
 ---
 
-
-
 ## 23. Related Documents
 
 - `../40_decisions/README.md`
@@ -519,8 +467,6 @@ Secret 규칙:
 - `../20_architecture/DEPLOYMENT.md`
 
 ---
-
-
 
 ## 24. Final Rule
 

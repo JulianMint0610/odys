@@ -45,8 +45,6 @@ ODYS는 일반적인 CRUD 애플리케이션과 달리 다음과 같은 비결�
 
 ---
 
-
-
 ## 03. Test Pyramid
 
 ```text
@@ -60,8 +58,6 @@ ODYS는 일반적인 CRUD 애플리케이션과 달리 다음과 같은 비결�
 테스트 수는 아래 계층이 가장 많고 위로 갈수록 적게 유지한다.
 
 ---
-
-
 
 ## 04. Unit Tests
 
@@ -81,8 +77,6 @@ ODYS는 일반적인 CRUD 애플리케이션과 달리 다음과 같은 비결�
 
 ---
 
-
-
 ## 05. Integration Tests
 
 대상:
@@ -96,8 +90,6 @@ ODYS는 일반적인 CRUD 애플리케이션과 달리 다음과 같은 비결�
 - workflow execution
 
 ---
-
-
 
 ## 06. Contract Tests
 
@@ -114,8 +106,6 @@ ODYS는 모듈 경계를 중요하게 관리하므로 contract test를 적극적
 - API request / response
 
 ---
-
-
 
 ## 07. End-to-End Tests
 
@@ -147,8 +137,6 @@ Result
 
 ---
 
-
-
 ## 08. Architecture Tests
 
 Modular Monolith의 경계를 자동으로 보호한다.
@@ -163,8 +151,6 @@ Modular Monolith의 경계를 자동으로 보호한다.
 가능한 경우 lint rule 또는 dependency graph test로 자동화한다.
 
 ---
-
-
 
 ## 09. Database Tests
 
@@ -182,8 +168,6 @@ Database 관련 변경에서는 다음을 검증한다.
 특히 사용자별 데이터 격리는 반드시 테스트한다.
 
 ---
-
-
 
 ## 10. Permission Tests
 
@@ -205,11 +189,7 @@ Wrong Scope
 
 ---
 
-
-
 ## 11. Tool Tests
-
-
 
 ### Input
 
@@ -218,8 +198,6 @@ Wrong Scope
 - missing field
 - boundary value
 
-
-
 ### Execution
 
 - success
@@ -227,15 +205,11 @@ Wrong Scope
 - provider error
 - retry behavior
 
-
-
 ### Permission
 
 - authorized
 - unauthorized
 - confirmation required
-
-
 
 ### Output
 
@@ -246,8 +220,6 @@ Wrong Scope
 Destructive Tool은 추가적인 safety test가 필요하다.
 
 ---
-
-
 
 ## 12. Agent Tests
 
@@ -266,8 +238,6 @@ Agent 테스트는 단순한 자연어 문자열 일치에 의존하지 않는�
 가능한 부분은 deterministic policy와 mock model을 사용한다.
 
 ---
-
-
 
 ## 13. Model Gateway Tests
 
@@ -288,8 +258,6 @@ Agent 테스트는 단순한 자연어 문자열 일치에 의존하지 않는�
 
 ---
 
-
-
 ## 14. AI Output Tests
 
 AI 모델 출력은 비결정적이므로 일반 함수와 동일하게 테스트하지 않는다.
@@ -308,8 +276,6 @@ AI 모델 출력은 비결정적이므로 일반 함수와 동일하게 테스�
 - 허용되지 않은 field를 생성하지 않는다.
 - critical action을 자동 실행하지 않는다.
 
-
-
 ### 14.3 Evaluation Set
 
 대표 입력과 기대 behavior를 가진 evaluation dataset을 관리할 수 있다.
@@ -319,8 +285,6 @@ AI 모델 출력은 비결정적이므로 일반 함수와 동일하게 테스�
 정확히 같은 문장을 요구하지 않고 품질 기준을 정의한다.
 
 ---
-
-
 
 ## 15. Prompt Regression Tests
 
@@ -340,8 +304,6 @@ Prompt 변경도 코드 변경과 동일하게 regression 가능성이 있다고
 
 ---
 
-
-
 ## 16. Mock Strategy
 
 다음 외부 의존성은 기본 테스트에서 mock 또는 fake를 사용할 수 있다.
@@ -356,8 +318,6 @@ Prompt 변경도 코드 변경과 동일하게 regression 가능성이 있다고
 단, mock만으로 실제 integration을 완전히 대체하지 않는다.
 
 ---
-
-
 
 ## 17. Network Tests
 
@@ -376,8 +336,6 @@ test:live
 
 ---
 
-
-
 ## 18. Test Data
 
 - production 개인정보를 사용하지 않는다.
@@ -387,8 +345,6 @@ test:live
 - 각 테스트는 가능한 한 독립적으로 실행 가능해야 한다.
 
 ---
-
-
 
 ## 19. Security Tests
 
@@ -409,8 +365,6 @@ test:live
 - command injection
 
 ---
-
-
 
 ## 20. Failure Tests
 
@@ -433,8 +387,6 @@ test:live
 
 ---
 
-
-
 ## 21. Retry and Idempotency Tests
 
 재시도가 가능한 작업은 중복 실행 위험을 테스트한다.
@@ -452,8 +404,6 @@ test:live
 
 ---
 
-
-
 ## 22. Observability Tests
 
 필요한 경우 다음을 테스트한다.
@@ -469,8 +419,6 @@ test:live
 로그 자체의 정확한 문구보다 필요한 정보가 기록되는지를 검증한다.
 
 ---
-
-
 
 ## 23. Test Naming
 
@@ -492,8 +440,6 @@ permission test
 
 ---
 
-
-
 ## 24. Test Structure
 
 가능하면 Arrange / Act / Assert 구조를 사용한다.
@@ -511,8 +457,6 @@ Assert
 
 ---
 
-
-
 ## 25. Coverage Policy
 
 숫자 coverage 자체를 목표로 삼지 않는다.
@@ -527,8 +471,6 @@ Assert
 Coverage는 누락을 찾는 보조 지표로 사용한다.
 
 ---
-
-
 
 ## 26. CI Test Order
 
@@ -552,8 +494,6 @@ Selected E2E
 
 ---
 
-
-
 ## 27. Local Verification
 
 기본 로컬 검증:
@@ -571,8 +511,6 @@ pnpm build
 ```
 
 ---
-
-
 
 ## 28. Bug Fix Rule
 
@@ -592,8 +530,6 @@ Commit
 
 ---
 
-
-
 ## 29. Release Gate
 
 release 또는 production 배포 전에 최소한 다음을 확인한다.
@@ -610,8 +546,6 @@ release 또는 production 배포 전에 최소한 다음을 확인한다.
 
 ---
 
-
-
 ## 30. What Not to Test
 
 다음 항목은 과도하게 테스트하지 않는다.
@@ -625,8 +559,6 @@ release 또는 production 배포 전에 최소한 다음을 확인한다.
 테스트는 ODYS의 계약과 위험에 집중한다.
 
 ---
-
-
 
 ## 31. Definition of Tested
 
@@ -642,8 +574,6 @@ release 또는 production 배포 전에 최소한 다음을 확인한다.
 
 ---
 
-
-
 ## 32. Related Documents
 
 - `DEVELOPMENT_WORKFLOW.md`
@@ -657,8 +587,6 @@ release 또는 production 배포 전에 최소한 다음을 확인한다.
 - `../20_architecture/TOOL_ARCHITECTURE.md`
 
 ---
-
-
 
 ## 33. Final Rule
 

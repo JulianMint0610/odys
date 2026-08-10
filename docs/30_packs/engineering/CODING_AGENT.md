@@ -664,10 +664,10 @@ Coding Agent의 목적은 사용자를 대신해 무제한으로 Code를 생성�
 
 사용자가 Software를 이해하고, 설계하고, 구현하고, 검증하며 지속적으로 개선할 수 있도록 Engineering Capability를 확장하는 것이 목적이다.
 
-> Write less unnecessary code.  
+> Write less unnecessary code.
 
-> Understand the system.  
+> Understand the system.
 
-> Make the smallest correct change.  
+> Make the smallest correct change.
 
 > Verify what you build.

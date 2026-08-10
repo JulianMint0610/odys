@@ -47,28 +47,21 @@ ODYS는 개인용 AI 도구에서 출발하지만 장기적으로는 다양한 �
 
 ---
 
-
-
 ## 03. ADR Status
 
-
-| Status     | Meaning                       |
-| ---------- | ----------------------------- |
-| Proposed   | 검토 중인 제안                      |
-| Accepted   | 현재 적용되는 결정                    |
+| Status     | Meaning                                            |
+| ---------- | -------------------------------------------------- |
+| Proposed   | 검토 중인 제안                                     |
+| Accepted   | 현재 적용되는 결정                                 |
 | Deprecated | 더 이상 권장되지 않지만 일부 구조가 남아 있는 결정 |
-| Superseded | 새로운 ADR에 의해 대체된 결정            |
-| Rejected   | 검토했지만 채택하지 않은 결정              |
-
+| Superseded | 새로운 ADR에 의해 대체된 결정                      |
+| Rejected   | 검토했지만 채택하지 않은 결정                      |
 
 현재 `ADR-001`부터 `ADR-007`까지는 모두 `Accepted` 상태다.
 
 ---
 
-
-
 ## 04. ADR Index
-
 
 | ADR     | Title                       | Status   |
 | ------- | --------------------------- | -------- |
@@ -80,21 +73,14 @@ ODYS는 개인용 AI 도구에서 출발하지만 장기적으로는 다양한 �
 | ADR-006 | Supabase                    | Accepted |
 | ADR-007 | Progressive Autonomy        | Accepted |
 
-
 ---
 
-
-
 ## 05. Decision Summary
-
-
 
 ### ADR-001 — Brand Architecture
 
 - **ODYSSEUS OS**: 전체 플랫폼
 - **ODYS AI**: 사용자가 직접 상호작용하는 대표 AI Agent
-
-
 
 ### ADR-002 — Core vs Pack
 
@@ -122,8 +108,6 @@ Agent 자율성은 낮은 위험의 관찰과 제안에서 시작하여 사용�
 
 ---
 
-
-
 ## 06. When to Create an ADR
 
 다음과 같은 결정은 ADR로 기록하는 것을 원칙으로 한다.
@@ -150,8 +134,6 @@ Agent 자율성은 낮은 위험의 관찰과 제안에서 시작하여 사용�
 
 ---
 
-
-
 ## 07. Naming Convention
 
 ADR 파일명은 다음 형식을 사용한다.
@@ -169,8 +151,6 @@ ADR-XXX-short-title.md
 
 ---
 
-
-
 ## 08. ADR Template
 
 ```markdown
@@ -180,18 +160,23 @@ ADR-XXX-short-title.md
 - Date: YYYY-MM-DD
 
 ## 01. Context
+
 ## 02. Decision
+
 ## 03. Rationale
+
 ## 04. Alternatives Considered
+
 ## 05. Consequences
+
 ## 06. Constraints
+
 ## 07. Revisit Conditions
+
 ## 08. Related Documents
 ```
 
 ---
-
-
 
 ## 09. Review Policy
 
@@ -208,8 +193,6 @@ ADR은 다음 상황에서 재검토할 수 있다.
 
 ---
 
-
-
 ## 10. Architectural Invariants
 
 1. ODYS Core는 특정 도메인에 종속되지 않는다.
@@ -222,8 +205,6 @@ ADR은 다음 상황에서 재검토할 수 있다.
 8. 실험적인 기능이 안정된 Core 계약을 무분별하게 변경하지 않는다.
 
 ---
-
-
 
 ## 11. Related Documents
 
@@ -241,8 +222,6 @@ ADR은 다음 상황에서 재검토할 수 있다.
 - `../50_engineering/TEST_STRATEGY.md`
 
 ---
-
-
 
 ## 12. Development Rule
 

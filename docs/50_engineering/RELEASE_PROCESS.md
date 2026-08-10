@@ -42,8 +42,6 @@ Post-Release Verification
 
 ---
 
-
-
 ## 03. Environments
 
 기본 환경 개념:
@@ -71,11 +69,7 @@ Production
 
 ---
 
-
-
 ## 04. Release Types
-
-
 
 ### 4.1 Patch Release
 
@@ -92,8 +86,6 @@ Production
 - 새로운 API endpoint
 - 새로운 Agent workflow
 
-
-
 ### 4.3 Major Release
 
 호환성을 깨는 변경 또는 큰 구조 변경.
@@ -106,8 +98,6 @@ Production
 - permission model 변경
 
 ---
-
-
 
 ## 05. Versioning
 
@@ -130,8 +120,6 @@ MAJOR.MINOR.PATCH
 
 ---
 
-
-
 ## 06. Pre-Release Entry Criteria
 
 Release candidate가 되기 전에 확인한다.
@@ -146,8 +134,6 @@ Release candidate가 되기 전에 확인한다.
 - Accepted ADR과 충돌하지 않는다.
 
 ---
-
-
 
 ## 07. Release Candidate
 
@@ -168,8 +154,6 @@ production
 검증 후 commit이 바뀌면 필요한 검증을 다시 수행한다.
 
 ---
-
-
 
 ## 08. Required Checks
 
@@ -193,8 +177,6 @@ pnpm test:e2e
 
 ---
 
-
-
 ## 09. Test Gate
 
 Production release 전 최소한 다음을 확인한다.
@@ -213,8 +195,6 @@ Production release 전 최소한 다음을 확인한다.
 
 ---
 
-
-
 ## 10. Architecture Gate
 
 Release가 architecture를 조용히 깨뜨리지 않았는지 확인한다.
@@ -231,8 +211,6 @@ Architecture decision 자체가 바뀌었다면 새로운 ADR 또는 기존 ADR 
 
 ---
 
-
-
 ## 11. Security Gate
 
 Production release 전 확인:
@@ -248,8 +226,6 @@ Production release 전 확인:
 
 ---
 
-
-
 ## 12. Database Migration Review
 
 Migration은 application code와 별도 위험 요소로 취급한다.
@@ -264,8 +240,6 @@ Migration은 application code와 별도 위험 요소로 취급한다.
 - application deployment 순서와 호환되는가
 
 ---
-
-
 
 ## 13. Expand and Contract
 
@@ -284,8 +258,6 @@ Breaking schema 변경은 가능하면 단계적으로 수행한다.
 
 ---
 
-
-
 ## 14. Data Recovery
 
 데이터 손실 가능성이 있는 migration은 backup 또는 recovery mechanism을 확인한다.
@@ -302,8 +274,6 @@ Breaking schema 변경은 가능하면 단계적으로 수행한다.
 Migration file이 존재한다는 사실만으로 안전하다고 판단하지 않는다.
 
 ---
-
-
 
 ## 15. Configuration Review
 
@@ -323,8 +293,6 @@ Code와 configuration은 하나의 release dependency로 취급한다.
 
 ---
 
-
-
 ## 16. Feature Flags
 
 위험하거나 점진 노출이 필요한 기능은 feature flag를 사용할 수 있다.
@@ -339,8 +307,6 @@ Code와 configuration은 하나의 release dependency로 취급한다.
 안정화 후 오래된 flag는 제거한다.
 
 ---
-
-
 
 ## 17. Release Notes
 
@@ -361,8 +327,6 @@ Known Issues
 
 ---
 
-
-
 ## 18. Breaking Changes
 
 Breaking change에는 다음을 명시한다.
@@ -377,8 +341,6 @@ Internal API라도 여러 module이 의존하면 contract change로 취급한다
 
 ---
 
-
-
 ## 19. Git Tag
 
 검증된 release commit에 tag를 부여할 수 있다.
@@ -391,8 +353,6 @@ git push origin v0.1.0
 Tag는 정확한 release commit을 가리켜야 한다.
 
 ---
-
-
 
 ## 20. Deployment Order
 
@@ -414,8 +374,6 @@ Cleanup in later release
 
 ---
 
-
-
 ## 21. Tool Release
 
 새로운 Tool 또는 Tool 변경에는 다음을 별도 검토한다.
@@ -435,8 +393,6 @@ Write Tool은 Progressive Autonomy 원칙을 따른다.
 
 ---
 
-
-
 ## 22. Agent Release
 
 Agent behavior 변경에는 다음을 확인한다.
@@ -453,8 +409,6 @@ Agent 변경을 단순한 텍스트 변경으로 취급하지 않는다.
 
 ---
 
-
-
 ## 23. Model Changes
 
 다음 변경도 release risk다.
@@ -468,8 +422,6 @@ Agent 변경을 단순한 텍스트 변경으로 취급하지 않는다.
 중요한 model change에는 regression evaluation을 수행한다.
 
 ---
-
-
 
 ## 24. Prompt Changes
 
@@ -488,8 +440,6 @@ Prompt는 versioned artifact로 취급한다.
 
 ---
 
-
-
 ## 25. Deployment
 
 Production deploy는 가능한 한 자동화된 pipeline을 사용한다.
@@ -506,8 +456,6 @@ Production deploy는 가능한 한 자동화된 pipeline을 사용한다.
 
 ---
 
-
-
 ## 26. Post-Deploy Smoke Test
 
 배포 직후 최소 smoke test:
@@ -521,8 +469,6 @@ Production deploy는 가능한 한 자동화된 pipeline을 사용한다.
 - 필요한 경우 안전한 Tool flow
 
 ---
-
-
 
 ## 27. Monitoring
 
@@ -540,8 +486,6 @@ Production deploy는 가능한 한 자동화된 pipeline을 사용한다.
 
 ---
 
-
-
 ## 28. Verification
 
 Release 직후 확인:
@@ -555,8 +499,6 @@ Release 직후 확인:
 
 ---
 
-
-
 ## 29. Rollback Principle
 
 Release 전에 다음을 알고 있어야 한다.
@@ -568,8 +510,6 @@ Release 전에 다음을 알고 있어야 한다.
 - feature flag로 기능을 끌 수 있는가
 
 ---
-
-
 
 ## 30. Rollback Triggers
 
@@ -585,8 +525,6 @@ Release 전에 다음을 알고 있어야 한다.
 - 예상하지 못한 비용 폭증
 
 ---
-
-
 
 ## 31. Rollback Methods
 
@@ -608,8 +546,6 @@ DB destructive change는 application rollback만으로 복구되지 않을 수 �
 
 ---
 
-
-
 ## 32. Hotfix
 
 긴급 수정 절차:
@@ -625,8 +561,6 @@ DB destructive change는 application rollback만으로 복구되지 않을 수 �
 긴급하다는 이유로 security / permission check를 생략하지 않는다.
 
 ---
-
-
 
 ## 33. Failed Release
 
@@ -645,19 +579,13 @@ Release 실패 원인을 기록한다.
 
 ---
 
-
-
 ## 34. Pre-Release Checklist
-
-
 
 ### Source
 
 - [ ] release commit 확정
 - [ ] unrelated change 없음
 - [ ] 관련 문서 업데이트
-
-
 
 ### Quality
 
@@ -667,8 +595,6 @@ Release 실패 원인을 기록한다.
 - [ ] build 통과
 - [ ] 필요한 integration / E2E 통과
 
-
-
 ### Security
 
 - [ ] secret 없음
@@ -676,15 +602,11 @@ Release 실패 원인을 기록한다.
 - [ ] RLS / auth 변경 검토
 - [ ] destructive action 검토
 
-
-
 ### Data
 
 - [ ] migration 검토
 - [ ] backup / recovery 검토
 - [ ] deployment ordering 검토
-
-
 
 ### Operations
 
@@ -694,8 +616,6 @@ Release 실패 원인을 기록한다.
 - [ ] rollback 경로 확인
 
 ---
-
-
 
 ## 35. Post-Release Checklist
 
@@ -709,8 +629,6 @@ Release 실패 원인을 기록한다.
 - [ ] tag / release notes 확인
 
 ---
-
-
 
 ## 36. Automation Roadmap
 
@@ -738,8 +656,6 @@ Automated smoke tests
 
 ---
 
-
-
 ## 37. Release Ownership
 
 Release를 수행한 사람은 다음을 설명할 수 있어야 한다.
@@ -753,8 +669,6 @@ Release를 수행한 사람은 다음을 설명할 수 있어야 한다.
 AI가 command를 제안해도 최종 책임은 사람에게 있다.
 
 ---
-
-
 
 ## 38. Release Frequency
 
@@ -770,8 +684,6 @@ AI가 command를 제안해도 최종 책임은 사람에게 있다.
 
 ---
 
-
-
 ## 39. Production Rules
 
 금지:
@@ -784,8 +696,6 @@ AI가 command를 제안해도 최종 책임은 사람에게 있다.
 - release 상태를 모르는 연속 배포
 
 ---
-
-
 
 ## 40. Related Documents
 
@@ -801,8 +711,6 @@ AI가 command를 제안해도 최종 책임은 사람에게 있다.
 - `../20_architecture/SECURITY_ARCHITECTURE.md`
 
 ---
-
-
 
 ## 41. Final Rule
 

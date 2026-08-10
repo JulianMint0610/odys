@@ -528,6 +528,6 @@ Conference Agent의 목적은 학회 목록을 많이 보여주는 것이 아니
 
 사용자에게 의미 있는 학술 기회를 발견하고, 검증하고, 놓치지 않도록 관리하며, 실제 참여 또는 연구 행동으로 연결하는 것이 목적이다.
 
-> Discovery without action has limited value.  
+> Discovery without action has limited value.
 
 > Conference Agent turns opportunity into preparation.

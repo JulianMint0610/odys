@@ -42,8 +42,6 @@ ODYS 전체 플랫폼을 의미한다.
 - Observability
 - Deployment Infrastructure
 
-
-
 ### 2.2 ODYS AI
 
 사용자가 직접 상호작용하는 대표 AI Agent를 의미한다.
@@ -59,8 +57,6 @@ ODYS AI는 ODYSSEUS OS 위에서 동작하며 다음 역할을 수행한다.
 - 최종 응답 전달
 
 ---
-
-
 
 ## 03. Product Structure
 
@@ -87,8 +83,6 @@ ODYS AI는 플랫폼 전체와 동일하지 않다.
 
 ---
 
-
-
 ## 04. Rationale
 
 `ODYSSEUS OS`는 기술적 기반과 실행 환경을 나타내고, `ODYS AI`는 최종 사용자가 경험하는 인터페이스와 대표 Agent를 나타낸다.
@@ -102,11 +96,7 @@ ODYS AI는 플랫폼 전체와 동일하지 않다.
 
 ---
 
-
-
 ## 05. Alternatives Considered
-
-
 
 ### Alternative A — 모든 것을 ODYS 하나로 통합
 
@@ -138,11 +128,7 @@ ODYS AI는 플랫폼 전체와 동일하지 않다.
 
 ---
 
-
-
 ## 06. Consequences
-
-
 
 ### Positive
 
@@ -150,16 +136,12 @@ ODYS AI는 플랫폼 전체와 동일하지 않다.
 - 기술 문서와 제품 문서의 용어를 일관되게 유지할 수 있다.
 - Pack과 Agent 확장에 유리하다.
 
-
-
 ### Negative
 
 - 두 개의 핵심 이름을 관리해야 한다.
 - 초기 사용자에게 두 이름의 관계를 설명해야 할 수 있다.
 
 ---
-
-
 
 ## 07. Naming Rules
 
@@ -172,8 +154,6 @@ ODYS AI는 플랫폼 전체와 동일하지 않다.
 
 ---
 
-
-
 ## 08. Constraints
 
 - ODYS AI를 Core와 동일한 개념으로 취급하지 않는다.
@@ -183,8 +163,6 @@ ODYS AI는 플랫폼 전체와 동일하지 않다.
 
 ---
 
-
-
 ## 09. Revisit Conditions
 
 - ODYS AI 외에 여러 동등한 최상위 사용자 Agent가 제품의 중심이 될 때
@@ -192,8 +170,6 @@ ODYS AI는 플랫폼 전체와 동일하지 않다.
 - 제품 포트폴리오가 여러 독립 제품군으로 확장될 때
 
 ---
-
-
 
 ## 10. Related Documents
 
@@ -204,8 +180,6 @@ ODYS AI는 플랫폼 전체와 동일하지 않다.
 - `../20_architecture/ODYS_CORE.md`
 
 ---
-
-
 
 ## 11. Development Rule
 
