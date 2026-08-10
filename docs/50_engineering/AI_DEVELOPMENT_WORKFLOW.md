@@ -285,18 +285,10 @@ ODYS 자체의 Tool 실행 코드를 AI가 수정할 때는 특히 엄격하게 
 
 AI가 만든 코드를 `그럴듯하다`는 이유로 승인하지 않는다.
 
-최소 검증:
+전체 local quality gate:
 
 ```bash
-pnpm lint
-pnpm typecheck
-pnpm test
-```
-
-필요하면:
-
-```bash
-pnpm build
+pnpm check
 ```
 
 또한 diff를 직접 읽는다.
@@ -508,7 +500,7 @@ Commit은 다음 의미를 가진다.
 - diff를 사람이 이해한다.
 - architecture rule을 지킨다.
 - security impact를 검토했다.
-- lint / typecheck / test가 통과한다.
+- local `pnpm check`가 통과한다.
 - 필요한 문서가 업데이트되었다.
 - 불필요한 AI-generated code가 제거되었다.
 - commit이 하나의 논리적 변경을 표현한다.

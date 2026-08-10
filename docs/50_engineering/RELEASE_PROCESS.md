@@ -160,10 +160,7 @@ production
 기본 release 검증:
 
 ```bash
-pnpm lint
-pnpm typecheck
-pnpm test
-pnpm build
+pnpm check
 ```
 
 프로젝트에 별도 suite가 존재하면 필요에 따라 실행한다.
@@ -589,6 +586,7 @@ Release 실패 원인을 기록한다.
 
 ### Quality
 
+- [ ] formatting 통과
 - [ ] lint 통과
 - [ ] typecheck 통과
 - [ ] tests 통과

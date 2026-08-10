@@ -832,23 +832,10 @@ AI가 작성한 코드도 동일한 기준을 적용한다.
 
 ## 45. Required Local Checks
 
-Commit 전 기본 검증:
+Push 전 전체 local quality gate:
 
 ```bash
-pnpm lint
-pnpm typecheck
-```
-
-기능 변경에는:
-
-```bash
-pnpm test
-```
-
-필요하면:
-
-```bash
-pnpm build
+pnpm check
 ```
 
 실제 command는 repository의 `package.json`을 source of truth로 한다.

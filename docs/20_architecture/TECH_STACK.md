@@ -88,11 +88,11 @@ compile-time typing과 runtime validation을 함께 사용한다.
 
 | Continuous Integration | GitHub Actions | Adopted |
 
-| Database | PostgreSQL via Supabase | Adopted |
+| Database | PostgreSQL via Supabase | Adopted Architecture |
 
 | Authentication | Supabase Auth | Planned |
 
-| Backend Platform | Supabase | Adopted |
+| Backend Platform | Supabase | Adopted Architecture |
 
 | AI Integration | Provider-independent Model Layer | Adopted Architecture |
 
@@ -761,7 +761,7 @@ lint rule은 실제 source code가 증가하면서 필요한 rule을 단계적�
 
 자동 테스트는 ODYS architecture의 중요한 부분이다.
 
-IMPLEMENTATION-001에서 Vitest 4.1.10을 initial TypeScript test runner로 채택했다.
+현재 repository는 Vitest를 TypeScript test runner로 사용한다.
 
 Test Runner 선택 기준:
 
@@ -903,17 +903,11 @@ pnpm format:check
 
 pnpm lint
 
-```
+pnpm typecheck
 
-source code가 추가되면 다음을 순차적으로 추가한다.
+pnpm test
 
-```
-
-typecheck
-
-tests
-
-build
+pnpm build
 
 ```
 
@@ -941,9 +935,9 @@ pnpm build
 
 ```
 
-`pnpm check`는 현재 formatting과 lint를 검증한다.
+`pnpm check`는 formatting, lint, typecheck, test 및 build를 순서대로 실행하는 전체 local quality gate다.
 
-IMPLEMENTATION-001에서 `@odys/core` package가 추가되면서 `pnpm typecheck`, `pnpm test`, `pnpm build`가 활성화되었다.
+개별 command는 특정 단계만 다시 실행하거나 실패 원인을 진단할 때 사용할 수 있다.
 
 ---
 
@@ -1439,9 +1433,9 @@ GitHub Actions CI
 
 ---
 
-## 62. First Implementation Stack
+## 62. Initial Core Foundation Stack
 
-첫 `ODYS Core Skeleton`을 시작할 때 최소한 필요한 stack은 다음과 같다.
+현재 initial Core foundation에 구현된 stack은 다음과 같다.
 
 ```
 
@@ -1453,8 +1447,6 @@ pnpm Workspace
 
 packages/core
 
-runtime schema validation
-
 test runner
 
 ESLint
@@ -1465,7 +1457,9 @@ GitHub Actions
 
 ```
 
-이 단계에서는 Web UI나 모든 external provider가 필요하지 않다.
+Runtime schema validation은 실제 external input 또는 structured contract를 구현할 때 선택한다.
+
+현재 foundation 단계에서는 Web UI나 external provider를 구현하지 않는다.
 
 먼저 Core contract를 실행 가능한 code로 만든다.
 

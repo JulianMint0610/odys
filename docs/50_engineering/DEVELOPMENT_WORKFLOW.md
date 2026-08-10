@@ -90,13 +90,19 @@ Design
    ↓
 Implement
    ↓
-Test
+Local Quality Check
    ↓
 Review
    ↓
 Document
    ↓
 Commit
+   ↓
+Push
+   ↓
+Pull Request
+   ↓
+GitHub Actions CI
    ↓
 Merge
 ```
@@ -187,23 +193,15 @@ timeout, retry, fallback 또는 명시적 오류 처리를 설계한다.
 
 ---
 
-## 10. Step 5 — Test
+## 10. Step 5 — Verify
 
-코드 변경 후 최소한 다음을 확인한다.
-
-```bash
-pnpm lint
-pnpm typecheck
-pnpm test
-```
-
-프로젝트 스크립트 이름이 실제로 다르면 `package.json`의 정의를 따른다.
-
-필요한 경우 추가로 수행한다.
+Push 전에 repository root에서 전체 local quality gate를 실행한다.
 
 ```bash
-pnpm build
+pnpm check
 ```
+
+`pnpm check`는 formatting, lint, typecheck, test 및 build를 순서대로 검증하며 어느 단계든 실패하면 non-zero exit code로 종료한다.
 
 기능 성격에 따라 다음 테스트를 추가한다.
 
@@ -301,6 +299,8 @@ test(agent): add execution permission cases
 
 협업 단계에서는 Pull Request를 기본 병합 단위로 사용한다.
 
+작업 branch를 push하고 Pull Request를 생성하거나 업데이트한 뒤 GitHub Actions 결과를 확인한다.
+
 PR에는 최소한 다음 정보가 있어야 한다.
 
 ```text
@@ -317,10 +317,8 @@ Risk
 
 `main` 병합 전 확인한다.
 
-- lint 통과
-- typecheck 통과
-- test 통과
-- 필요한 build 통과
+- local `pnpm check` 통과
+- GitHub Actions CI 통과
 - 관련 문서 업데이트
 - migration 검토
 - secret 없음
@@ -446,7 +444,8 @@ Secret 규칙:
 작업은 다음 조건을 만족할 때 완료된 것으로 본다.
 
 - 요구사항이 구현되었다.
-- lint / typecheck / test가 통과한다.
+- local `pnpm check`가 통과한다.
+- Pull Request를 병합하는 경우 GitHub Actions CI가 통과한다.
 - 필요한 테스트가 추가되었다.
 - 문서가 현재 동작과 일치한다.
 - 보안 영향을 검토했다.

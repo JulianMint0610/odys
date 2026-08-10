@@ -477,6 +477,8 @@ Coverage는 누락을 찾는 보조 지표로 사용한다.
 ```text
 Install
   ↓
+Formatting
+  ↓
 Lint
   ↓
 Typecheck
@@ -499,16 +501,12 @@ Selected E2E
 기본 로컬 검증:
 
 ```bash
-pnpm lint
-pnpm typecheck
-pnpm test
+pnpm check
 ```
 
-큰 변경 또는 release 전에는:
+이 command는 formatting, lint, typecheck, test 및 build를 포함한다.
 
-```bash
-pnpm build
-```
+실제 integration, E2E 또는 live suite가 추가된 경우 변경 위험에 따라 해당 script를 추가로 실행한다.
 
 ---
 
