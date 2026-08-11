@@ -234,10 +234,12 @@ packages:
 
   - 'packages/*'
 
+  - 'packs/*'
+
   - 'agents/*'
 ```
 
-이 구조는 Application, Core package, Agent 및 향후 독립 service를 하나의 repository에서 관리할 수 있게 한다.
+이 구조는 Application, Core package, Pack, Agent 및 향후 독립 service를 하나의 repository에서 관리할 수 있게 한다.
 
 ---
 
@@ -254,6 +256,8 @@ odys/
 ├── agents/
 
 ├── packages/
+
+├── packs/
 
 ├── services/
 
@@ -1446,6 +1450,12 @@ Node.js
 pnpm Workspace
 
 packages/core
+
+Core Pack identity public contract
+
+Core Pack Registry
+
+packs/engineering
 
 test runner
 

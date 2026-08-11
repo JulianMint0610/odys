@@ -10,7 +10,7 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "lint": "eslint .",
-    "test": "pnpm --recursive --if-present run test",
+    "test": "vitest run --dir tests && pnpm --recursive --if-present run test",
     "typecheck": "pnpm --recursive --if-present run typecheck",
     "check": "pnpm format:check && pnpm lint && pnpm typecheck && pnpm test && pnpm build"
   },

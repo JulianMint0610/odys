@@ -231,6 +231,12 @@ importers:
 
   packages/core: {}
 
+  packs/engineering:
+    dependencies:
+      '@odys/core':
+        specifier: workspace:*
+        version: link:../../packages/core
+
 packages:
 
   '@eslint-community/eslint-utils@4.10.1':

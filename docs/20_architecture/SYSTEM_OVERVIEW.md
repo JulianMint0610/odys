@@ -340,6 +340,8 @@ Pack은 Core를 복제하거나 fork하지 않는다.
 
 모든 Pack은 동일한 Core contract와 extension point를 사용한다.
 
+현재 `packs/engineering/`에는 첫 번째 실제 Pack workspace package와 identity metadata만 구현되어 있다. 위 Engineering Agent들은 후속 구현 범위이며 아직 구현되지 않았다.
+
 ---
 
 ## 8. Agents
@@ -1110,6 +1112,8 @@ odys/
 
 ├── packages/
 
+├── packs/
+
 ├── services/
 
 ├── tests/
@@ -1135,6 +1139,10 @@ Agent definition 및 Agent 관련 구현을 배치한다.
 ### `packages/`
 
 ODYS Core와 여러 Application 또는 Agent가 공유하는 library를 배치한다.
+
+### `packs/`
+
+Core public contract를 사용하는 domain-specific Pack workspace package를 배치한다. 현재 첫 번째 구현은 `packs/engineering/`이다.
 
 ### `services/`
 
