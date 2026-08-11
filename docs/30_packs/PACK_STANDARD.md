@@ -208,6 +208,12 @@ Manifest에는 최소한 다음 정보가 포함되어야 한다.
 
 - Configuration Schema
 
+위 항목은 Pack Manifest의 전체 목표 contract를 정의한다.
+
+IMPLEMENTATION-003에서 도입된 초기 Core Pack public contract는 Pack identity를 위한 `Pack ID`, `Pack Name`, `Version`, `Description`만 먼저 구현한다.
+
+나머지 Manifest 항목은 전체 Pack 표준의 목표 contract이며, 실제 Pack capability와 runtime이 구현되는 단계에서 점진적으로 추가한다.
+
 예를 들어 Engineering Pack의 개념적 식별자는 다음과 같이 정의할 수 있다.
 
 - Pack ID: `engineering`
