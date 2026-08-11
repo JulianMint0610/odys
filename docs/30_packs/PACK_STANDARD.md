@@ -212,6 +212,8 @@ Manifest에는 최소한 다음 정보가 포함되어야 한다.
 
 IMPLEMENTATION-003에서 도입된 초기 Core Pack public contract는 Pack identity를 위한 `Pack ID`, `Pack Name`, `Version`, `Description`만 먼저 구현한다.
 
+IMPLEMENTATION-004는 이 identity contract를 변경하지 않고 Core의 명시적 Pack Registry와 `packs/engineering/`의 첫 실제 Engineering Pack workspace package에 적용한다.
+
 나머지 Manifest 항목은 전체 Pack 표준의 목표 contract이며, 실제 Pack capability와 runtime이 구현되는 단계에서 점진적으로 추가한다.
 
 예를 들어 Engineering Pack의 개념적 식별자는 다음과 같이 정의할 수 있다.
@@ -220,7 +222,7 @@ IMPLEMENTATION-003에서 도입된 초기 Core Pack public contract는 Pack iden
 
 - Pack Name: `Engineering Pack`
 
-구체적인 TypeScript Interface는 구현 단계에서 정의한다.
+현재 TypeScript contract는 `@odys/core`의 `PackManifest`와 `PackDefinition`으로 공개되며, Engineering Pack은 이 package의 public entry point만 사용한다.
 
 ---
 
@@ -628,6 +630,8 @@ Pack은 자신이 지원하는 Core Version Range를 명시해야 한다.
 
 - Core Compatibility
 
+현재 구현 범위의 테스트는 Manifest validation, Pack Registry behavior, Engineering Pack contract 및 Core와 Pack 사이의 package boundary를 검증한다. Agent registration부터 Core Compatibility까지의 runtime 테스트는 해당 capability가 구현될 때 추가한다.
+
 LLM 기반 Agent의 품질은 일반 Unit Test만으로 충분하지 않을 수 있다.
 
 필요한 경우 Evaluation Dataset과 Scenario Test를 함께 사용한다.
@@ -638,7 +642,9 @@ LLM 기반 Agent의 품질은 일반 Unit Test만으로 충분하지 않을 수 
 
 ODYS의 첫 번째 Pack은 Engineering Pack이다.
 
-초기 Engineering Pack에는 다음 Agent를 포함한다.
+현재 `packs/engineering/`에는 Engineering Pack의 identity definition만 구현되어 있으며 Agent Runtime이나 domain Agent는 포함하지 않는다.
+
+Engineering Pack의 후속 capability 후보는 다음과 같다.
 
 1. Study Agent
 
@@ -648,7 +654,7 @@ ODYS의 첫 번째 Pack은 Engineering Pack이다.
 
 4. Coding Agent
 
-이 Agent들은 ODYS Core 구성 요소가 아니다.
+이 Agent들은 아직 구현되지 않았으며, 구현될 때에도 ODYS Core 구성 요소가 아니다.
 
 Engineering Pack이 제공하는 최초의 Domain Agent다.
 

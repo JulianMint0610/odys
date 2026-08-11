@@ -1336,6 +1336,8 @@ Pack은 Core가 제공하는 다음 extension point를 사용할 수 있다.
 
 - knowledge source configuration
 
+현재 코드로 구현된 Pack extension point는 Pack identity public contract와 명시적 Pack Registry다. Agent, Tool, workflow, policy, Memory 및 knowledge source 관련 extension point는 계획된 아키텍처이며 아직 runtime으로 구현되지 않았다.
+
 Pack이 새로운 domain 기능을 추가할 때 Core 내부 구현을 직접 수정하는 것을 기본 방식으로 삼지 않는다.
 
 ---
@@ -1374,9 +1376,9 @@ Notification Channel
 
 ---
 
-## 33. Planned Initial Core Package
+## 33. Initial Core Package Boundary
 
-첫 번째 실제 Core 구현은 `packages/core/`에서 시작하는 것을 기본 방향으로 한다.
+실제 Core 구현은 `packages/core/`에 위치한다. 현재 구현 범위는 Pack identity public contract와 Pack Registry이며, 아래 구조는 후속 capability를 위한 개념적 방향이다.
 
 예상 구조는 다음과 같다.
 

@@ -4,3 +4,10 @@ export class InvalidPackManifestError extends Error {
     this.name = 'InvalidPackManifestError';
   }
 }
+
+export class DuplicatePackIdError extends Error {
+  public constructor(packId: string) {
+    super(`Pack with id "${packId}" is already registered`);
+    this.name = 'DuplicatePackIdError';
+  }
+}
