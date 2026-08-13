@@ -1,4 +1,4 @@
-# PACK_[STANDARD.md](http://STANDARD.md)
+# PACK_STANDARD
 
 ## 1. Purpose
 

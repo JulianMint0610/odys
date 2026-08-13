@@ -852,19 +852,19 @@ ODYS에서는 AI의 reasoning capability와 실제 action authority를 분리한
 
 ```
 
-[calendar.read](http://calendar.read)
+calender.read
 
 calendar.write
 
-[email.read](http://email.read)
+email.read
 
 email.send
 
-[files.read](http://files.read)
+files.read
 
 files.write
 
-[memory.read](http://memory.read)
+memory.read
 
 memory.write
 

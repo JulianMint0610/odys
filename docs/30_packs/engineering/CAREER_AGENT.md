@@ -1,4 +1,4 @@
-# CAREER_[AGENT.md](http://AGENT.md)
+# CAREER_AGENT
 
 ## 1. Purpose
 

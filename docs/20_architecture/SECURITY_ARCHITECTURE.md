@@ -454,23 +454,23 @@ ODYS는 capability-based permission을 사용할 수 있다.
 
 ```
 
-[calendar.read](http://calendar.read)
+calender.read
 
 calendar.write
 
-[email.read](http://email.read)
+email.read
 
 email.send
 
-[files.read](http://files.read)
+files.read
 
 files.write
 
-[memory.read](http://memory.read)
+memory.read
 
 memory.write
 
-[tasks.read](http://tasks.read)
+tasks.read
 
 tasks.write
 
@@ -794,13 +794,13 @@ read-only capability도 민감할 수 있다.
 
 ```
 
-[email.read](http://email.read)
+email.read
 
-[files.read](http://files.read)
+files.read
 
-[calendar.read](http://calendar.read)
+calender.read
 
-private [repository.read](http://repository.read)
+private repository.read
 
 ```
 
@@ -1130,7 +1130,7 @@ Tool이 arbitrary network request를 수행할 수 있다면 SSRF와 internal re
 
 ```
 
-[localhost](http://localhost) services
+localhost services
 
 private network addresses
 
