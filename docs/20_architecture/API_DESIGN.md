@@ -1050,7 +1050,7 @@ Task의 canonical 상태는 서버가 관리한다.
 
 ```
 
-[response.delta](http://response.delta)
+response.delta
 
 Tool.started
 
@@ -1678,7 +1678,7 @@ Application API contract는 implementation과 동기화되어야 한다.
 
 ```
 
-API_[DESIGN.md](http://DESIGN.md)
+API_DESIGN.md
 
 → principles and architecture
 

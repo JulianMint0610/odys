@@ -270,17 +270,17 @@ Local / Cloud Storage Adapter
 
 ```
 
-[web.search](http://web.search)
+web.search
 
-[calendar.read](http://calendar.read)_events
+calender.read_events
 
 calendar.create_event
 
-[email.read](http://email.read)
+email.read
 
 email.send
 
-[files.read](http://files.read)
+files.read
 
 files.write
 
@@ -306,7 +306,7 @@ google.execute
 
 files.manage_everything
 
-[system.do](http://system.do)_action
+system.do_action
 
 ```
 
@@ -314,11 +314,11 @@ files.manage_everything
 
 ```
 
-[calendar.read](http://calendar.read)_events
+calender.read_events
 
 calendar.create_event
 
-[files.read](http://files.read)
+files.read
 
 files.write
 
@@ -336,15 +336,15 @@ capability를 적절히 분리하면 permission과 risk를 더 정확하게 제�
 
 ```
 
-[calendar.read](http://calendar.read)_events
+calender.read_events
 
 calendar.create_event
 
-[email.read](http://email.read)
+email.read
 
 email.send
 
-[files.read](http://files.read)
+files.read
 
 files.write
 
@@ -538,17 +538,17 @@ Tool Runtime은 등록된 Tool만 실행한다.
 
 Tool Registry
 
-├── [web.search](http://web.search)
+├── web.search
 
-├── [calendar.read](http://calendar.read)_events
+├── calender.read_events
 
 ├── calendar.create_event
 
-├── [email.read](http://email.read)
+├── email.read
 
 ├── email.send
 
-├── [files.read](http://files.read)
+├── files.read
 
 └── code.execute
 
@@ -592,15 +592,15 @@ Tool Registry에 등록되어 있다고 해서 모든 Agent가 해당 Tool을 �
 
 Conference Agent
 
-├── [web.search](http://web.search)
+├── web.search
 
-├── [calendar.read](http://calendar.read)_events
+├── calender.read_events
 
 └── calendar.create_event
 
 Coding Agent
 
-├── [files.read](http://files.read)
+├── files.read
 
 ├── files.write
 
@@ -620,17 +620,17 @@ Tool 실행에는 필요한 capability permission이 존재한다.
 
 ```
 
-[web.read](http://web.read)
+web.read
 
-[calendar.read](http://calendar.read)
+calender.read
 
 calendar.write
 
-[email.read](http://email.read)
+email.read
 
 email.send
 
-[files.read](http://files.read)
+files.read
 
 files.write
 
@@ -810,13 +810,13 @@ local deterministic calculation
 
 ```
 
-[calendar.read](http://calendar.read)
+calender.read
 
-[email.read](http://email.read)
+email.read
 
-private [files.read](http://files.read)
+private files.read
 
-private [repository.read](http://repository.read)
+private repository.read
 
 ```
 
@@ -1602,7 +1602,7 @@ File Tool은 path와 resource boundary를 명확히 제한해야 한다.
 
 ```
 
-[files.read](http://files.read)
+files.read
 
 files.write
 
@@ -1726,7 +1726,7 @@ Calendar capability는 read와 write를 구분한다.
 
 ```
 
-[calendar.read](http://calendar.read)
+calender.read
 
 calendar.write
 
@@ -1760,7 +1760,7 @@ Email 역시 read와 send를 분리한다.
 
 ```
 
-[email.read](http://email.read)
+email.read
 
 email.send
 
@@ -1862,9 +1862,9 @@ Tool boundary는 stable capability를 기준으로 설계한다.
 
 ```
 
-[web.search](http://web.search)
+web.search
 
-[files.read](http://files.read)
+files.read
 
 ```
 

@@ -1,4 +1,4 @@
-# STUDY_[AGENT.md](http://AGENT.md)
+# STUDY_AGENT
 
 ## 1. Purpose
 

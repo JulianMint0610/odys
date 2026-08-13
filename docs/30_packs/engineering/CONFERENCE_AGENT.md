@@ -1,4 +1,4 @@
-# CONFERENCE_[AGENT.md](http://AGENT.md)
+# CONFERENCE_AGENT
 
 ## 1. Purpose
 

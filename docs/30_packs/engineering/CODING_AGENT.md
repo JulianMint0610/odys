@@ -1,4 +1,4 @@
-# CODING_[AGENT.md](http://AGENT.md)
+# CODING_AGENT
 
 ## 1. Purpose
 

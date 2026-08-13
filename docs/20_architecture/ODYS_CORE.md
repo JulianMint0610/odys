@@ -926,23 +926,23 @@ Permission은 capability와 resource 접근 권한을 표현한다.
 
 ```
 
-[calendar.read](http://calendar.read)
+calender.read
 
 calendar.write
 
-[email.read](http://email.read)
+email.read
 
 email.send
 
-[files.read](http://files.read)
+files.read
 
 files.write
 
-[memory.read](http://memory.read)
+memory.read
 
 memory.write
 
-[tasks.read](http://tasks.read)
+tasks.read
 
 tasks.write
 
