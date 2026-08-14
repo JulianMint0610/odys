@@ -316,6 +316,8 @@ responsibility
 
 Allowed Tools, Model Strategy, Execution Policy, Context, input/output contract, permission, autonomy 및 failure behavior는 전체 목표 Agent Definition에 속하지만, 관련 Core contract와 Runtime이 아직 없으므로 이 단계의 TypeScript API에는 placeholder로 추가하지 않는다.
 
+Core에는 이제 별도의 최소 Tool Definition과 Tool Registry foundation이 존재하지만, staged `AgentDefinition`은 여전히 `allowedTools`를 포함하지 않는다. Tool definition을 등록할 수 있다는 사실만으로 Agent-to-Tool authorization semantics가 완성되지는 않는다.
+
 ---
 
 ## 8. Agent Definition and Agent Execution
@@ -873,6 +875,8 @@ Coding Agent
 ```
 
 Agent가 Tool Registry에 존재하는 모든 Tool을 자동으로 사용할 수 있게 하지 않는다.
+
+현재 Core의 `ToolRegistry`는 non-executable definition registration과 discovery만 제공한다. Registry membership은 어떤 Agent에도 Tool authority를 부여하지 않으며, staged `AgentDefinition`에도 `allowedTools`가 없다. Agent-to-Tool allowlist와 그 validation은 Common Agent Runtime, permission 및 policy contract가 구현되는 후속 단계에서 추가한다.
 
 ---
 
@@ -1676,7 +1680,7 @@ packages/core/src/agent/
 
 ```
 
-현재는 `packages/core/src/agent/`의 최소 contract와 Registry foundation만 구현되어 있다. concrete Agent definition, common Agent Runtime 및 실행 lifecycle은 후속 단계다.
+현재는 `packages/core/src/agent/`의 최소 contract와 Registry foundation, 그리고 별도 `packages/core/src/tool/`의 최소 Tool Definition과 Registry foundation만 구현되어 있다. concrete Agent definition과 실행 lifecycle은 후속 단계이며, Common Agent Runtime이 다음 주요 Agent architecture milestone이다.
 
 ---
 
