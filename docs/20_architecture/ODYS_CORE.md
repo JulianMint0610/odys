@@ -618,6 +618,10 @@ Agent Runtime은 ODYS Core에 속한다.
 
 이 분리를 통해 서로 다른 domain Agent가 동일한 execution infrastructure를 공유할 수 있다.
 
+현재 `@odys/core`에는 repository-defined Agent를 표현하는 최소 `AgentDefinition` contract와 이를 검증하는 `defineAgent()`, 격리된 `AgentRegistry` foundation이 구현되어 있다. 이 단계의 definition은 stable `id`, `name`, `version`, `description`, `responsibility`만 포함한다.
+
+Agent execution lifecycle, Context 조합, Model 호출, Tool 호출, permission, approval 및 audit를 담당하는 Agent Runtime은 아직 구현되지 않았다.
+
 ---
 
 ## 15. Tool Runtime
@@ -1336,7 +1340,7 @@ Pack은 Core가 제공하는 다음 extension point를 사용할 수 있다.
 
 - knowledge source configuration
 
-현재 코드로 구현된 Pack extension point는 Pack identity public contract와 명시적 Pack Registry다. Agent, Tool, workflow, policy, Memory 및 knowledge source 관련 extension point는 계획된 아키텍처이며 아직 runtime으로 구현되지 않았다.
+현재 코드에는 Pack identity public contract와 Pack Registry, 최소 Agent Definition public contract와 Agent Registry foundation이 구현되어 있다. Pack이 Agent를 등록하는 lifecycle, Agent execution Runtime, Tool, workflow, policy, Memory 및 knowledge source 관련 extension point는 계획된 아키텍처이며 아직 구현되지 않았다.
 
 Pack이 새로운 domain 기능을 추가할 때 Core 내부 구현을 직접 수정하는 것을 기본 방식으로 삼지 않는다.
 
@@ -1378,7 +1382,7 @@ Notification Channel
 
 ## 33. Initial Core Package Boundary
 
-실제 Core 구현은 `packages/core/`에 위치한다. 현재 구현 범위는 Pack identity public contract와 Pack Registry이며, 아래 구조는 후속 capability를 위한 개념적 방향이다.
+실제 Core 구현은 `packages/core/`에 위치한다. 현재 구현 범위는 Pack identity public contract와 Pack Registry, `packages/core/src/agent/`의 최소 Agent Definition contract와 Agent Registry foundation이다. 아래의 나머지 구조는 후속 capability를 위한 개념적 방향이다.
 
 예상 구조는 다음과 같다.
 

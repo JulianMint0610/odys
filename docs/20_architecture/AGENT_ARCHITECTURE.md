@@ -300,6 +300,22 @@ Agent Definition 자체를 반드시 database에 저장할 필요는 없다.
 
 초기에는 repository의 code와 configuration이 Agent Definition의 source of truth가 될 수 있다.
 
+### 7.1 Current Staged TypeScript Definition
+
+현재 `@odys/core`가 공개하는 첫 단계 `AgentDefinition`은 다음 metadata만 포함한다.
+
+```text
+id
+name
+version
+description
+responsibility
+```
+
+`defineAgent()`는 이 metadata를 runtime에서 검증하며, Agent ID는 lowercase kebab-case 형식을 사용한다. `AgentRegistry`는 검증된 definition을 stable ID로 등록하고 조회하며 각 factory instance의 상태를 독립적으로 유지한다.
+
+Allowed Tools, Model Strategy, Execution Policy, Context, input/output contract, permission, autonomy 및 failure behavior는 전체 목표 Agent Definition에 속하지만, 관련 Core contract와 Runtime이 아직 없으므로 이 단계의 TypeScript API에는 placeholder로 추가하지 않는다.
+
 ---
 
 ## 8. Agent Definition and Agent Execution
@@ -1434,6 +1450,8 @@ valid output contract
 
 ```
 
+현재 구현된 Agent Registry foundation은 Agent Definition 자체의 runtime validation과 unique Agent ID만 강제한다. Tool reference, Model Strategy, execution policy 및 output contract 검증은 해당 contract와 Agent Runtime이 구현된 뒤 추가한다. Registry는 Agent를 실행하거나 Pack lifecycle에 연결하지 않는다.
+
 ---
 
 ## 40. Dynamic Agents
@@ -1654,9 +1672,11 @@ agents/
 
 packages/core/src/agent/
 
-→ common Agent Runtime and contracts
+→ common Agent contracts and Registry foundation
 
 ```
+
+현재는 `packages/core/src/agent/`의 최소 contract와 Registry foundation만 구현되어 있다. concrete Agent definition, common Agent Runtime 및 실행 lifecycle은 후속 단계다.
 
 ---
 
@@ -1717,6 +1737,12 @@ Agent가 제한 없이 다른 Agent를 생성하거나 호출하지 않는다.
 ```
 
 Common Agent Contract
+
+        │
+
+        ▼
+
+Agent Registry Foundation
 
         │
 
