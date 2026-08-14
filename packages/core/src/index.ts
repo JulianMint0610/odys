@@ -1,10 +1,17 @@
 export {
   createAgentRegistry,
+  createAgentRuntime,
   defineAgent,
   DuplicateAgentIdError,
   InvalidAgentDefinitionError,
+  InvalidAgentRuntimeRequestError,
+  UnknownAgentError,
   type AgentDefinition,
   type AgentRegistry,
+  type AgentRuntime,
+  type AgentRuntimeExecutor,
+  type AgentRuntimeRequest,
+  type AgentRuntimeResult,
 } from './agent/index.js';
 
 export {

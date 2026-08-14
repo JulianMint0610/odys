@@ -314,7 +314,7 @@ responsibility
 
 `defineAgent()`는 이 metadata를 runtime에서 검증하며, Agent ID는 lowercase kebab-case 형식을 사용한다. `AgentRegistry`는 검증된 definition을 stable ID로 등록하고 조회하며 각 factory instance의 상태를 독립적으로 유지한다.
 
-Allowed Tools, Model Strategy, Execution Policy, Context, input/output contract, permission, autonomy 및 failure behavior는 전체 목표 Agent Definition에 속하지만, 관련 Core contract와 Runtime이 아직 없으므로 이 단계의 TypeScript API에는 placeholder로 추가하지 않는다.
+Allowed Tools, Model Strategy, Execution Policy, Context, input/output contract, permission, autonomy 및 failure behavior는 전체 목표 Agent Definition에 속하지만, 관련 Core contract와 완전한 execution lifecycle이 아직 없으므로 이 단계의 TypeScript API에는 placeholder로 추가하지 않는다.
 
 Core에는 이제 별도의 최소 Tool Definition과 Tool Registry foundation이 존재하지만, staged `AgentDefinition`은 여전히 `allowedTools`를 포함하지 않는다. Tool definition을 등록할 수 있다는 사실만으로 Agent-to-Tool authorization semantics가 완성되지는 않는다.
 
@@ -503,6 +503,12 @@ Agent Runtime
 ```
 
 Agent마다 별도의 runtime implementation을 만드는 대신 공통 runtime을 공유하는 것을 기본으로 한다.
+
+### 12.1 Current Staged Runtime Foundation
+
+현재 `@odys/core`의 첫 Common Agent Runtime foundation은 runtime request를 검증하고, injected `AgentRegistry`에서 stable ID로 Agent를 조회하고, 등록된 정확한 `AgentDefinition`과 opaque input을 injected `AgentRuntimeExecutor`에 한 번 전달한 뒤 opaque result를 반환한다. Runtime은 Registry reference를 유지하므로 Runtime 생성 후 등록된 Agent도 이후 request에서 조회할 수 있으며, Registry와 Runtime instance 사이에 global mutable state를 공유하지 않는다.
+
+이 staged executor는 Registry lookup을 넘어서는 dispatch behavior를 검증하기 위한 provider-neutral seam이며 최종 Agent execution architecture나 authority boundary가 아니다. 현재 Runtime은 Context assembly, Model strategy, Model invocation, Tool request handling, Tool allowlist, Tool Runtime, permission, policy, Approval, Task lifecycle, Memory processing, Audit, execution persistence 또는 Pack-to-Agent registration을 구현하지 않는다. Agent registration은 dispatch eligibility만 의미하며 Tool 또는 external Action authority를 부여하지 않는다.
 
 ---
 
@@ -876,7 +882,7 @@ Coding Agent
 
 Agent가 Tool Registry에 존재하는 모든 Tool을 자동으로 사용할 수 있게 하지 않는다.
 
-현재 Core의 `ToolRegistry`는 non-executable definition registration과 discovery만 제공한다. Registry membership은 어떤 Agent에도 Tool authority를 부여하지 않으며, staged `AgentDefinition`에도 `allowedTools`가 없다. Agent-to-Tool allowlist와 그 validation은 Common Agent Runtime, permission 및 policy contract가 구현되는 후속 단계에서 추가한다.
+현재 Core의 `ToolRegistry`는 non-executable definition registration과 discovery만 제공한다. Registry membership은 어떤 Agent에도 Tool authority를 부여하지 않으며, staged `AgentDefinition`에도 `allowedTools`가 없다. 첫 Common Agent Runtime foundation 역시 Tool Registry에 의존하지 않는다. Agent-to-Tool allowlist와 그 validation은 Tool Runtime, permission 및 policy contract가 구현되는 후속 단계에서 추가한다.
 
 ---
 
@@ -1454,7 +1460,7 @@ valid output contract
 
 ```
 
-현재 구현된 Agent Registry foundation은 Agent Definition 자체의 runtime validation과 unique Agent ID만 강제한다. Tool reference, Model Strategy, execution policy 및 output contract 검증은 해당 contract와 Agent Runtime이 구현된 뒤 추가한다. Registry는 Agent를 실행하거나 Pack lifecycle에 연결하지 않는다.
+현재 구현된 Agent Registry foundation은 Agent Definition 자체의 runtime validation과 unique Agent ID만 강제한다. Common Agent Runtime foundation은 valid request가 이 Registry에 등록된 Agent를 대상으로 할 때만 executor dispatch를 허용한다. Tool reference, Model Strategy, execution policy 및 output contract 검증은 해당 contract와 완전한 execution lifecycle이 구현된 뒤 추가한다. Registry 자체는 Agent를 실행하거나 Pack lifecycle에 연결하지 않는다.
 
 ---
 
@@ -1676,11 +1682,11 @@ agents/
 
 packages/core/src/agent/
 
-→ common Agent contracts and Registry foundation
+→ common Agent contracts, Registry, and staged Runtime foundation
 
 ```
 
-현재는 `packages/core/src/agent/`의 최소 contract와 Registry foundation, 그리고 별도 `packages/core/src/tool/`의 최소 Tool Definition과 Registry foundation만 구현되어 있다. concrete Agent definition과 실행 lifecycle은 후속 단계이며, Common Agent Runtime이 다음 주요 Agent architecture milestone이다.
+현재 `packages/core/src/agent/`에는 최소 contract와 Registry foundation에 더해 request validation, registered-Agent resolution, provider-neutral executor dispatch 및 opaque result return만 담당하는 첫 Common Agent Runtime foundation이 구현되어 있다. 별도 `packages/core/src/tool/`에는 최소 Tool Definition과 Registry foundation만 구현되어 있다. concrete Agent definition, Model 및 Tool integration, authority enforcement를 포함한 완전한 실행 lifecycle은 후속 단계다.
 
 ---
 
@@ -1773,6 +1779,8 @@ Real Tool Usage
 Repeated Real Usage
 
 ```
+
+현재는 Common Agent Runtime의 registered-Agent dispatch foundation까지 구현되어 있다. 이 foundation만으로 Model 호출, Tool 실행 또는 real Agent behavior가 제공되는 것은 아니다.
 
 첫 번째 Agent가 실제 workflow에서 유용하다는 것이 검증된 이후 다른 Agent를 단계적으로 추가한다.
 

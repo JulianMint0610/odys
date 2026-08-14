@@ -512,6 +512,8 @@ Agent Runtime은 domain-specific 전문지식 자체를 가지고 있지 않는�
 
 Runtime의 책임은 서로 다른 Agent를 동일한 실행 모델 위에서 일관되고 안전하게 실행하는 것이다.
 
+현재 구현된 첫 Agent Runtime foundation은 이 전체 lifecycle 중 runtime request validation, registered-Agent resolution, injected provider-neutral executor dispatch 및 opaque result return만 제공한다. 이 dispatch는 Agent registration 여부만 확인하며 Tool 또는 external Action authority를 만들지 않는다.
+
 ---
 
 ## 13. Agent Execution Lifecycle
@@ -618,9 +620,9 @@ Agent Runtime은 ODYS Core에 속한다.
 
 이 분리를 통해 서로 다른 domain Agent가 동일한 execution infrastructure를 공유할 수 있다.
 
-현재 `@odys/core`에는 repository-defined Agent를 표현하는 최소 `AgentDefinition` contract와 이를 검증하는 `defineAgent()`, 격리된 `AgentRegistry` foundation이 구현되어 있다. 이 단계의 definition은 stable `id`, `name`, `version`, `description`, `responsibility`만 포함한다.
+현재 `@odys/core`에는 repository-defined Agent를 표현하는 최소 `AgentDefinition` contract와 이를 검증하는 `defineAgent()`, 격리된 `AgentRegistry`, registered-Agent dispatch를 위한 첫 Common Agent Runtime foundation이 구현되어 있다. 이 단계의 definition은 stable `id`, `name`, `version`, `description`, `responsibility`만 포함한다.
 
-Agent execution lifecycle, Context 조합, Model 호출, Tool 호출, permission, approval 및 audit를 담당하는 Agent Runtime은 아직 구현되지 않았다.
+현재 Runtime은 valid request가 Registry에 등록된 exact Agent만 provider-neutral executor seam으로 한 번 dispatch하고 opaque result를 반환한다. Context 조합, Model 호출, Tool 호출, permission, policy, Approval, Task lifecycle, Memory processing, Audit 및 execution persistence를 포함한 완전한 Agent execution lifecycle은 아직 구현되지 않았다.
 
 ---
 
@@ -1344,7 +1346,7 @@ Pack은 Core가 제공하는 다음 extension point를 사용할 수 있다.
 
 - knowledge source configuration
 
-현재 코드에는 Pack identity public contract와 Pack Registry, 최소 Agent Definition public contract와 Agent Registry foundation, 최소 Tool Definition public contract와 Tool Registry foundation이 구현되어 있다. Pack-to-Agent 및 Pack-to-Tool registration lifecycle, Common Agent Runtime, Tool Runtime, Model Runtime, permission과 policy, Approval, Audit, Memory/runtime extension point, workflow 및 knowledge source 관련 extension point는 계획된 아키텍처이며 아직 구현되지 않았다.
+현재 코드에는 Pack identity public contract와 Pack Registry, 최소 Agent Definition public contract와 Agent Registry foundation, registered-Agent dispatch만 제공하는 첫 Common Agent Runtime foundation, 최소 Tool Definition public contract와 Tool Registry foundation이 구현되어 있다. Pack-to-Agent 및 Pack-to-Tool registration lifecycle, 완전한 Agent execution lifecycle, Tool Runtime, Model Runtime, permission과 policy, Approval, Audit, Memory/runtime extension point, workflow 및 knowledge source 관련 extension point는 계획된 아키텍처이며 아직 구현되지 않았다.
 
 현재 Tool Registry는 definition registration과 discovery만 담당하며 Tool을 실행하지 않는다.
 
@@ -1388,7 +1390,7 @@ Notification Channel
 
 ## 33. Initial Core Package Boundary
 
-실제 Core 구현은 `packages/core/`에 위치한다. 현재 구현 범위는 Pack identity public contract와 Pack Registry, `packages/core/src/agent/`의 최소 Agent Definition contract와 Agent Registry foundation, `packages/core/src/tool/`의 최소 Tool Definition contract와 Tool Registry foundation이다. 아래의 나머지 구조는 후속 capability를 위한 개념적 방향이다.
+실제 Core 구현은 `packages/core/`에 위치한다. 현재 구현 범위는 Pack identity public contract와 Pack Registry, `packages/core/src/agent/`의 최소 Agent Definition contract, Agent Registry 및 registered-Agent dispatch Runtime foundation, `packages/core/src/tool/`의 최소 Tool Definition contract와 Tool Registry foundation이다. 아래의 나머지 구조는 후속 capability를 위한 개념적 방향이다.
 
 예상 구조는 다음과 같다.
 

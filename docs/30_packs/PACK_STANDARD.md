@@ -218,6 +218,8 @@ IMPLEMENTATION-006은 Pack contract를 변경하지 않고 Core에 최소 Agent 
 
 IMPLEMENTATION-007도 Pack contract를 변경하지 않고 Core에 non-executable 최소 Tool Definition과 Tool Registry foundation을 추가한다.
 
+IMPLEMENTATION-008은 Pack contract를 변경하지 않고 Core에 runtime request validation, registered-Agent resolution, provider-neutral executor dispatch 및 opaque result return만 제공하는 첫 Common Agent Runtime foundation을 추가한다.
+
 나머지 Manifest 항목, `Registered Agents`, `Registered Tools`, `Required Permissions`, Pack-to-Agent 및 Pack-to-Tool registration semantics는 전체 Pack 표준의 목표 contract이며, 실제 Pack capability와 runtime이 구현되는 단계에서 점진적으로 추가한다.
 
 예를 들어 Engineering Pack의 개념적 식별자는 다음과 같이 정의할 수 있다.
@@ -264,7 +266,7 @@ Agent는 자신의 Runtime을 직접 구현하지 않는다.
 
 실제 실행은 ODYS Core의 Agent Runtime이 담당한다.
 
-현재 구현된 첫 단계 Core `AgentDefinition`은 `id`, `name`, `version`, `description`, `responsibility`만 제공하며, `AgentRegistry`는 이 definition의 검증, 등록 및 조회만 담당한다. 위의 supported tasks, capability, Tool, Memory, input/output, autonomy 및 failure contract와 Pack-to-Agent registration은 관련 Core contract와 Runtime이 구현될 때 점진적으로 추가한다.
+현재 구현된 첫 단계 Core `AgentDefinition`은 `id`, `name`, `version`, `description`, `responsibility`만 제공하며, `AgentRegistry`는 이 definition의 검증, 등록 및 조회만 담당한다. 첫 Common Agent Runtime foundation은 valid request가 Registry에 등록된 Agent만 provider-neutral executor seam으로 dispatch하도록 제한하지만 Pack을 Agent Registry에 자동 연결하지 않는다. 위의 supported tasks, capability, Tool, Memory, input/output, autonomy 및 failure contract와 Pack-to-Agent registration은 관련 Core contract와 완전한 execution lifecycle이 구현될 때 점진적으로 추가한다. Agent registration과 Runtime dispatch eligibility는 Tool 또는 external Action authority를 의미하지 않는다.
 
 ---
 
@@ -638,7 +640,7 @@ Pack은 자신이 지원하는 Core Version Range를 명시해야 한다.
 
 - Core Compatibility
 
-현재 구현 범위의 테스트는 Manifest validation, Pack Registry behavior, 최소 Agent Definition validation, Agent Registry behavior, 최소 Tool Definition validation, Tool Registry behavior, Engineering Pack contract 및 Core와 Pack 사이의 package boundary를 검증한다. Pack-to-Agent 및 Pack-to-Tool registration, routing 및 나머지 runtime 테스트는 해당 capability가 구현될 때 추가한다.
+현재 구현 범위의 테스트는 Manifest validation, Pack Registry behavior, 최소 Agent Definition validation, Agent Registry behavior, registered-Agent Runtime dispatch와 failure behavior, 최소 Tool Definition validation, Tool Registry behavior, Engineering Pack contract 및 Core와 Pack 사이의 package boundary를 검증한다. Pack-to-Agent 및 Pack-to-Tool registration, routing, Model/Tool integration 및 나머지 runtime 테스트는 해당 capability가 구현될 때 추가한다.
 
 LLM 기반 Agent의 품질은 일반 Unit Test만으로 충분하지 않을 수 있다.
 
@@ -650,7 +652,7 @@ LLM 기반 Agent의 품질은 일반 Unit Test만으로 충분하지 않을 수 
 
 ODYS의 첫 번째 Pack은 Engineering Pack이다.
 
-현재 `packs/engineering/`에는 Engineering Pack의 identity definition만 구현되어 있으며 Agent Runtime, domain Agent 또는 실제 Tool implementation은 포함하지 않는다.
+현재 `packs/engineering/`에는 Engineering Pack의 identity definition만 구현되어 있으며 Pack-owned Agent Runtime, domain Agent 또는 실제 Tool implementation은 포함하지 않는다. Core의 staged Runtime foundation이 존재하더라도 Engineering Pack은 Agent Registry에 자동 연결되지 않는다.
 
 Engineering Pack의 후속 capability 후보는 다음과 같다.
 
