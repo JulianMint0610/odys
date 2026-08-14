@@ -400,6 +400,25 @@ Tool Definition
 
 architecture 문서에서는 Tool contract의 의미와 invariants를 먼저 고정한다.
 
+### 10.1 Current Staged TypeScript Definition
+
+현재 `@odys/core`가 공개하는 첫 단계 `ToolDefinition`은 다음 metadata만 포함한다.
+
+```text
+id
+name
+description
+risk
+```
+
+`defineTool()`은 이 metadata를 runtime에서 검증하고 accepted metadata를 정규화하지 않은 채 원래 definition을 반환한다. 현재 Tool ID는 IMPLEMENTATION-007의 보수적인 구현 규칙인 `^[a-z][a-z0-9]*(?:[._-][a-z0-9]+)*$`를 사용한다.
+
+`ToolRisk`는 `low`, `medium`, `high`, `critical` 중 하나인 선언적 분류다. 이 값만으로 자동 실행, permission, Approval 또는 차단 behavior가 결정되지는 않는다.
+
+현재 `ToolRegistry` foundation은 검증된 definition을 exact ID로 등록하고 조회하며 각 `createToolRegistry()` instance의 상태를 독립적으로 유지한다. Registry membership은 Tool execution capability나 Agent authority를 부여하지 않는다.
+
+Input/output schema, required permission, execution policy, `execute` capability, Tool Runtime, external implementation, Approval integration 및 Audit integration은 전체 목표 Tool contract에 속하지만 이 단계의 TypeScript API에는 포함되지 않는다.
+
 ---
 
 ## 11. Input Schema
@@ -556,6 +575,8 @@ Tool Registry
 
 runtime 중 임의의 function name을 받아 실행하는 구조를 피한다.
 
+현재 구현된 `ToolRegistry`는 definition registration과 discovery만 제공하는 non-executable foundation이다. `list()`는 insertion order를 보존하는 Registry state의 read-only snapshot을 반환하며, Registry instance 사이에 mutable state를 공유하지 않는다.
+
 ---
 
 ## 16. Tool Registration
@@ -579,6 +600,8 @@ registered implementation
 ```
 
 잘못 구성된 Tool은 application startup 또는 registration 단계에서 가능한 한 빨리 발견한다.
+
+현재 staged registration은 Tool Definition runtime validation과 unique Tool ID만 강제한다. Input/output schema, permission, implementation 및 execution 관련 검증은 해당 contract와 Tool Runtime이 구현된 뒤 추가한다.
 
 ---
 

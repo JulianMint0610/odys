@@ -16,3 +16,13 @@ export {
   type PackManifest,
   type PackRegistry,
 } from './pack/index.js';
+
+export {
+  createToolRegistry,
+  defineTool,
+  DuplicateToolIdError,
+  InvalidToolDefinitionError,
+  type ToolDefinition,
+  type ToolRegistry,
+  type ToolRisk,
+} from './tool/index.js';

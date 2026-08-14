@@ -656,6 +656,10 @@ Tool
 
 Architecture 단계에서는 책임과 contract boundary를 우선한다.
 
+현재 `@odys/core`에는 non-executable 최소 `ToolDefinition` contract와 이를 검증하는 `defineTool()`, 격리된 `ToolRegistry` foundation이 구현되어 있다. 이 단계의 definition은 stable `id`, `name`, `description`, 선언적 `risk`만 포함한다.
+
+Input/output schema, permission requirement, execution capability, external implementation, Tool Runtime, Approval 및 Audit integration은 아직 구현되지 않았다. 따라서 현재의 Tool registration은 Tool execution이나 Agent authority를 의미하지 않는다.
+
 ---
 
 ## 16. Tool Execution Lifecycle
@@ -1340,7 +1344,9 @@ Pack은 Core가 제공하는 다음 extension point를 사용할 수 있다.
 
 - knowledge source configuration
 
-현재 코드에는 Pack identity public contract와 Pack Registry, 최소 Agent Definition public contract와 Agent Registry foundation이 구현되어 있다. Pack이 Agent를 등록하는 lifecycle, Agent execution Runtime, Tool, workflow, policy, Memory 및 knowledge source 관련 extension point는 계획된 아키텍처이며 아직 구현되지 않았다.
+현재 코드에는 Pack identity public contract와 Pack Registry, 최소 Agent Definition public contract와 Agent Registry foundation, 최소 Tool Definition public contract와 Tool Registry foundation이 구현되어 있다. Pack-to-Agent 및 Pack-to-Tool registration lifecycle, Common Agent Runtime, Tool Runtime, Model Runtime, permission과 policy, Approval, Audit, Memory/runtime extension point, workflow 및 knowledge source 관련 extension point는 계획된 아키텍처이며 아직 구현되지 않았다.
+
+현재 Tool Registry는 definition registration과 discovery만 담당하며 Tool을 실행하지 않는다.
 
 Pack이 새로운 domain 기능을 추가할 때 Core 내부 구현을 직접 수정하는 것을 기본 방식으로 삼지 않는다.
 
@@ -1382,7 +1388,7 @@ Notification Channel
 
 ## 33. Initial Core Package Boundary
 
-실제 Core 구현은 `packages/core/`에 위치한다. 현재 구현 범위는 Pack identity public contract와 Pack Registry, `packages/core/src/agent/`의 최소 Agent Definition contract와 Agent Registry foundation이다. 아래의 나머지 구조는 후속 capability를 위한 개념적 방향이다.
+실제 Core 구현은 `packages/core/`에 위치한다. 현재 구현 범위는 Pack identity public contract와 Pack Registry, `packages/core/src/agent/`의 최소 Agent Definition contract와 Agent Registry foundation, `packages/core/src/tool/`의 최소 Tool Definition contract와 Tool Registry foundation이다. 아래의 나머지 구조는 후속 capability를 위한 개념적 방향이다.
 
 예상 구조는 다음과 같다.
 
