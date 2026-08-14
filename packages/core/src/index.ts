@@ -1,4 +1,13 @@
 export {
+  createAgentRegistry,
+  defineAgent,
+  DuplicateAgentIdError,
+  InvalidAgentDefinitionError,
+  type AgentDefinition,
+  type AgentRegistry,
+} from './agent/index.js';
+
+export {
   createPackRegistry,
   definePack,
   DuplicatePackIdError,
