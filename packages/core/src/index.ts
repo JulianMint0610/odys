@@ -26,11 +26,18 @@ export {
 
 export {
   createModelRegistry,
+  createModelRuntime,
   defineModel,
   DuplicateModelIdError,
   InvalidModelDefinitionError,
+  InvalidModelRuntimeRequestError,
+  UnknownModelError,
   type ModelDefinition,
   type ModelRegistry,
+  type ModelRuntime,
+  type ModelRuntimeExecutor,
+  type ModelRuntimeRequest,
+  type ModelRuntimeResult,
 } from './model/index.js';
 
 export {

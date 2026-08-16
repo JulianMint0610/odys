@@ -758,9 +758,9 @@ Model Usage
 
 Agent domain logic은 특정 provider SDK에 가능한 한 직접 의존하지 않는다.
 
-현재 `@odys/core`에는 provider-independent identity metadata를 표현하는 최소 `ModelDefinition`, 이를 검증하는 `defineModel()`, 격리된 `ModelRegistry` foundation이 구현되어 있다. Definition은 stable logical `id`, ODYS-side `provider` identifier 및 provider-owned opaque `providerModelId`만 포함하며, Registry는 logical ID 기준 registration과 discovery만 제공한다.
+현재 `@odys/core`에는 provider-independent identity metadata를 표현하는 최소 `ModelDefinition`, 이를 검증하는 `defineModel()`, 격리된 `ModelRegistry`, registered-Model dispatch를 위한 staged `ModelRuntime` foundation이 구현되어 있다. Definition은 stable logical `id`, ODYS-side `provider` identifier 및 provider-owned opaque `providerModelId`만 포함하며, Registry는 logical ID 기준 registration과 discovery를 제공한다. Runtime은 canonical logical ID로 exact registered definition을 resolve하고 opaque input을 provider-independent injected executor seam으로 한 번 dispatch한 뒤 opaque output을 반환한다.
 
-Model Registry의 존재는 Model Runtime 또는 Gateway가 존재한다는 뜻이 아니다. registered Model은 실행 가능한 Model이 아니며, provider metadata는 Provider Adapter가 아니다. Model request/response contract, Provider SDK integration, capability, strategy, routing, Agent Runtime 및 Tool integration, timeout, retry, fallback과 usage accounting은 아직 구현되지 않았다.
+이 staged Runtime은 concrete Provider Adapter, Provider SDK 또는 network Model invocation이 아니다. Registry membership은 injected Runtime composition의 dispatch eligibility만 제공하며 독립적인 provider execution authority를 만들지 않는다. Normalized provider request/response, Model Gateway, capability, strategy, routing, Agent Runtime 및 Tool integration, timeout, retry, fallback과 usage accounting은 아직 구현되지 않았다.
 
 ---
 
@@ -1350,7 +1350,7 @@ Pack은 Core가 제공하는 다음 extension point를 사용할 수 있다.
 
 - knowledge source configuration
 
-현재 코드에는 Pack identity public contract와 Pack Registry, 최소 Agent Definition public contract와 Agent Registry foundation, registered-Agent dispatch만 제공하는 첫 Common Agent Runtime foundation, 최소 Tool Definition public contract와 Tool Registry foundation이 구현되어 있다. Pack-to-Agent 및 Pack-to-Tool registration lifecycle, 완전한 Agent execution lifecycle, Tool Runtime, Model Runtime, permission과 policy, Approval, Audit, Memory/runtime extension point, workflow 및 knowledge source 관련 extension point는 계획된 아키텍처이며 아직 구현되지 않았다.
+현재 코드에는 Pack identity public contract와 Pack Registry, 최소 Agent Definition public contract와 Agent Registry foundation, registered-Agent dispatch만 제공하는 첫 Common Agent Runtime foundation, 최소 Tool Definition public contract와 Tool Registry foundation, 최소 Model Definition/Registry와 registered-Model dispatch만 제공하는 Model Runtime foundation이 구현되어 있다. Pack-to-Agent, Pack-to-Tool 및 Pack-to-Model registration lifecycle, 완전한 Agent execution lifecycle, Tool Runtime, provider execution, permission과 policy, Approval, Audit, Memory/runtime extension point, workflow 및 knowledge source 관련 extension point는 계획된 아키텍처이며 아직 구현되지 않았다.
 
 현재 Tool Registry는 definition registration과 discovery만 담당하며 Tool을 실행하지 않는다.
 
@@ -1394,7 +1394,7 @@ Notification Channel
 
 ## 33. Initial Core Package Boundary
 
-실제 Core 구현은 `packages/core/`에 위치한다. 현재 구현 범위는 Pack identity public contract와 Pack Registry, `packages/core/src/agent/`의 최소 Agent Definition contract, Agent Registry 및 registered-Agent dispatch Runtime foundation, `packages/core/src/tool/`의 최소 Tool Definition contract와 Tool Registry foundation, `packages/core/src/model/`의 최소 Model Definition contract와 Model Registry foundation이다. 아래의 나머지 구조는 후속 capability를 위한 개념적 방향이다.
+실제 Core 구현은 `packages/core/`에 위치한다. 현재 구현 범위는 Pack identity public contract와 Pack Registry, `packages/core/src/agent/`의 최소 Agent Definition contract, Agent Registry 및 registered-Agent dispatch Runtime foundation, `packages/core/src/tool/`의 최소 Tool Definition contract와 Tool Registry foundation, `packages/core/src/model/`의 최소 Model Definition contract, Model Registry 및 registered-Model dispatch Runtime foundation이다. 아래의 나머지 구조는 후속 capability를 위한 개념적 방향이다.
 
 예상 구조는 다음과 같다.
 

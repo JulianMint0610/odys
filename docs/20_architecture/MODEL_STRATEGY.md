@@ -378,11 +378,13 @@ Registry는 실제 implementation에 따라 configuration 또는 code로 관리�
 
 ### 9.1 Current Staged TypeScript Definition
 
-현재 `@odys/core`에는 provider-independent Model identity와 discovery를 위한 첫 단계 foundation이 구현되어 있다.
+현재 `@odys/core`에는 provider-independent Model identity와 discovery, registered-Model dispatch를 위한 staged foundation이 구현되어 있다.
 
 `ModelDefinition`은 stable logical `id`, ODYS-side `provider` identifier, provider-owned opaque `providerModelId`만 포함한다. `defineModel()`은 이 metadata를 runtime에서 검증하고 accepted definition을 normalize하거나 교체하지 않는다. `ModelRegistry`는 각 factory instance 안에서 definition을 exact logical ID로 등록하고 조회하며, duplicate ID를 거부하고 registration order를 보존하는 read-only snapshot을 제공한다.
 
-이 foundation에는 Model Request/Response execution contract, Model Runtime 또는 Gateway, Provider Adapter execution, Provider SDK integration, Model Capability, Model Strategy, Model Router, Agent Runtime integration, Tool calling integration, structured output, timeout, retry, fallback 및 usage accounting이 포함되지 않는다. Registry membership은 Model metadata를 발견할 수 있다는 뜻일 뿐, 해당 Model을 실제로 호출할 수 있거나 어떤 execution authority가 생겼다는 뜻이 아니다.
+`ModelRuntime`은 request의 canonical logical Model ID를 검증하고 injected `ModelRegistry`에서 exact `ModelDefinition`을 resolve한 뒤, opaque input과 함께 provider-independent injected `ModelRuntimeExecutor` seam으로 정확히 한 번 dispatch하고 opaque output을 반환한다. Registry membership은 이 staged Runtime composition에서 dispatch eligibility를 제공하지만, 그 자체로 concrete Provider authority, Provider SDK 또는 network execution을 제공하지 않는다.
+
+Normalized provider Model request/response, Model Gateway, concrete Provider Adapter와 Provider SDK integration, Model Capability, Model Strategy, Model Router, Agent Runtime integration, Tool calling integration, structured output, timeout, retry, fallback 및 usage accounting은 아직 구현되지 않았다.
 
 ---
 
@@ -1684,7 +1686,7 @@ Task transitions
 
 ## 53. Initial Implementation Direction
 
-Model identity/Registry foundation과 향후 Model Runtime 및 provider-independent execution contract는 `packages/core/`의 Model module에 위치하는 것을 기본 방향으로 한다.
+Model identity/Registry foundation과 현재의 staged Model Runtime 및 provider-independent executor seam은 `packages/core/`의 model module에 위치하며, 향후 normalized provider-independent execution contract도 같은 경계에 두는 것을 기본 방향으로 한다.
 
 예:
 
@@ -1704,7 +1706,7 @@ concrete provider adapter의 실제 위치는 implementation 단계에서 결정
 
 별도의 service가 필요하지 않은 동안 Modular Monolith 내부에 유지한다.
 
-현재는 이 위치에 최소 `ModelDefinition`, runtime validation 및 instance-local `ModelRegistry`만 구현되어 있다. Model Runtime, Gateway, execution request/response contract 및 concrete Provider Adapter는 후속 단계다.
+현재는 이 위치에 최소 `ModelDefinition`, definition/runtime request validation, instance-local `ModelRegistry`, registered-Model dispatch를 위한 `ModelRuntime` request/result contract와 provider-independent injected executor seam이 구현되어 있다. Normalized provider execution request/response, Model Gateway 및 concrete Provider Adapter는 후속 단계다.
 
 ---
 

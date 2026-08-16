@@ -11,3 +11,17 @@ export class DuplicateModelIdError extends Error {
     this.name = 'DuplicateModelIdError';
   }
 }
+
+export class InvalidModelRuntimeRequestError extends Error {
+  public constructor(message: string) {
+    super(message);
+    this.name = 'InvalidModelRuntimeRequestError';
+  }
+}
+
+export class UnknownModelError extends Error {
+  public constructor(modelId: string) {
+    super(`Model with id "${modelId}" is not registered`);
+    this.name = 'UnknownModelError';
+  }
+}
