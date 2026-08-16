@@ -25,6 +25,15 @@ export {
 } from './pack/index.js';
 
 export {
+  createModelRegistry,
+  defineModel,
+  DuplicateModelIdError,
+  InvalidModelDefinitionError,
+  type ModelDefinition,
+  type ModelRegistry,
+} from './model/index.js';
+
+export {
   createToolRegistry,
   defineTool,
   DuplicateToolIdError,

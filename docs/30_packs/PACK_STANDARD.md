@@ -586,6 +586,8 @@ Agent는 가능한 한 필요한 Model Capability를 선언해야 한다.
 
 Pack 내부에서 특정 Model을 직접 지정하는 것은 기술적으로 반드시 필요한 경우에만 허용한다.
 
+IMPLEMENTATION-009는 Core에 최소 Model Definition과 instance-local Model Registry foundation을 추가하지만 Pack contract는 변경하지 않는다. Engineering Pack은 Model을 등록하지 않으며 Provider를 직접 선택하거나 호출하지 않는다. Registry membership만으로 Model execution capability나 authority가 생기지 않는다.
+
 ---
 
 ## 18. Versioning
@@ -640,7 +642,7 @@ Pack은 자신이 지원하는 Core Version Range를 명시해야 한다.
 
 - Core Compatibility
 
-현재 구현 범위의 테스트는 Manifest validation, Pack Registry behavior, 최소 Agent Definition validation, Agent Registry behavior, registered-Agent Runtime dispatch와 failure behavior, 최소 Tool Definition validation, Tool Registry behavior, Engineering Pack contract 및 Core와 Pack 사이의 package boundary를 검증한다. Pack-to-Agent 및 Pack-to-Tool registration, routing, Model/Tool integration 및 나머지 runtime 테스트는 해당 capability가 구현될 때 추가한다.
+현재 구현 범위의 테스트는 Manifest validation, Pack Registry behavior, 최소 Agent Definition validation, Agent Registry behavior, registered-Agent Runtime dispatch와 failure behavior, 최소 Tool Definition validation, Tool Registry behavior, 최소 Model Definition validation, Model Registry behavior, Engineering Pack contract 및 Core와 Pack 사이의 package boundary를 검증한다. Pack-to-Agent, Pack-to-Tool 및 Pack-to-Model registration, routing, Model/Tool integration 및 나머지 runtime 테스트는 해당 capability가 구현될 때 추가한다.
 
 LLM 기반 Agent의 품질은 일반 Unit Test만으로 충분하지 않을 수 있다.
 

@@ -318,6 +318,8 @@ Allowed Tools, Model Strategy, Execution Policy, Context, input/output contract,
 
 Core에는 이제 별도의 최소 Tool Definition과 Tool Registry foundation이 존재하지만, staged `AgentDefinition`은 여전히 `allowedTools`를 포함하지 않는다. Tool definition을 등록할 수 있다는 사실만으로 Agent-to-Tool authorization semantics가 완성되지는 않는다.
 
+Core에는 별도의 최소 Model Definition과 Model Registry foundation도 존재하지만, staged `AgentDefinition`은 `model`, `modelStrategy` 또는 `allowedModels`를 포함하지 않는다. Common Agent Runtime은 Model Registry와 연결되지 않으며 계속해서 IMPLEMENTATION-008에서 도입한 injected provider-neutral `AgentRuntimeExecutor` seam만 사용한다.
+
 ---
 
 ## 8. Agent Definition and Agent Execution
@@ -508,7 +510,7 @@ Agent마다 별도의 runtime implementation을 만드는 대신 공통 runtime�
 
 현재 `@odys/core`의 첫 Common Agent Runtime foundation은 runtime request를 검증하고, injected `AgentRegistry`에서 stable ID로 Agent를 조회하고, 등록된 정확한 `AgentDefinition`과 opaque input을 injected `AgentRuntimeExecutor`에 한 번 전달한 뒤 opaque result를 반환한다. Runtime은 Registry reference를 유지하므로 Runtime 생성 후 등록된 Agent도 이후 request에서 조회할 수 있으며, Registry와 Runtime instance 사이에 global mutable state를 공유하지 않는다.
 
-이 staged executor는 Registry lookup을 넘어서는 dispatch behavior를 검증하기 위한 provider-neutral seam이며 최종 Agent execution architecture나 authority boundary가 아니다. 현재 Runtime은 Context assembly, Model strategy, Model invocation, Tool request handling, Tool allowlist, Tool Runtime, permission, policy, Approval, Task lifecycle, Memory processing, Audit, execution persistence 또는 Pack-to-Agent registration을 구현하지 않는다. Agent registration은 dispatch eligibility만 의미하며 Tool 또는 external Action authority를 부여하지 않는다.
+이 staged executor는 Registry lookup을 넘어서는 dispatch behavior를 검증하기 위한 provider-neutral seam이며 최종 Agent execution architecture나 authority boundary가 아니다. 별도의 Model Definition/Registry foundation이 존재하지만 현재 Runtime은 Model Registry에 의존하지 않는다. Context assembly, Model strategy, Model invocation, Tool request handling, Tool allowlist, Tool Runtime, permission, policy, Approval, Task lifecycle, Memory processing, Audit, execution persistence 또는 Pack-to-Agent registration도 구현하지 않는다. Agent registration은 dispatch eligibility만 의미하며 Model 또는 Tool execution authority를 부여하지 않는다.
 
 ---
 
@@ -1686,7 +1688,7 @@ packages/core/src/agent/
 
 ```
 
-현재 `packages/core/src/agent/`에는 최소 contract와 Registry foundation에 더해 request validation, registered-Agent resolution, provider-neutral executor dispatch 및 opaque result return만 담당하는 첫 Common Agent Runtime foundation이 구현되어 있다. 별도 `packages/core/src/tool/`에는 최소 Tool Definition과 Registry foundation만 구현되어 있다. concrete Agent definition, Model 및 Tool integration, authority enforcement를 포함한 완전한 실행 lifecycle은 후속 단계다.
+현재 `packages/core/src/agent/`에는 최소 contract와 Registry foundation에 더해 request validation, registered-Agent resolution, provider-neutral executor dispatch 및 opaque result return만 담당하는 첫 Common Agent Runtime foundation이 구현되어 있다. 별도 `packages/core/src/tool/`에는 최소 Tool Definition과 Registry foundation이, `packages/core/src/model/`에는 최소 Model Definition과 Registry foundation이 구현되어 있다. Agent Runtime은 어느 Registry와도 execution integration을 추가하지 않았으며, concrete Agent definition, Model 및 Tool integration, authority enforcement를 포함한 완전한 실행 lifecycle은 후속 단계다.
 
 ---
 

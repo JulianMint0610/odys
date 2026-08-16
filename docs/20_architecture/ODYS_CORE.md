@@ -758,6 +758,10 @@ Model Usage
 
 Agent domain logic은 특정 provider SDK에 가능한 한 직접 의존하지 않는다.
 
+현재 `@odys/core`에는 provider-independent identity metadata를 표현하는 최소 `ModelDefinition`, 이를 검증하는 `defineModel()`, 격리된 `ModelRegistry` foundation이 구현되어 있다. Definition은 stable logical `id`, ODYS-side `provider` identifier 및 provider-owned opaque `providerModelId`만 포함하며, Registry는 logical ID 기준 registration과 discovery만 제공한다.
+
+Model Registry의 존재는 Model Runtime 또는 Gateway가 존재한다는 뜻이 아니다. registered Model은 실행 가능한 Model이 아니며, provider metadata는 Provider Adapter가 아니다. Model request/response contract, Provider SDK integration, capability, strategy, routing, Agent Runtime 및 Tool integration, timeout, retry, fallback과 usage accounting은 아직 구현되지 않았다.
+
 ---
 
 ## 18. Model Independence
@@ -1390,7 +1394,7 @@ Notification Channel
 
 ## 33. Initial Core Package Boundary
 
-실제 Core 구현은 `packages/core/`에 위치한다. 현재 구현 범위는 Pack identity public contract와 Pack Registry, `packages/core/src/agent/`의 최소 Agent Definition contract, Agent Registry 및 registered-Agent dispatch Runtime foundation, `packages/core/src/tool/`의 최소 Tool Definition contract와 Tool Registry foundation이다. 아래의 나머지 구조는 후속 capability를 위한 개념적 방향이다.
+실제 Core 구현은 `packages/core/`에 위치한다. 현재 구현 범위는 Pack identity public contract와 Pack Registry, `packages/core/src/agent/`의 최소 Agent Definition contract, Agent Registry 및 registered-Agent dispatch Runtime foundation, `packages/core/src/tool/`의 최소 Tool Definition contract와 Tool Registry foundation, `packages/core/src/model/`의 최소 Model Definition contract와 Model Registry foundation이다. 아래의 나머지 구조는 후속 capability를 위한 개념적 방향이다.
 
 예상 구조는 다음과 같다.
 
