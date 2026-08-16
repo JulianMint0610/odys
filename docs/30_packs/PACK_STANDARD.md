@@ -586,7 +586,7 @@ Agent는 가능한 한 필요한 Model Capability를 선언해야 한다.
 
 Pack 내부에서 특정 Model을 직접 지정하는 것은 기술적으로 반드시 필요한 경우에만 허용한다.
 
-IMPLEMENTATION-009는 Core에 최소 Model Definition과 instance-local Model Registry foundation을 추가하지만 Pack contract는 변경하지 않는다. Engineering Pack은 Model을 등록하지 않으며 Provider를 직접 선택하거나 호출하지 않는다. Registry membership만으로 Model execution capability나 authority가 생기지 않는다.
+IMPLEMENTATION-009는 Core에 최소 Model Definition과 instance-local Model Registry foundation을 추가했고, IMPLEMENTATION-010은 registered logical Model ID를 exact definition으로 resolve하여 provider-independent injected executor seam으로 dispatch하는 최소 Model Runtime foundation을 추가한다. 두 단계 모두 Pack contract를 변경하지 않는다. Engineering Pack은 Model을 등록하거나 선택하거나 호출하지 않으며 Provider를 직접 선택하거나 호출하지도 않는다. Registry membership은 staged Runtime composition의 dispatch eligibility일 뿐 concrete Provider execution capability나 authority가 아니다.
 
 ---
 
@@ -642,7 +642,7 @@ Pack은 자신이 지원하는 Core Version Range를 명시해야 한다.
 
 - Core Compatibility
 
-현재 구현 범위의 테스트는 Manifest validation, Pack Registry behavior, 최소 Agent Definition validation, Agent Registry behavior, registered-Agent Runtime dispatch와 failure behavior, 최소 Tool Definition validation, Tool Registry behavior, 최소 Model Definition validation, Model Registry behavior, Engineering Pack contract 및 Core와 Pack 사이의 package boundary를 검증한다. Pack-to-Agent, Pack-to-Tool 및 Pack-to-Model registration, routing, Model/Tool integration 및 나머지 runtime 테스트는 해당 capability가 구현될 때 추가한다.
+현재 구현 범위의 테스트는 Manifest validation, Pack Registry behavior, 최소 Agent Definition validation, Agent Registry behavior, registered-Agent Runtime dispatch와 failure behavior, 최소 Tool Definition validation, Tool Registry behavior, 최소 Model Definition validation, Model Registry behavior, registered-Model Runtime dispatch와 failure behavior, Engineering Pack contract 및 Core와 Pack 사이의 package boundary를 검증한다. Pack-to-Agent, Pack-to-Tool 및 Pack-to-Model registration, routing, provider execution, Model/Agent/Tool integration 및 나머지 runtime 테스트는 해당 capability가 구현될 때 추가한다.
 
 LLM 기반 Agent의 품질은 일반 Unit Test만으로 충분하지 않을 수 있다.
 
@@ -654,7 +654,7 @@ LLM 기반 Agent의 품질은 일반 Unit Test만으로 충분하지 않을 수 
 
 ODYS의 첫 번째 Pack은 Engineering Pack이다.
 
-현재 `packs/engineering/`에는 Engineering Pack의 identity definition만 구현되어 있으며 Pack-owned Agent Runtime, domain Agent 또는 실제 Tool implementation은 포함하지 않는다. Core의 staged Runtime foundation이 존재하더라도 Engineering Pack은 Agent Registry에 자동 연결되지 않는다.
+현재 `packs/engineering/`에는 Engineering Pack의 identity definition만 구현되어 있으며 Pack-owned Agent Runtime, domain Agent, 실제 Tool implementation 또는 Model registration/invocation은 포함하지 않는다. Core의 staged Agent 및 Model Runtime foundation이 존재하더라도 Engineering Pack은 Agent Registry나 Model Registry에 자동 연결되지 않는다.
 
 Engineering Pack의 후속 capability 후보는 다음과 같다.
 
