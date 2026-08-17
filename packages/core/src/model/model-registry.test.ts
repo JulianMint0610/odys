@@ -17,11 +17,15 @@ function createTestModel(id: string): ModelDefinition {
 }
 
 describe('Model Registry', () => {
-  it('registers and returns a valid Model', () => {
+  it('registers and returns a Registry-owned immutable Model snapshot', () => {
     const registry = createModelRegistry();
     const model = createTestModel('general');
+    const registeredModel = registry.register(model);
 
-    expect(registry.register(model)).toBe(model);
+    expect(registeredModel).toEqual(model);
+    expect(registeredModel).not.toBe(model);
+    expect(Object.isFrozen(registeredModel)).toBe(true);
+    expect(Object.isFrozen(model)).toBe(false);
     expect(registry.has('general')).toBe(true);
   });
 
@@ -29,9 +33,9 @@ describe('Model Registry', () => {
     const registry = createModelRegistry();
     const model = createTestModel('general');
 
-    registry.register(model);
+    const registeredModel = registry.register(model);
 
-    expect(registry.get('general')).toBe(model);
+    expect(registry.get('general')).toBe(registeredModel);
   });
 
   it('reports an unknown Model ID without adding provider-specific lookup behavior', () => {
@@ -46,14 +50,44 @@ describe('Model Registry', () => {
     const firstModel = createTestModel('general');
     const secondModel = createTestModel('coding.primary');
 
-    registry.register(firstModel);
-    registry.register(secondModel);
+    const registeredFirstModel = registry.register(firstModel);
+    const registeredSecondModel = registry.register(secondModel);
 
     const listedModels = registry.list();
 
     expect(listedModels).toEqual([firstModel, secondModel]);
+    expect(listedModels[0]).toBe(registeredFirstModel);
+    expect(listedModels[1]).toBe(registeredSecondModel);
     expect(Object.isFrozen(listedModels)).toBe(true);
+    expect(listedModels.every((model) => Object.isFrozen(model))).toBe(true);
     expect(registry.list()).not.toBe(listedModels);
+  });
+
+  it('isolates registered state from caller mutation', () => {
+    const registry = createModelRegistry();
+    const model = createTestModel('general');
+    const registeredModel = registry.register(model);
+
+    (model as { provider: string; providerModelId: string }).provider = 'mutated-provider';
+    (model as { provider: string; providerModelId: string }).providerModelId = 'mutated/model';
+
+    expect(registry.get('general')).toBe(registeredModel);
+    expect(registry.get('general')).toEqual({
+      id: 'general',
+      provider: 'test-provider',
+      providerModelId: 'provider/general:v1',
+    });
+    expect(registry.list()).toEqual([registeredModel]);
+  });
+
+  it('does not allow mutation of the registered Model snapshot', () => {
+    const registry = createModelRegistry();
+    const registeredModel = registry.register(createTestModel('general'));
+
+    expect(() => {
+      (registeredModel as { provider: string }).provider = 'mutated-provider';
+    }).toThrow(TypeError);
+    expect(registry.get('general')?.provider).toBe('test-provider');
   });
 
   it('returns list snapshots that are not changed by later registrations', () => {
@@ -77,14 +111,14 @@ describe('Model Registry', () => {
       providerModelId: 'replacement/model',
     });
 
-    registry.register(firstModel);
+    const registeredModel = registry.register(firstModel);
 
     expect(() => registry.register(duplicateModel)).toThrow(DuplicateModelIdError);
     expect(() => registry.register(duplicateModel)).toThrow(
       'Model with id "general" is already registered',
     );
-    expect(registry.get('general')).toBe(firstModel);
-    expect(registry.list()).toEqual([firstModel]);
+    expect(registry.get('general')).toBe(registeredModel);
+    expect(registry.list()).toEqual([registeredModel]);
   });
 
   it('revalidates a definition before checking Registry invariants', () => {
@@ -104,11 +138,11 @@ describe('Model Registry', () => {
     const firstModel = createTestModel('general');
     const malformedDuplicate = { ...firstModel, provider: 'Invalid Provider' } as ModelDefinition;
 
-    registry.register(firstModel);
+    const registeredModel = registry.register(firstModel);
 
     expect(() => registry.register(malformedDuplicate)).toThrow(InvalidModelDefinitionError);
     expect(() => registry.register(malformedDuplicate)).not.toThrow(DuplicateModelIdError);
-    expect(registry.get('general')).toBe(firstModel);
+    expect(registry.get('general')).toBe(registeredModel);
   });
 
   it('keeps separate Registry instances isolated without hidden global state', () => {
@@ -122,15 +156,20 @@ describe('Model Registry', () => {
     expect(secondRegistry.list()).toEqual([]);
   });
 
-  it('allows the same Model ID in separate Registry instances', () => {
+  it('creates isolated registered references for the same Model object', () => {
     const firstRegistry = createModelRegistry();
     const secondRegistry = createModelRegistry();
-    const firstModel = createTestModel('general');
-    const secondModel = createTestModel('general');
+    const model = createTestModel('general');
 
-    expect(() => firstRegistry.register(firstModel)).not.toThrow();
-    expect(() => secondRegistry.register(secondModel)).not.toThrow();
-    expect(firstRegistry.get('general')).toBe(firstModel);
-    expect(secondRegistry.get('general')).toBe(secondModel);
+    const firstRegisteredModel = firstRegistry.register(model);
+    const secondRegisteredModel = secondRegistry.register(model);
+
+    expect(firstRegisteredModel).not.toBe(model);
+    expect(secondRegisteredModel).not.toBe(model);
+    expect(firstRegisteredModel).not.toBe(secondRegisteredModel);
+    expect(firstRegisteredModel).toEqual(model);
+    expect(secondRegisteredModel).toEqual(model);
+    expect(firstRegistry.get('general')).toBe(firstRegisteredModel);
+    expect(secondRegistry.get('general')).toBe(secondRegisteredModel);
   });
 });

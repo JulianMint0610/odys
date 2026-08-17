@@ -411,11 +411,11 @@ description
 risk
 ```
 
-`defineTool()`은 이 metadata를 runtime에서 검증하고 accepted metadata를 정규화하지 않은 채 원래 definition을 반환한다. 현재 Tool ID는 IMPLEMENTATION-007의 보수적인 구현 규칙인 `^[a-z][a-z0-9]*(?:[._-][a-z0-9]+)*$`를 사용한다.
+`defineTool()`은 이 metadata를 runtime에서 검증하고 accepted metadata를 정규화하지 않은 채 원래 caller-owned definition을 반환한다. Definition construction은 ownership을 이전하지 않는다. 현재 Tool ID는 IMPLEMENTATION-007의 보수적인 구현 규칙인 `^[a-z][a-z0-9]*(?:[._-][a-z0-9]+)*$`를 사용한다.
 
 `ToolRisk`는 `low`, `medium`, `high`, `critical` 중 하나인 선언적 분류다. 이 값만으로 자동 실행, permission, Approval 또는 차단 behavior가 결정되지는 않는다.
 
-현재 `ToolRegistry` foundation은 검증된 definition을 exact ID로 등록하고 조회하며 각 `createToolRegistry()` instance의 상태를 독립적으로 유지한다. Registry membership은 Tool execution capability나 Agent authority를 부여하지 않는다.
+현재 `ToolRegistry` foundation은 성공한 registration마다 현재 scalar metadata를 새 object에 복사하고 freeze하여 해당 Registry entry의 canonical immutable snapshot으로 소유한다. Caller object 자체는 freeze하지 않으며 이후 caller mutation은 Registry state에 영향을 주지 않는다. `get()`과 `list()`는 canonical snapshot을 재사용하고 `list()` array도 frozen 상태를 유지하므로, 등록된 Tool definition은 entry lifetime 동안 안정적이다. 같은 caller object를 별도 Registry instance에 등록하면 각 instance가 서로 다른 snapshot을 소유한다. Registry membership과 definition immutability는 Tool execution capability나 Agent authority를 부여하지 않는다.
 
 Input/output schema, required permission, execution policy, `execute` capability, Tool Runtime, external implementation, Approval integration 및 Audit integration은 전체 목표 Tool contract에 속하지만 이 단계의 TypeScript API에는 포함되지 않는다.
 
@@ -575,7 +575,7 @@ Tool Registry
 
 runtime 중 임의의 function name을 받아 실행하는 구조를 피한다.
 
-현재 구현된 `ToolRegistry`는 definition registration과 discovery만 제공하는 non-executable foundation이다. `list()`는 insertion order를 보존하는 Registry state의 read-only snapshot을 반환하며, Registry instance 사이에 mutable state를 공유하지 않는다.
+현재 구현된 `ToolRegistry`는 definition registration과 discovery만 제공하는 non-executable foundation이다. `list()`는 insertion order를 보존하는 frozen Registry state snapshot을 반환하며, 그 element는 registration 시 한 번 생성한 Registry-owned frozen definition이다. Registry instance 사이에는 container state나 registered-definition reference를 공유하지 않는다.
 
 ---
 

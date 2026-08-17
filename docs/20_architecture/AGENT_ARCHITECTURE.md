@@ -312,7 +312,9 @@ description
 responsibility
 ```
 
-`defineAgent()`는 이 metadata를 runtime에서 검증하며, Agent ID는 lowercase kebab-case 형식을 사용한다. `AgentRegistry`는 검증된 definition을 stable ID로 등록하고 조회하며 각 factory instance의 상태를 독립적으로 유지한다.
+`defineAgent()`는 이 metadata를 runtime에서 검증하며, Agent ID는 lowercase kebab-case 형식을 사용한다. Definition construction은 ownership을 이전하지 않으므로 `defineAgent()`는 accepted caller-owned definition reference를 그대로 반환한다. 성공한 `AgentRegistry.register()`는 현재 scalar metadata를 새 object에 복사하고 freeze하여 해당 Registry entry의 canonical immutable snapshot으로 소유한다. Caller object 자체는 freeze하지 않으며, 이후 caller mutation은 Registry state에 영향을 주지 않는다. 각 factory instance는 같은 caller object를 등록해도 서로 다른 snapshot을 소유한다.
+
+`get()`과 `list()`는 이 canonical snapshot을 재사용하므로 한 번 등록된 Agent definition은 해당 Registry entry의 lifetime 동안 안정적이다. `list()`의 snapshot array도 frozen 상태를 유지한다.
 
 Allowed Tools, Model Strategy, Execution Policy, Context, input/output contract, permission, autonomy 및 failure behavior는 전체 목표 Agent Definition에 속하지만, 관련 Core contract와 완전한 execution lifecycle이 아직 없으므로 이 단계의 TypeScript API에는 placeholder로 추가하지 않는다.
 
@@ -508,7 +510,7 @@ Agent마다 별도의 runtime implementation을 만드는 대신 공통 runtime�
 
 ### 12.1 Current Staged Runtime Foundation
 
-현재 `@odys/core`의 첫 Common Agent Runtime foundation은 runtime request를 검증하고, injected `AgentRegistry`에서 stable ID로 Agent를 조회하고, 등록된 정확한 `AgentDefinition`과 opaque input을 injected `AgentRuntimeExecutor`에 한 번 전달한 뒤 opaque result를 반환한다. Runtime은 Registry reference를 유지하므로 Runtime 생성 후 등록된 Agent도 이후 request에서 조회할 수 있으며, Registry와 Runtime instance 사이에 global mutable state를 공유하지 않는다.
+현재 `@odys/core`의 첫 Common Agent Runtime foundation은 runtime request를 검증하고, injected `AgentRegistry`에서 stable ID로 Agent를 조회하고, Registry가 소유하는 정확한 immutable `AgentDefinition` snapshot과 opaque input을 injected `AgentRuntimeExecutor`에 한 번 전달한 뒤 opaque result를 반환한다. Runtime은 definition을 다시 clone하지 않는다. Runtime은 Registry reference를 유지하므로 Runtime 생성 후 등록된 Agent도 이후 request에서 조회할 수 있으며, Registry와 Runtime instance 사이에 global mutable state를 공유하지 않는다.
 
 이 staged executor는 Registry lookup을 넘어서는 dispatch behavior를 검증하기 위한 provider-neutral seam이며 최종 Agent execution architecture나 authority boundary가 아니다. 별도의 Model Definition/Registry와 Model Runtime foundation이 존재하지만 Agent Runtime은 Model Registry 또는 Model Runtime에 의존하지 않는다. Context assembly, Model strategy, Model invocation, Tool request handling, Tool allowlist, Tool Runtime, permission, policy, Approval, Task lifecycle, Memory processing, Audit, execution persistence 또는 Pack-to-Agent registration도 구현하지 않는다. Agent registration은 dispatch eligibility만 의미하며 Model 또는 Tool execution authority를 부여하지 않는다.
 

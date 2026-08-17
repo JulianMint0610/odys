@@ -20,8 +20,14 @@ class CoreModelRegistry implements ModelRegistry {
       throw new DuplicateModelIdError(id);
     }
 
-    this.#models.set(id, validModel);
-    return validModel;
+    const registeredModel = Object.freeze({
+      id: validModel.id,
+      provider: validModel.provider,
+      providerModelId: validModel.providerModelId,
+    });
+
+    this.#models.set(id, registeredModel);
+    return registeredModel;
   }
 
   public get(modelId: string): ModelDefinition | undefined {

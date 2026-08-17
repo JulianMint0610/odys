@@ -18,11 +18,15 @@ function createTestTool(id: string): ToolDefinition {
 }
 
 describe('Tool Registry', () => {
-  it('registers and returns a valid Tool', () => {
+  it('registers and returns a Registry-owned immutable Tool snapshot', () => {
     const registry = createToolRegistry();
     const tool = createTestTool('web.search');
+    const registeredTool = registry.register(tool);
 
-    expect(registry.register(tool)).toBe(tool);
+    expect(registeredTool).toEqual(tool);
+    expect(registeredTool).not.toBe(tool);
+    expect(Object.isFrozen(registeredTool)).toBe(true);
+    expect(Object.isFrozen(tool)).toBe(false);
     expect(registry.has('web.search')).toBe(true);
   });
 
@@ -30,9 +34,9 @@ describe('Tool Registry', () => {
     const registry = createToolRegistry();
     const tool = createTestTool('web.search');
 
-    registry.register(tool);
+    const registeredTool = registry.register(tool);
 
-    expect(registry.get('web.search')).toBe(tool);
+    expect(registry.get('web.search')).toBe(registeredTool);
   });
 
   it('reports an unknown Tool ID explicitly', () => {
@@ -47,14 +51,39 @@ describe('Tool Registry', () => {
     const firstTool = createTestTool('web.search');
     const secondTool = createTestTool('email.read');
 
-    registry.register(firstTool);
-    registry.register(secondTool);
+    const registeredFirstTool = registry.register(firstTool);
+    const registeredSecondTool = registry.register(secondTool);
 
     const listedTools = registry.list();
 
     expect(listedTools).toEqual([firstTool, secondTool]);
+    expect(listedTools[0]).toBe(registeredFirstTool);
+    expect(listedTools[1]).toBe(registeredSecondTool);
     expect(Object.isFrozen(listedTools)).toBe(true);
+    expect(listedTools.every((tool) => Object.isFrozen(tool))).toBe(true);
     expect(registry.list()).not.toBe(listedTools);
+  });
+
+  it('isolates registered state from caller mutation', () => {
+    const registry = createToolRegistry();
+    const tool = createTestTool('web.search');
+    const registeredTool = registry.register(tool);
+
+    (tool as { risk: string }).risk = 'critical';
+
+    expect(registry.get('web.search')).toBe(registeredTool);
+    expect(registry.get('web.search')?.risk).toBe('low');
+    expect(registry.list()).toEqual([registeredTool]);
+  });
+
+  it('does not allow mutation of the registered Tool snapshot', () => {
+    const registry = createToolRegistry();
+    const registeredTool = registry.register(createTestTool('web.search'));
+
+    expect(() => {
+      (registeredTool as { risk: string }).risk = 'critical';
+    }).toThrow(TypeError);
+    expect(registry.get('web.search')?.risk).toBe('low');
   });
 
   it('returns list snapshots that are not changed by later registrations', () => {
@@ -77,14 +106,14 @@ describe('Tool Registry', () => {
       name: 'Replacement Web Search Tool',
     });
 
-    registry.register(firstTool);
+    const registeredTool = registry.register(firstTool);
 
     expect(() => registry.register(duplicateTool)).toThrow(DuplicateToolIdError);
     expect(() => registry.register(duplicateTool)).toThrow(
       'Tool with id "web.search" is already registered',
     );
-    expect(registry.get('web.search')).toBe(firstTool);
-    expect(registry.list()).toEqual([firstTool]);
+    expect(registry.get('web.search')).toBe(registeredTool);
+    expect(registry.list()).toEqual([registeredTool]);
   });
 
   it('validates malformed runtime data before checking Registry invariants', () => {
@@ -92,11 +121,11 @@ describe('Tool Registry', () => {
     const firstTool = createTestTool('web.search');
     const malformedDuplicate = { ...firstTool, name: '' } as ToolDefinition;
 
-    registry.register(firstTool);
+    const registeredTool = registry.register(firstTool);
 
     expect(() => registry.register(malformedDuplicate)).toThrow(InvalidToolDefinitionError);
     expect(() => registry.register(malformedDuplicate)).not.toThrow(DuplicateToolIdError);
-    expect(registry.get('web.search')).toBe(firstTool);
+    expect(registry.get('web.search')).toBe(registeredTool);
   });
 
   it('keeps separate Registry instances isolated without hidden global state', () => {
@@ -110,15 +139,20 @@ describe('Tool Registry', () => {
     expect(secondRegistry.list()).toEqual([]);
   });
 
-  it('allows the same Tool ID in separate Registry instances', () => {
+  it('creates isolated registered references for the same Tool object', () => {
     const firstRegistry = createToolRegistry();
     const secondRegistry = createToolRegistry();
-    const firstTool = createTestTool('web.search');
-    const secondTool = createTestTool('web.search');
+    const tool = createTestTool('web.search');
 
-    expect(() => firstRegistry.register(firstTool)).not.toThrow();
-    expect(() => secondRegistry.register(secondTool)).not.toThrow();
-    expect(firstRegistry.get('web.search')).toBe(firstTool);
-    expect(secondRegistry.get('web.search')).toBe(secondTool);
+    const firstRegisteredTool = firstRegistry.register(tool);
+    const secondRegisteredTool = secondRegistry.register(tool);
+
+    expect(firstRegisteredTool).not.toBe(tool);
+    expect(secondRegisteredTool).not.toBe(tool);
+    expect(firstRegisteredTool).not.toBe(secondRegisteredTool);
+    expect(firstRegisteredTool).toEqual(tool);
+    expect(secondRegisteredTool).toEqual(tool);
+    expect(firstRegistry.get('web.search')).toBe(firstRegisteredTool);
+    expect(secondRegistry.get('web.search')).toBe(secondRegisteredTool);
   });
 });
