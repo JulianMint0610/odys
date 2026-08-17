@@ -380,9 +380,9 @@ Registry는 실제 implementation에 따라 configuration 또는 code로 관리�
 
 현재 `@odys/core`에는 provider-independent Model identity와 discovery, registered-Model dispatch를 위한 staged foundation이 구현되어 있다.
 
-`ModelDefinition`은 stable logical `id`, ODYS-side `provider` identifier, provider-owned opaque `providerModelId`만 포함한다. `defineModel()`은 이 metadata를 runtime에서 검증하고 accepted definition을 normalize하거나 교체하지 않는다. `ModelRegistry`는 각 factory instance 안에서 definition을 exact logical ID로 등록하고 조회하며, duplicate ID를 거부하고 registration order를 보존하는 read-only snapshot을 제공한다.
+`ModelDefinition`은 stable logical `id`, ODYS-side `provider` identifier, provider-owned opaque `providerModelId`만 포함한다. `defineModel()`은 이 metadata를 runtime에서 검증하고 accepted caller-owned definition을 normalize하거나 교체하지 않으므로 definition construction은 ownership을 이전하지 않는다. 성공한 `ModelRegistry.register()`는 현재 scalar metadata를 새 object에 복사하고 freeze하여 해당 Registry entry의 canonical immutable snapshot으로 소유한다. Caller object 자체는 freeze하지 않으며, 같은 caller object를 별도 Registry instance에 등록해도 registered-definition reference는 공유되지 않는다. `get()`과 insertion order를 보존하는 frozen `list()` snapshot은 이 canonical definition을 재사용하므로 등록된 Provider-selection metadata는 entry lifetime 동안 안정적이다.
 
-`ModelRuntime`은 request의 canonical logical Model ID를 검증하고 injected `ModelRegistry`에서 exact `ModelDefinition`을 resolve한 뒤, opaque input과 함께 provider-independent injected `ModelRuntimeExecutor` seam으로 정확히 한 번 dispatch하고 opaque output을 반환한다. Registry membership은 이 staged Runtime composition에서 dispatch eligibility를 제공하지만, 그 자체로 concrete Provider authority, Provider SDK 또는 network execution을 제공하지 않는다.
+`ModelRuntime`은 request의 canonical logical Model ID를 검증하고 injected `ModelRegistry`에서 Registry-owned exact immutable `ModelDefinition` snapshot을 resolve한 뒤, definition을 다시 clone하지 않고 opaque input과 함께 provider-independent injected `ModelRuntimeExecutor` seam으로 정확히 한 번 dispatch하며 opaque output을 반환한다. 이 ownership hardening은 concrete Provider execution 도입 전에 `provider`와 `providerModelId`가 caller mutation으로 바뀌지 않도록 보장한다. Registry membership과 definition immutability는 이 staged Runtime composition에서 dispatch eligibility만 제공하며, 그 자체로 concrete Provider authority, Provider SDK 또는 network execution을 제공하지 않는다.
 
 Normalized provider Model request/response, Model Gateway, concrete Provider Adapter와 Provider SDK integration, Model Capability, Model Strategy, Model Router, Agent Runtime integration, Tool calling integration, structured output, timeout, retry, fallback 및 usage accounting은 아직 구현되지 않았다.
 
@@ -1706,7 +1706,7 @@ concrete provider adapter의 실제 위치는 implementation 단계에서 결정
 
 별도의 service가 필요하지 않은 동안 Modular Monolith 내부에 유지한다.
 
-현재는 이 위치에 최소 `ModelDefinition`, definition/runtime request validation, instance-local `ModelRegistry`, registered-Model dispatch를 위한 `ModelRuntime` request/result contract와 provider-independent injected executor seam이 구현되어 있다. Normalized provider execution request/response, Model Gateway 및 concrete Provider Adapter는 후속 단계다.
+현재는 이 위치에 최소 `ModelDefinition`, definition/runtime request validation, Registry-owned immutable definition snapshot을 보관하는 instance-local `ModelRegistry`, registered-Model dispatch를 위한 `ModelRuntime` request/result contract와 provider-independent injected executor seam이 구현되어 있다. Normalized provider execution request/response, Model Gateway 및 concrete Provider Adapter는 후속 단계다.
 
 ---
 

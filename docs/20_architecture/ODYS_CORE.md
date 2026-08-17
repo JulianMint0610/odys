@@ -620,9 +620,9 @@ Agent Runtime은 ODYS Core에 속한다.
 
 이 분리를 통해 서로 다른 domain Agent가 동일한 execution infrastructure를 공유할 수 있다.
 
-현재 `@odys/core`에는 repository-defined Agent를 표현하는 최소 `AgentDefinition` contract와 이를 검증하는 `defineAgent()`, 격리된 `AgentRegistry`, registered-Agent dispatch를 위한 첫 Common Agent Runtime foundation이 구현되어 있다. 이 단계의 definition은 stable `id`, `name`, `version`, `description`, `responsibility`만 포함한다.
+현재 `@odys/core`에는 repository-defined Agent를 표현하는 최소 `AgentDefinition` contract와 이를 검증하는 `defineAgent()`, 격리된 `AgentRegistry`, registered-Agent dispatch를 위한 첫 Common Agent Runtime foundation이 구현되어 있다. 이 단계의 definition은 stable `id`, `name`, `version`, `description`, `responsibility`만 포함한다. Definition construction은 ownership을 이전하지 않으며, 성공한 registration은 caller object를 freeze하지 않고 새 frozen object를 해당 Registry entry의 canonical snapshot으로 소유한다. 따라서 등록된 Agent definition은 entry lifetime 동안 caller mutation과 다른 Registry instance로부터 격리된다.
 
-현재 Runtime은 valid request가 Registry에 등록된 exact Agent만 provider-neutral executor seam으로 한 번 dispatch하고 opaque result를 반환한다. Context 조합, Model 호출, Tool 호출, permission, policy, Approval, Task lifecycle, Memory processing, Audit 및 execution persistence를 포함한 완전한 Agent execution lifecycle은 아직 구현되지 않았다.
+현재 Runtime은 valid request가 Registry에 등록된 exact canonical Agent snapshot만 provider-neutral executor seam으로 한 번 dispatch하고 opaque result를 반환한다. Agent registration과 definition immutability는 Tool authority를 부여하지 않는다. Context 조합, Model 호출, Tool 호출, permission, policy, Approval, Task lifecycle, Memory processing, Audit 및 execution persistence를 포함한 완전한 Agent execution lifecycle은 아직 구현되지 않았다.
 
 ---
 
@@ -658,7 +658,7 @@ Tool
 
 Architecture 단계에서는 책임과 contract boundary를 우선한다.
 
-현재 `@odys/core`에는 non-executable 최소 `ToolDefinition` contract와 이를 검증하는 `defineTool()`, 격리된 `ToolRegistry` foundation이 구현되어 있다. 이 단계의 definition은 stable `id`, `name`, `description`, 선언적 `risk`만 포함한다.
+현재 `@odys/core`에는 non-executable 최소 `ToolDefinition` contract와 이를 검증하는 `defineTool()`, 격리된 `ToolRegistry` foundation이 구현되어 있다. 이 단계의 definition은 stable `id`, `name`, `description`, 선언적 `risk`만 포함한다. Definition construction은 ownership을 이전하지 않으며, 성공한 registration은 caller object를 freeze하지 않고 새 frozen object를 해당 Registry entry의 canonical snapshot으로 소유한다. `get()`과 frozen `list()` array는 이 snapshot을 재사용하므로 등록된 Tool definition은 entry lifetime 동안 안정적이고 Registry instance 사이에 reference를 공유하지 않는다.
 
 Input/output schema, permission requirement, execution capability, external implementation, Tool Runtime, Approval 및 Audit integration은 아직 구현되지 않았다. 따라서 현재의 Tool registration은 Tool execution이나 Agent authority를 의미하지 않는다.
 
@@ -758,9 +758,9 @@ Model Usage
 
 Agent domain logic은 특정 provider SDK에 가능한 한 직접 의존하지 않는다.
 
-현재 `@odys/core`에는 provider-independent identity metadata를 표현하는 최소 `ModelDefinition`, 이를 검증하는 `defineModel()`, 격리된 `ModelRegistry`, registered-Model dispatch를 위한 staged `ModelRuntime` foundation이 구현되어 있다. Definition은 stable logical `id`, ODYS-side `provider` identifier 및 provider-owned opaque `providerModelId`만 포함하며, Registry는 logical ID 기준 registration과 discovery를 제공한다. Runtime은 canonical logical ID로 exact registered definition을 resolve하고 opaque input을 provider-independent injected executor seam으로 한 번 dispatch한 뒤 opaque output을 반환한다.
+현재 `@odys/core`에는 provider-independent identity metadata를 표현하는 최소 `ModelDefinition`, 이를 검증하는 `defineModel()`, 격리된 `ModelRegistry`, registered-Model dispatch를 위한 staged `ModelRuntime` foundation이 구현되어 있다. Definition은 stable logical `id`, ODYS-side `provider` identifier 및 provider-owned opaque `providerModelId`만 포함한다. Definition construction은 ownership을 이전하지 않으며, 성공한 registration은 caller object를 freeze하지 않고 새 frozen object를 해당 Registry entry의 canonical snapshot으로 소유한다. 이 snapshot은 entry lifetime과 Registry instance 사이에서 격리되어 Provider-selection metadata를 안정적으로 유지한다. Runtime은 canonical logical ID로 exact Registry-owned snapshot을 resolve하고 이를 다시 clone하지 않은 채 opaque input과 함께 provider-independent injected executor seam으로 한 번 dispatch한 뒤 opaque output을 반환한다.
 
-이 staged Runtime은 concrete Provider Adapter, Provider SDK 또는 network Model invocation이 아니다. Registry membership은 injected Runtime composition의 dispatch eligibility만 제공하며 독립적인 provider execution authority를 만들지 않는다. Normalized provider request/response, Model Gateway, capability, strategy, routing, Agent Runtime 및 Tool integration, timeout, retry, fallback과 usage accounting은 아직 구현되지 않았다.
+이 staged Runtime은 concrete Provider Adapter, Provider SDK 또는 network Model invocation이 아니다. Model registration과 definition immutability는 injected Runtime composition의 dispatch eligibility만 제공하며 독립적인 concrete Provider execution authority를 만들지 않는다. Normalized provider request/response, Model Gateway, capability, strategy, routing, Agent Runtime 및 Tool integration, timeout, retry, fallback과 usage accounting은 아직 구현되지 않았다.
 
 ---
 

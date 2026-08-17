@@ -20,8 +20,15 @@ class CoreToolRegistry implements ToolRegistry {
       throw new DuplicateToolIdError(id);
     }
 
-    this.#tools.set(id, validTool);
-    return validTool;
+    const registeredTool = Object.freeze({
+      id: validTool.id,
+      name: validTool.name,
+      description: validTool.description,
+      risk: validTool.risk,
+    });
+
+    this.#tools.set(id, registeredTool);
+    return registeredTool;
   }
 
   public get(toolId: string): ToolDefinition | undefined {

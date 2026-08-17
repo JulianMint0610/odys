@@ -20,8 +20,16 @@ class CoreAgentRegistry implements AgentRegistry {
       throw new DuplicateAgentIdError(id);
     }
 
-    this.#agents.set(id, validAgent);
-    return validAgent;
+    const registeredAgent = Object.freeze({
+      id: validAgent.id,
+      name: validAgent.name,
+      version: validAgent.version,
+      description: validAgent.description,
+      responsibility: validAgent.responsibility,
+    });
+
+    this.#agents.set(id, registeredAgent);
+    return registeredAgent;
   }
 
   public get(agentId: string): AgentDefinition | undefined {

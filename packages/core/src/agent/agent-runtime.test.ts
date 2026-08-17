@@ -35,14 +35,14 @@ describe('Agent Runtime', () => {
     const agent = createTestAgent('coding-agent');
     const input = { prompt: 'Review this repository.' };
     const output = { summary: 'Repository reviewed.' };
+    const registeredAgent = agentRegistry.register(agent);
     const executor: AgentRuntimeExecutor = vi.fn(async (request) => {
-      expect(request.agent).toBe(agent);
+      expect(request.agent).toBe(registeredAgent);
+      expect(request.agent).not.toBe(agent);
       expect(request.input).toBe(input);
       return output;
     });
     const runtime: AgentRuntime = createAgentRuntime({ agentRegistry, executor });
-
-    agentRegistry.register(agent);
 
     const result: AgentRuntimeResult = await runtime.run({ agentId: 'coding-agent', input });
 

@@ -53,14 +53,14 @@ describe('Model Runtime', () => {
     const model = createTestModel('coding-primary');
     const input = { messages: [{ role: 'user', content: 'Review this repository.' }] };
     const output = { content: [{ type: 'text', text: 'Repository reviewed.' }] };
+    const registeredModel = modelRegistry.register(model);
     const executor: ModelRuntimeExecutor = vi.fn(async (request) => {
-      expect(request.model).toBe(model);
+      expect(request.model).toBe(registeredModel);
+      expect(request.model).not.toBe(model);
       expect(request.input).toBe(input);
       return output;
     });
     const runtime: ModelRuntime = createModelRuntime({ modelRegistry, executor });
-
-    modelRegistry.register(model);
 
     const result: ModelRuntimeResult = await runtime.run({
       modelId: 'coding-primary',
@@ -70,6 +70,39 @@ describe('Model Runtime', () => {
     expect(executor).toHaveBeenCalledOnce();
     expect(result).toEqual({ modelId: 'coding-primary', output });
     expect(result.output).toBe(output);
+  });
+
+  it('keeps registered Provider dispatch metadata stable after caller mutation', async () => {
+    const modelRegistry = createModelRegistry();
+    const model = defineModel({
+      id: 'coding-primary',
+      provider: 'provider-a',
+      providerModelId: 'model-a',
+    });
+    const registeredModel = modelRegistry.register(model);
+    const executor: ModelRuntimeExecutor = vi.fn(async ({ model: dispatchedModel }) => {
+      expect(dispatchedModel).toBe(registeredModel);
+      expect(dispatchedModel).not.toBe(model);
+      expect(dispatchedModel.provider).toBe('provider-a');
+      expect(dispatchedModel.providerModelId).toBe('model-a');
+      return 'completed';
+    });
+    const runtime = createModelRuntime({ modelRegistry, executor });
+
+    (model as { provider: string; providerModelId: string }).provider = 'provider-b';
+    (model as { provider: string; providerModelId: string }).providerModelId = 'model-b';
+
+    expect(modelRegistry.get('coding-primary')).toBe(registeredModel);
+    expect(modelRegistry.get('coding-primary')).toEqual({
+      id: 'coding-primary',
+      provider: 'provider-a',
+      providerModelId: 'model-a',
+    });
+    await expect(runtime.run({ modelId: 'coding-primary', input: null })).resolves.toEqual({
+      modelId: 'coding-primary',
+      output: 'completed',
+    });
+    expect(executor).toHaveBeenCalledOnce();
   });
 
   it.each([null, undefined, 1, 'request', [], () => undefined])(
