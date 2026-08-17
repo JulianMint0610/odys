@@ -1350,7 +1350,7 @@ Pack은 Core가 제공하는 다음 extension point를 사용할 수 있다.
 
 - knowledge source configuration
 
-현재 코드에는 Pack identity public contract와 Pack Registry, 최소 Agent Definition public contract와 Agent Registry foundation, registered-Agent dispatch만 제공하는 첫 Common Agent Runtime foundation, 최소 Tool Definition public contract와 Tool Registry foundation, 최소 Model Definition/Registry와 registered-Model dispatch만 제공하는 Model Runtime foundation이 구현되어 있다. Pack-to-Agent, Pack-to-Tool 및 Pack-to-Model registration lifecycle, 완전한 Agent execution lifecycle, Tool Runtime, provider execution, permission과 policy, Approval, Audit, Memory/runtime extension point, workflow 및 knowledge source 관련 extension point는 계획된 아키텍처이며 아직 구현되지 않았다.
+현재 코드에는 네 필드 manifest의 Pack identity validation과 instance-local Pack Registry가 구현되어 있다. 성공한 Pack registration은 caller-owned Pack을 저장하거나 freeze하지 않고 새 frozen `PackDefinition`과 새 frozen nested manifest를 Registry entry의 canonical snapshot으로 소유하며, `get()`과 `list()`는 이 snapshot을 재사용한다. 또한 최소 Agent Definition public contract와 Agent Registry foundation, registered-Agent dispatch만 제공하는 첫 Common Agent Runtime foundation, 최소 Tool Definition public contract와 Tool Registry foundation, 최소 Model Definition/Registry와 registered-Model dispatch만 제공하는 Model Runtime foundation이 구현되어 있다. Pack lifecycle/composition, Pack-to-Agent/Tool/Model registration, 완전한 Agent execution lifecycle, Tool Runtime, provider execution, Permission/Policy, Approval, Audit, Memory/runtime extension point, workflow 및 knowledge source 관련 extension point는 계획된 아키텍처이며 아직 구현되지 않았다.
 
 현재 Tool Registry는 definition registration과 discovery만 담당하며 Tool을 실행하지 않는다.
 

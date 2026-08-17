@@ -20,7 +20,17 @@ class CorePackRegistry implements PackRegistry {
       throw new DuplicatePackIdError(id);
     }
 
-    this.#packs.set(id, validPack);
+    const registeredManifest = Object.freeze({
+      id: validPack.manifest.id,
+      name: validPack.manifest.name,
+      version: validPack.manifest.version,
+      ...(validPack.manifest.description === undefined
+        ? {}
+        : { description: validPack.manifest.description }),
+    });
+    const registeredPack = Object.freeze({ manifest: registeredManifest });
+
+    this.#packs.set(id, registeredPack);
   }
 
   public get(packId: string): PackDefinition | undefined {

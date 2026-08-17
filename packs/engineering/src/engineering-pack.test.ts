@@ -19,8 +19,16 @@ describe('Engineering Pack', () => {
     const registry = createPackRegistry();
 
     registry.register(engineeringPack);
+    const registeredEngineeringPack = registry.get('engineering');
 
-    expect(registry.get('engineering')).toBe(engineeringPack);
-    expect(registry.list()).toEqual([engineeringPack]);
+    expect(registeredEngineeringPack).toEqual(engineeringPack);
+    expect(registeredEngineeringPack).not.toBe(engineeringPack);
+    expect(registeredEngineeringPack?.manifest).not.toBe(engineeringPack.manifest);
+    expect(Object.isFrozen(registeredEngineeringPack)).toBe(true);
+    expect(Object.isFrozen(registeredEngineeringPack?.manifest)).toBe(true);
+    expect(Object.isFrozen(engineeringPack)).toBe(false);
+    expect(Object.isFrozen(engineeringPack.manifest)).toBe(false);
+    expect(registry.list()).toEqual([registeredEngineeringPack]);
+    expect(registry.list()[0]).toBe(registeredEngineeringPack);
   });
 });
