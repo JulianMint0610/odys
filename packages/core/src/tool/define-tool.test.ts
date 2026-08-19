@@ -9,6 +9,7 @@ import {
 } from '../index.js';
 
 const inputSchema = z.object({ query: z.string() });
+const outputSchema = z.object({ results: z.array(z.string()) });
 
 const validDefinition: ToolDefinition = {
   id: 'web.search',
@@ -16,6 +17,7 @@ const validDefinition: ToolDefinition = {
   description: 'Searches public web information.',
   risk: 'low',
   inputSchema,
+  outputSchema,
 };
 
 function runtimeDefinition(overrides: Record<string, unknown>): ToolDefinition {
@@ -33,6 +35,7 @@ describe('defineTool', () => {
       description: 'Searches public web information.',
       risk: 'low',
       inputSchema,
+      outputSchema,
     });
   });
 
@@ -45,6 +48,32 @@ describe('defineTool', () => {
     expectTypeOf(definition.inputSchema).toEqualTypeOf<
       z.ZodObject<{ query: z.ZodString; limit: z.ZodOptional<z.ZodNumber> }>
     >();
+  });
+
+  it('preserves concrete input and output schema types independently', () => {
+    const definition = defineTool({
+      ...validDefinition,
+      inputSchema: z.string().trim(),
+      outputSchema: z.coerce.number(),
+    });
+
+    expectTypeOf(definition.inputSchema).toEqualTypeOf<z.ZodString>();
+    expectTypeOf(definition.outputSchema).toEqualTypeOf<z.ZodCoercedNumber<unknown>>();
+  });
+
+  it('keeps the first ToolDefinition generic assigned to the input schema', () => {
+    const definition: ToolDefinition<typeof inputSchema> = { ...validDefinition, inputSchema };
+
+    expectTypeOf(definition.inputSchema).toEqualTypeOf<typeof inputSchema>();
+  });
+  it('preserves explicit input-schema-only defineTool generic compatibility', () => {
+    const definition = defineTool<typeof inputSchema>({
+      ...validDefinition,
+      inputSchema,
+      outputSchema,
+    });
+
+    expectTypeOf(definition.inputSchema).toEqualTypeOf<typeof inputSchema>();
   });
 
   it.each([
@@ -157,6 +186,27 @@ describe('defineTool', () => {
     },
   );
 
+  it('rejects a missing outputSchema', () => {
+    const definition = { ...validDefinition } as Record<string, unknown>;
+    delete definition.outputSchema;
+
+    expect(() => defineTool(definition as unknown as ToolDefinition)).toThrow(
+      InvalidToolDefinitionError,
+    );
+    expect(() => defineTool(definition as unknown as ToolDefinition)).toThrow(
+      'Invalid Tool definition: outputSchema must be a Zod schema',
+    );
+  });
+
+  it.each([null, undefined, 'schema', {}, { safeParse: () => ({ success: true }) }])(
+    'rejects the non-Zod outputSchema %j',
+    (invalidSchema) => {
+      expect(() => defineTool(runtimeDefinition({ outputSchema: invalidSchema }))).toThrow(
+        InvalidToolDefinitionError,
+      );
+    },
+  );
+
   it.each([null, 1, [], {}])(
     'rejects a malformed runtime definition without leaking an incidental TypeError',
     (definition) => {
@@ -185,6 +235,7 @@ describe('defineTool', () => {
     expect(definition).toBe(callerDefinition);
     expect(Object.isFrozen(callerDefinition)).toBe(false);
     expect(Object.isFrozen(inputSchema)).toBe(false);
+    expect(Object.isFrozen(outputSchema)).toBe(false);
   });
 
   it('reports which field failed validation', () => {

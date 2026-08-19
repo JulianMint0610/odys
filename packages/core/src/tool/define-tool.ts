@@ -44,11 +44,18 @@ function validateToolDefinition(definition: unknown): asserts definition is Tool
   if (!(definition.inputSchema instanceof z.ZodType)) {
     rejectInvalidDefinition('inputSchema must be a Zod schema');
   }
+
+  if (!(definition.outputSchema instanceof z.ZodType)) {
+    rejectInvalidDefinition('outputSchema must be a Zod schema');
+  }
 }
 
-export function defineTool<TSchema extends z.ZodType>(
-  definition: ToolDefinition<TSchema>,
-): ToolDefinition<TSchema> {
+export function defineTool<
+  TInputSchema extends z.ZodType = z.ZodType,
+  TOutputSchema extends z.ZodType = z.ZodType,
+>(
+  definition: ToolDefinition<TInputSchema, TOutputSchema>,
+): ToolDefinition<TInputSchema, TOutputSchema> {
   validateToolDefinition(definition);
   return definition;
 }

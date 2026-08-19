@@ -232,6 +232,7 @@ describe('Agent Runtime', () => {
         description: 'A non-executable Tool definition fixture.',
         risk: 'low',
         inputSchema: z.unknown(),
+        outputSchema: z.unknown(),
       }),
     );
 

@@ -21,3 +21,13 @@ export class ToolInputValidationError extends Error {
     this.toolId = toolId;
   }
 }
+
+export class ToolOutputValidationError extends Error {
+  public readonly toolId: string;
+
+  public constructor(toolId: string, cause: unknown) {
+    super(`Invalid output for Tool "${toolId}".`, { cause });
+    this.name = 'ToolOutputValidationError';
+    this.toolId = toolId;
+  }
+}

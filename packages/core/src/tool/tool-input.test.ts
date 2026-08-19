@@ -13,6 +13,7 @@ function createTool(risk: ToolRisk = 'low') {
       query: z.string().trim().min(1),
       limit: z.coerce.number().int().positive().default(10),
     }),
+    outputSchema: z.unknown(),
   });
 }
 
@@ -36,6 +37,7 @@ describe('parseToolInput', () => {
       inputSchema: z
         .object({ value: z.coerce.number(), label: z.string().default('result') })
         .transform(({ value, label }) => ({ doubled: value * 2, label })),
+      outputSchema: z.unknown(),
     });
 
     const parsed = parseToolInput(tool, { value: '4' });
@@ -72,6 +74,29 @@ describe('parseToolInput', () => {
     expect(() => parseToolInput(tool, { query: '', limit: 1 })).toThrow(ToolInputValidationError);
     expect(tool).toEqual(definitionBeforeValidation);
     expect(tool.inputSchema).toBe(definitionBeforeValidation.inputSchema);
+  });
+
+  it('preserves an arbitrary exception thrown by input schema logic', () => {
+    const schemaError = new Error('input schema implementation failed');
+    const tool = defineTool({
+      id: 'input.throw',
+      name: 'Throwing Input Schema',
+      description: 'Exercises the input exception boundary.',
+      risk: 'low',
+      inputSchema: z.unknown().transform(() => {
+        throw schemaError;
+      }),
+      outputSchema: z.unknown(),
+    });
+
+    expect(() => parseToolInput(tool, 'raw input')).toThrow(schemaError);
+
+    try {
+      parseToolInput(tool, 'raw input');
+    } catch (error) {
+      expect(error).toBe(schemaError);
+      expect(error).not.toBeInstanceOf(ToolInputValidationError);
+    }
   });
 
   it.each<ToolRisk>(['low', 'medium', 'high', 'critical'])(
