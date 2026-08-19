@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, expectTypeOf, it } from 'vitest';
 
 import {
   createToolRegistry,
@@ -16,6 +16,7 @@ function createTestTool(id: string): ToolDefinition {
     description: `Fixture for ${id}.`,
     risk: 'low',
     inputSchema: z.object({ value: z.string() }),
+    outputSchema: z.object({ result: z.string() }),
   });
 }
 
@@ -30,6 +31,24 @@ describe('Tool Registry', () => {
     expect(Object.isFrozen(registeredTool)).toBe(true);
     expect(Object.isFrozen(tool)).toBe(false);
     expect(registry.has('web.search')).toBe(true);
+  });
+
+  it('preserves explicit input-schema-only register generic compatibility', () => {
+    const inputSchema = z.object({ value: z.string() });
+    const outputSchema = z.object({ result: z.string() });
+    const tool = defineTool({
+      id: 'generic.compatibility',
+      name: 'Generic Compatibility Tool',
+      description: 'Tests explicit Registry generic compatibility.',
+      risk: 'low',
+      inputSchema,
+      outputSchema,
+    });
+    const registry = createToolRegistry();
+
+    const registeredTool = registry.register<typeof inputSchema>(tool);
+
+    expectTypeOf(registeredTool.inputSchema).toEqualTypeOf<typeof inputSchema>();
   });
 
   it('retrieves a registered Tool by its stable ID', () => {
@@ -78,19 +97,28 @@ describe('Tool Registry', () => {
     expect(registry.list()).toEqual([registeredTool]);
   });
 
-  it('captures the exact schema reference without freezing it or following caller replacement', () => {
+  it('captures exact schema references without freezing them or following caller replacement', () => {
     const registry = createToolRegistry();
     const tool = createTestTool('web.search');
-    const capturedSchema = tool.inputSchema;
-    const replacementSchema = z.object({ replacement: z.boolean() });
+    const capturedInputSchema = tool.inputSchema;
+    const capturedOutputSchema = tool.outputSchema;
+    const replacementInputSchema = z.object({ replacementInput: z.boolean() });
+    const replacementOutputSchema = z.object({ replacementOutput: z.boolean() });
 
     const registeredTool = registry.register(tool);
-    (tool as unknown as { inputSchema: typeof replacementSchema }).inputSchema = replacementSchema;
+    (tool as unknown as { inputSchema: typeof replacementInputSchema }).inputSchema =
+      replacementInputSchema;
+    (tool as unknown as { outputSchema: typeof replacementOutputSchema }).outputSchema =
+      replacementOutputSchema;
 
-    expect(registeredTool.inputSchema).toBe(capturedSchema);
-    expect(registry.get('web.search')?.inputSchema).toBe(capturedSchema);
-    expect(tool.inputSchema).toBe(replacementSchema);
-    expect(Object.isFrozen(capturedSchema)).toBe(false);
+    expect(registeredTool.inputSchema).toBe(capturedInputSchema);
+    expect(registeredTool.outputSchema).toBe(capturedOutputSchema);
+    expect(registry.get('web.search')?.inputSchema).toBe(capturedInputSchema);
+    expect(registry.get('web.search')?.outputSchema).toBe(capturedOutputSchema);
+    expect(tool.inputSchema).toBe(replacementInputSchema);
+    expect(tool.outputSchema).toBe(replacementOutputSchema);
+    expect(Object.isFrozen(capturedInputSchema)).toBe(false);
+    expect(Object.isFrozen(capturedOutputSchema)).toBe(false);
     expect(Object.isFrozen(tool)).toBe(false);
   });
 
@@ -171,6 +199,9 @@ describe('Tool Registry', () => {
     expect(firstRegisteredTool.inputSchema).toBe(tool.inputSchema);
     expect(secondRegisteredTool.inputSchema).toBe(tool.inputSchema);
     expect(firstRegisteredTool.inputSchema).toBe(secondRegisteredTool.inputSchema);
+    expect(firstRegisteredTool.outputSchema).toBe(tool.outputSchema);
+    expect(secondRegisteredTool.outputSchema).toBe(tool.outputSchema);
+    expect(firstRegisteredTool.outputSchema).toBe(secondRegisteredTool.outputSchema);
     expect(firstRegisteredTool).toEqual(tool);
     expect(secondRegisteredTool).toEqual(tool);
     expect(firstRegistry.get('web.search')).toBe(firstRegisteredTool);

@@ -322,6 +322,7 @@ describe('Model Runtime', () => {
         description: 'A Model Runtime boundary fixture.',
         risk: 'low',
         inputSchema: z.unknown(),
+        outputSchema: z.unknown(),
       }),
     );
 

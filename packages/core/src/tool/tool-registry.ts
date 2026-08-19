@@ -5,7 +5,9 @@ import { DuplicateToolIdError } from './tool-errors.js';
 import type { ToolDefinition } from './tool.js';
 
 export interface ToolRegistry {
-  register<TSchema extends z.ZodType>(tool: ToolDefinition<TSchema>): ToolDefinition<TSchema>;
+  register<TInputSchema extends z.ZodType = z.ZodType, TOutputSchema extends z.ZodType = z.ZodType>(
+    tool: ToolDefinition<TInputSchema, TOutputSchema>,
+  ): ToolDefinition<TInputSchema, TOutputSchema>;
   get(toolId: string): ToolDefinition | undefined;
   has(toolId: string): boolean;
   list(): readonly ToolDefinition[];
@@ -14,9 +16,12 @@ export interface ToolRegistry {
 class CoreToolRegistry implements ToolRegistry {
   readonly #tools = new Map<string, ToolDefinition>();
 
-  public register<TSchema extends z.ZodType>(
-    tool: ToolDefinition<TSchema>,
-  ): ToolDefinition<TSchema> {
+  public register<
+    TInputSchema extends z.ZodType = z.ZodType,
+    TOutputSchema extends z.ZodType = z.ZodType,
+  >(
+    tool: ToolDefinition<TInputSchema, TOutputSchema>,
+  ): ToolDefinition<TInputSchema, TOutputSchema> {
     const validTool = defineTool(tool);
     const { id } = validTool;
 
@@ -30,6 +35,7 @@ class CoreToolRegistry implements ToolRegistry {
       description: validTool.description,
       risk: validTool.risk,
       inputSchema: validTool.inputSchema,
+      outputSchema: validTool.outputSchema,
     });
 
     this.#tools.set(id, registeredTool);

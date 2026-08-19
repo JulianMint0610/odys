@@ -98,7 +98,7 @@ compile-time typing과 runtime validation을 함께 사용한다.
 
 | Web Application | TypeScript-based Web Application | Planned |
 
-| Runtime Validation | To be selected | Deferred |
+| Runtime Validation | Zod 4 for Core Tool input/output contracts | Adopted |
 
 | Test Runner | Vitest | Adopted |
 
@@ -687,9 +687,9 @@ Second Provider When Needed
 
 ## 26. Runtime Validation
 
-External API input, Model structured output 및 Tool input에는 runtime schema validation이 필요하다.
+External API input, Model structured output 및 Tool input/output에는 runtime schema validation이 필요하다.
 
-현재 첫 concrete runtime-validation library로 Zod 4를 채택했으며, 구현 범위는 `@odys/core`의 Tool input contract validation이다. `ToolDefinition.inputSchema`와 `parseToolInput()`이 이 boundary를 제공한다.
+현재 첫 concrete runtime-validation library로 Zod 4를 채택했으며, 구현 범위는 `@odys/core`의 Tool input/output contract validation이다. `ToolDefinition.inputSchema`와 `ToolDefinition.outputSchema`, `parseToolInput()`과 `parseToolOutput()`이 execution-independent boundary를 제공한다. 이 선택은 아직 구현되지 않은 모든 external boundary에 Zod 적용을 확정하지 않는다.
 
 선택 기준:
 
@@ -1241,7 +1241,7 @@ External request와 structured Model output은 runtime schema를 source of truth
 
 TypeScript type과 runtime schema가 drift하지 않는 방식을 선택한다.
 
-Tool input에는 현재 채택한 Zod 4를 사용한다. External API와 Model output schema의 concrete 적용은 해당 boundary 구현 시 결정한다.
+Tool input/output에는 현재 채택한 Zod 4를 사용한다. External API와 Model output schema의 concrete 적용은 해당 boundary 구현 시 결정한다.
 
 ---
 
@@ -1451,7 +1451,7 @@ pnpm Workspace
 
 packages/core
 
-Zod 4 for Tool input contract runtime validation
+Zod 4 for Tool input/output contract runtime validation
 
 Core Pack identity public contract
 
@@ -1469,7 +1469,7 @@ GitHub Actions
 
 ```
 
-Runtime schema validation은 Tool input contract에 Zod 4로 처음 적용되었다. 다른 external input과 structured contract에는 실제 boundary를 구현할 때 확장 여부를 결정한다.
+Runtime schema validation은 Tool input/output contract에 Zod 4로 처음 적용되었다. 다른 external input과 structured contract에는 실제 boundary를 구현할 때 확장 여부를 결정한다.
 
 현재 foundation 단계에서는 Web UI나 external provider를 구현하지 않는다.
 

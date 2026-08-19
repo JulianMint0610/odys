@@ -410,17 +410,20 @@ name
 description
 risk
 inputSchema
+outputSchema
 ```
 
-`inputSchema`는 Zod 4 schema이며 Tool이 허용하는 input의 runtime source of truth다. `defineTool()`은 metadata와 schema contract를 runtime에서 검증하고 accepted definition을 정규화하지 않은 채 원래 caller-owned reference로 반환한다. Definition construction은 ownership을 이전하지 않고 caller object나 schema를 freeze하지 않는다. 현재 Tool ID는 IMPLEMENTATION-007의 보수적인 구현 규칙인 `^[a-z][a-z0-9]*(?:[._-][a-z0-9]+)*$`를 사용한다.
+`inputSchema`와 `outputSchema`는 required Zod 4 schema이며 각각 Tool이 허용하는 input과 output의 runtime source of truth다. `defineTool()`은 metadata와 두 schema contract를 runtime에서 검증하고 accepted definition을 정규화하지 않은 채 원래 caller-owned reference로 반환한다. Definition construction은 ownership을 이전하지 않고 caller object나 schema를 freeze하지 않는다. 현재 Tool ID는 IMPLEMENTATION-007의 보수적인 구현 규칙인 `^[a-z][a-z0-9]*(?:[._-][a-z0-9]+)*$`를 사용한다.
 
 `ToolRisk`는 `low`, `medium`, `high`, `critical` 중 하나인 선언적 분류다. 이 값만으로 자동 실행, permission, Approval 또는 차단 behavior가 결정되지는 않는다.
 
-현재 `ToolRegistry` foundation은 성공한 registration마다 scalar metadata와 registration 시점의 `inputSchema` reference를 새 object에 복사하고 container만 freeze하여 해당 Registry entry의 canonical immutable snapshot으로 소유한다. Zod schema는 immutable contract value로 취급하므로 deep clone하거나 recursively freeze하지 않고 exact reference를 유지한다. Caller object 자체는 freeze하지 않으며 이후 caller가 자신의 `inputSchema` property를 교체해도 Registry가 포착한 schema reference는 바뀌지 않는다. `get()`과 `list()`는 canonical snapshot을 재사용하고 `list()` array도 frozen 상태를 유지한다. 같은 caller object를 별도 Registry instance에 등록하면 각 instance는 서로 다른 definition snapshot을 소유하지만 schema reference는 의도적으로 공유할 수 있다. Registry membership과 definition immutability는 Tool execution capability나 Agent authority를 부여하지 않는다.
+현재 `ToolRegistry` foundation은 성공한 registration마다 scalar metadata와 registration 시점의 `inputSchema` 및 `outputSchema` reference를 새 object에 복사하고 container만 freeze하여 해당 Registry entry의 canonical immutable snapshot으로 소유한다. Zod schema는 immutable contract value로 취급하므로 deep clone하거나 recursively freeze하지 않고 exact reference를 유지한다. Caller object 자체는 freeze하지 않으며 이후 caller가 자신의 schema property를 교체해도 Registry가 포착한 schema reference는 바뀌지 않는다. `get()`과 `list()`는 canonical snapshot을 재사용하고 `list()` array도 frozen 상태를 유지한다. 같은 caller object를 별도 Registry instance에 등록하면 각 instance는 서로 다른 definition snapshot을 소유하지만 schema reference는 의도적으로 공유할 수 있다. Registry membership과 definition immutability는 Tool execution capability나 Agent authority를 부여하지 않는다.
 
 `parseToolInput()`은 Registry membership이나 `risk`와 독립적으로 unknown input을 `inputSchema`로 parse하고 schema가 생성한 parsed/transformed output을 반환한다. Validation failure는 raw input을 message에 포함하지 않는 `ToolInputValidationError`로 변환하며 underlying Zod validation failure를 cause로 보존한다.
 
-Output schema, required permission, execution policy, `execute` capability, Tool Runtime, external implementation, timeout, retry, Approval integration 및 Audit integration은 전체 목표 Tool contract에 속하지만 이 단계의 TypeScript API에는 포함되지 않는다.
+`parseToolOutput()`도 execution과 독립적으로 unknown Tool output을 `outputSchema`로 parse하고 schema가 생성한 parsed/transformed output을 반환한다. Validation failure는 raw output을 message에 포함하지 않는 `ToolOutputValidationError`로 변환하며 underlying Zod validation failure를 cause로 보존한다. 두 parser 모두 schema logic이 직접 던진 임의의 exception을 validation error로 잘못 정규화하지 않는다.
+
+두 validation primitive는 Tool을 실행하지 않으며 성공해도 permission, policy, Approval 또는 Agent authority를 부여하지 않는다. Required permission, execution policy, `execute` capability, Tool Runtime, external implementation, output handling lifecycle beyond validation, timeout, retry, Approval integration 및 Audit integration은 전체 목표 Tool contract에 속하지만 이 단계의 TypeScript API에는 포함되지 않는다.
 
 ---
 
@@ -550,6 +553,8 @@ content size
 
 외부 response가 예상 contract와 다르면 ToolExecutionError 등 명확한 error로 변환한다.
 
+현재 구현된 `parseToolOutput()`은 execution과 분리된 output validation primitive다. Tool Definition을 직접 받아 unknown output을 required Zod `outputSchema`로 parse하고 parsed/transformed output을 반환하며, invalid output은 raw payload를 message에 노출하지 않는 `ToolOutputValidationError`가 된다. 이 primitive는 Tool을 실행하지 않고 Registry, Agent, permission, policy 또는 Approval을 조회하지 않으며, validation 성공도 execution authority를 의미하지 않는다. Provider response normalization, execution result lifecycle 및 audit는 아직 구현되지 않았다.
+
 ---
 
 ## 15. Tool Registry
@@ -606,7 +611,7 @@ registered implementation
 
 잘못 구성된 Tool은 application startup 또는 registration 단계에서 가능한 한 빨리 발견한다.
 
-현재 staged registration은 Tool Definition runtime validation, required Zod `inputSchema` 및 unique Tool ID를 강제한다. Output schema, permission, implementation 및 execution 관련 검증은 해당 contract와 Tool Runtime이 구현된 뒤 추가한다.
+현재 staged registration은 Tool Definition runtime validation, required Zod `inputSchema`와 `outputSchema` 및 unique Tool ID를 강제한다. Permission, implementation 및 execution 관련 검증은 해당 contract와 Tool Runtime이 구현된 뒤 추가한다.
 
 ---
 
