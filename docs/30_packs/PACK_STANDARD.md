@@ -230,6 +230,14 @@ IMPLEMENTATION-008은 Pack contract를 변경하지 않고 Core에 runtime reque
 
 현재 TypeScript contract는 `@odys/core`의 `PackManifest`와 `PackDefinition`으로 공개되며, Engineering Pack은 이 package의 public entry point만 사용한다.
 
+현재 `definePack()`은 네 필드 manifest contract(`id`, `name`, `version`, optional `description`)를 검증하지만 ownership을 이전하지 않는다. 유효한 caller-owned `PackDefinition`과 nested manifest를 그대로 반환하며 둘을 clone하거나 freeze하지 않는다.
+
+성공한 `PackRegistry.register()`는 validation과 duplicate detection을 마친 뒤 현재 네 필드만 명시적으로 복사한 새 manifest snapshot과 이를 포함하는 새 `PackDefinition` snapshot을 해당 Registry entry의 canonical state로 소유한다. Registry는 새 manifest와 outer Pack을 각각 freeze하며 caller의 Pack과 manifest를 freeze하거나 변경하지 않는다. 이는 현재 scalar-only manifest contract에 필요한 명시적 nested freeze이며 미래의 임의 구조에 대한 generic deep-freeze 보장은 아니다.
+
+`get()`은 entry의 동일한 canonical Pack snapshot을 반복해서 반환한다. `list()`는 호출마다 새 frozen array를 반환하되 각 element에는 `get()`과 동일한 canonical Pack snapshot reference를 담고 insertion order를 보존한다. Registry instance마다 같은 caller Pack에서도 서로 다른 outer Pack과 manifest snapshot을 소유하므로 이후 caller mutation은 Registry-visible state를 변경할 수 없다.
+
+현재 Pack registration은 Pack을 activate하지 않고 Agent, Tool 또는 Model을 등록하지 않으며 Permission을 부여하거나 execution authority를 만들지 않는다. Pack lifecycle/composition과 확장된 Manifest capability는 후속 아키텍처로 남는다.
+
 ---
 
 ## 7. Agent Registration
