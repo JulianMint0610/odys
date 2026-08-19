@@ -658,9 +658,9 @@ Tool
 
 Architecture 단계에서는 책임과 contract boundary를 우선한다.
 
-현재 `@odys/core`에는 non-executable 최소 `ToolDefinition` contract와 이를 검증하는 `defineTool()`, 격리된 `ToolRegistry` foundation이 구현되어 있다. 이 단계의 definition은 stable `id`, `name`, `description`, 선언적 `risk`만 포함한다. Definition construction은 ownership을 이전하지 않으며, 성공한 registration은 caller object를 freeze하지 않고 새 frozen object를 해당 Registry entry의 canonical snapshot으로 소유한다. `get()`과 frozen `list()` array는 이 snapshot을 재사용하므로 등록된 Tool definition은 entry lifetime 동안 안정적이고 Registry instance 사이에 reference를 공유하지 않는다.
+현재 `@odys/core`에는 non-executable Tool definition / registry / input-validation foundation이 구현되어 있다. `ToolDefinition`은 stable `id`, `name`, `description`, 선언적 `risk`와 required Zod 4 `inputSchema`를 포함하고 `defineTool()`이 runtime contract를 검증한다. `parseToolInput()`은 unknown input을 schema로 parse하여 parsed output을 반환하고 failure를 causal `ToolInputValidationError`로 변환한다. 이 primitive는 Registry membership이나 execution과 독립적이다.
 
-Input/output schema, permission requirement, execution capability, external implementation, Tool Runtime, Approval 및 Audit integration은 아직 구현되지 않았다. 따라서 현재의 Tool registration은 Tool execution이나 Agent authority를 의미하지 않는다.
+Definition construction은 ownership을 이전하지 않는다. 성공한 registration은 scalar metadata와 exact schema reference를 새 frozen definition container에 포착한다. Caller object와 Zod schema 자체는 freeze하지 않으며, 별도 Registry instance는 서로 다른 definition snapshot을 소유하되 immutable schema reference는 의도적으로 공유할 수 있다. Output schema, permission requirement, execution capability, external implementation, Tool Runtime, Approval 및 Audit integration은 아직 구현되지 않았다. 따라서 valid input이나 Tool registration은 Tool execution 또는 Agent authority를 의미하지 않는다.
 
 ---
 
@@ -1350,7 +1350,7 @@ Pack은 Core가 제공하는 다음 extension point를 사용할 수 있다.
 
 - knowledge source configuration
 
-현재 코드에는 네 필드 manifest의 Pack identity validation과 instance-local Pack Registry가 구현되어 있다. 성공한 Pack registration은 caller-owned Pack을 저장하거나 freeze하지 않고 새 frozen `PackDefinition`과 새 frozen nested manifest를 Registry entry의 canonical snapshot으로 소유하며, `get()`과 `list()`는 이 snapshot을 재사용한다. 또한 최소 Agent Definition public contract와 Agent Registry foundation, registered-Agent dispatch만 제공하는 첫 Common Agent Runtime foundation, 최소 Tool Definition public contract와 Tool Registry foundation, 최소 Model Definition/Registry와 registered-Model dispatch만 제공하는 Model Runtime foundation이 구현되어 있다. Pack lifecycle/composition, Pack-to-Agent/Tool/Model registration, 완전한 Agent execution lifecycle, Tool Runtime, provider execution, Permission/Policy, Approval, Audit, Memory/runtime extension point, workflow 및 knowledge source 관련 extension point는 계획된 아키텍처이며 아직 구현되지 않았다.
+현재 코드에는 네 필드 manifest의 Pack identity validation과 instance-local Pack Registry가 구현되어 있다. 성공한 Pack registration은 caller-owned Pack을 저장하거나 freeze하지 않고 새 frozen `PackDefinition`과 새 frozen nested manifest를 Registry entry의 canonical snapshot으로 소유하며, `get()`과 `list()`는 이 snapshot을 재사용한다. 또한 최소 Agent Definition public contract와 Agent Registry foundation, registered-Agent dispatch만 제공하는 첫 Common Agent Runtime foundation, non-executable Tool Definition/Registry/input-validation foundation, 최소 Model Definition/Registry와 registered-Model dispatch만 제공하는 Model Runtime foundation이 구현되어 있다. Pack lifecycle/composition, Pack-to-Agent/Tool/Model registration, 완전한 Agent execution lifecycle, Tool Runtime execution, provider execution, Permission/Policy, Approval, Audit, Memory/runtime extension point, workflow 및 knowledge source 관련 extension point는 계획된 아키텍처이며 아직 구현되지 않았다.
 
 현재 Tool Registry는 definition registration과 discovery만 담당하며 Tool을 실행하지 않는다.
 
@@ -1394,7 +1394,7 @@ Notification Channel
 
 ## 33. Initial Core Package Boundary
 
-실제 Core 구현은 `packages/core/`에 위치한다. 현재 구현 범위는 Pack identity public contract와 Pack Registry, `packages/core/src/agent/`의 최소 Agent Definition contract, Agent Registry 및 registered-Agent dispatch Runtime foundation, `packages/core/src/tool/`의 최소 Tool Definition contract와 Tool Registry foundation, `packages/core/src/model/`의 최소 Model Definition contract, Model Registry 및 registered-Model dispatch Runtime foundation이다. 아래의 나머지 구조는 후속 capability를 위한 개념적 방향이다.
+실제 Core 구현은 `packages/core/`에 위치한다. 현재 구현 범위는 Pack identity public contract와 Pack Registry, `packages/core/src/agent/`의 최소 Agent Definition contract, Agent Registry 및 registered-Agent dispatch Runtime foundation, `packages/core/src/tool/`의 non-executable Tool Definition/Registry/input-validation foundation, `packages/core/src/model/`의 최소 Model Definition contract, Model Registry 및 registered-Model dispatch Runtime foundation이다. 아래의 나머지 구조는 후속 capability를 위한 개념적 방향이다.
 
 예상 구조는 다음과 같다.
 

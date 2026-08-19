@@ -1,3 +1,4 @@
+import { z } from 'zod';
 import { describe, expect, it } from 'vitest';
 
 import {
@@ -14,6 +15,7 @@ function createTestTool(id: string): ToolDefinition {
     name: `${id} Tool`,
     description: `Fixture for ${id}.`,
     risk: 'low',
+    inputSchema: z.object({ value: z.string() }),
   });
 }
 
@@ -74,6 +76,22 @@ describe('Tool Registry', () => {
     expect(registry.get('web.search')).toBe(registeredTool);
     expect(registry.get('web.search')?.risk).toBe('low');
     expect(registry.list()).toEqual([registeredTool]);
+  });
+
+  it('captures the exact schema reference without freezing it or following caller replacement', () => {
+    const registry = createToolRegistry();
+    const tool = createTestTool('web.search');
+    const capturedSchema = tool.inputSchema;
+    const replacementSchema = z.object({ replacement: z.boolean() });
+
+    const registeredTool = registry.register(tool);
+    (tool as unknown as { inputSchema: typeof replacementSchema }).inputSchema = replacementSchema;
+
+    expect(registeredTool.inputSchema).toBe(capturedSchema);
+    expect(registry.get('web.search')?.inputSchema).toBe(capturedSchema);
+    expect(tool.inputSchema).toBe(replacementSchema);
+    expect(Object.isFrozen(capturedSchema)).toBe(false);
+    expect(Object.isFrozen(tool)).toBe(false);
   });
 
   it('does not allow mutation of the registered Tool snapshot', () => {
@@ -150,6 +168,9 @@ describe('Tool Registry', () => {
     expect(firstRegisteredTool).not.toBe(tool);
     expect(secondRegisteredTool).not.toBe(tool);
     expect(firstRegisteredTool).not.toBe(secondRegisteredTool);
+    expect(firstRegisteredTool.inputSchema).toBe(tool.inputSchema);
+    expect(secondRegisteredTool.inputSchema).toBe(tool.inputSchema);
+    expect(firstRegisteredTool.inputSchema).toBe(secondRegisteredTool.inputSchema);
     expect(firstRegisteredTool).toEqual(tool);
     expect(secondRegisteredTool).toEqual(tool);
     expect(firstRegistry.get('web.search')).toBe(firstRegisteredTool);

@@ -1,3 +1,4 @@
+import { z } from 'zod';
 import { describe, expect, it, vi } from 'vitest';
 
 import {
@@ -320,6 +321,7 @@ describe('Model Runtime', () => {
         name: 'Coding Tool',
         description: 'A Model Runtime boundary fixture.',
         risk: 'low',
+        inputSchema: z.unknown(),
       }),
     );
 

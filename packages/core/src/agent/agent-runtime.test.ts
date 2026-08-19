@@ -1,3 +1,4 @@
+import { z } from 'zod';
 import { describe, expect, it, vi } from 'vitest';
 
 import {
@@ -230,6 +231,7 @@ describe('Agent Runtime', () => {
         name: 'Coding Tool',
         description: 'A non-executable Tool definition fixture.',
         risk: 'low',
+        inputSchema: z.unknown(),
       }),
     );
 

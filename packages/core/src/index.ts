@@ -45,6 +45,8 @@ export {
   defineTool,
   DuplicateToolIdError,
   InvalidToolDefinitionError,
+  parseToolInput,
+  ToolInputValidationError,
   type ToolDefinition,
   type ToolRegistry,
   type ToolRisk,

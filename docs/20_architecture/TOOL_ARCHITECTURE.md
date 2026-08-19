@@ -402,22 +402,25 @@ architecture 문서에서는 Tool contract의 의미와 invariants를 먼저 고
 
 ### 10.1 Current Staged TypeScript Definition
 
-현재 `@odys/core`가 공개하는 첫 단계 `ToolDefinition`은 다음 metadata만 포함한다.
+현재 `@odys/core`가 공개하는 staged `ToolDefinition`은 다음 contract를 포함한다.
 
 ```text
 id
 name
 description
 risk
+inputSchema
 ```
 
-`defineTool()`은 이 metadata를 runtime에서 검증하고 accepted metadata를 정규화하지 않은 채 원래 caller-owned definition을 반환한다. Definition construction은 ownership을 이전하지 않는다. 현재 Tool ID는 IMPLEMENTATION-007의 보수적인 구현 규칙인 `^[a-z][a-z0-9]*(?:[._-][a-z0-9]+)*$`를 사용한다.
+`inputSchema`는 Zod 4 schema이며 Tool이 허용하는 input의 runtime source of truth다. `defineTool()`은 metadata와 schema contract를 runtime에서 검증하고 accepted definition을 정규화하지 않은 채 원래 caller-owned reference로 반환한다. Definition construction은 ownership을 이전하지 않고 caller object나 schema를 freeze하지 않는다. 현재 Tool ID는 IMPLEMENTATION-007의 보수적인 구현 규칙인 `^[a-z][a-z0-9]*(?:[._-][a-z0-9]+)*$`를 사용한다.
 
 `ToolRisk`는 `low`, `medium`, `high`, `critical` 중 하나인 선언적 분류다. 이 값만으로 자동 실행, permission, Approval 또는 차단 behavior가 결정되지는 않는다.
 
-현재 `ToolRegistry` foundation은 성공한 registration마다 현재 scalar metadata를 새 object에 복사하고 freeze하여 해당 Registry entry의 canonical immutable snapshot으로 소유한다. Caller object 자체는 freeze하지 않으며 이후 caller mutation은 Registry state에 영향을 주지 않는다. `get()`과 `list()`는 canonical snapshot을 재사용하고 `list()` array도 frozen 상태를 유지하므로, 등록된 Tool definition은 entry lifetime 동안 안정적이다. 같은 caller object를 별도 Registry instance에 등록하면 각 instance가 서로 다른 snapshot을 소유한다. Registry membership과 definition immutability는 Tool execution capability나 Agent authority를 부여하지 않는다.
+현재 `ToolRegistry` foundation은 성공한 registration마다 scalar metadata와 registration 시점의 `inputSchema` reference를 새 object에 복사하고 container만 freeze하여 해당 Registry entry의 canonical immutable snapshot으로 소유한다. Zod schema는 immutable contract value로 취급하므로 deep clone하거나 recursively freeze하지 않고 exact reference를 유지한다. Caller object 자체는 freeze하지 않으며 이후 caller가 자신의 `inputSchema` property를 교체해도 Registry가 포착한 schema reference는 바뀌지 않는다. `get()`과 `list()`는 canonical snapshot을 재사용하고 `list()` array도 frozen 상태를 유지한다. 같은 caller object를 별도 Registry instance에 등록하면 각 instance는 서로 다른 definition snapshot을 소유하지만 schema reference는 의도적으로 공유할 수 있다. Registry membership과 definition immutability는 Tool execution capability나 Agent authority를 부여하지 않는다.
 
-Input/output schema, required permission, execution policy, `execute` capability, Tool Runtime, external implementation, Approval integration 및 Audit integration은 전체 목표 Tool contract에 속하지만 이 단계의 TypeScript API에는 포함되지 않는다.
+`parseToolInput()`은 Registry membership이나 `risk`와 독립적으로 unknown input을 `inputSchema`로 parse하고 schema가 생성한 parsed/transformed output을 반환한다. Validation failure는 raw input을 message에 포함하지 않는 `ToolInputValidationError`로 변환하며 underlying Zod validation failure를 cause로 보존한다.
+
+Output schema, required permission, execution policy, `execute` capability, Tool Runtime, external implementation, timeout, retry, Approval integration 및 Audit integration은 전체 목표 Tool contract에 속하지만 이 단계의 TypeScript API에는 포함되지 않는다.
 
 ---
 
@@ -490,6 +493,8 @@ unsupported file path
 ```
 
 validation failure는 외부 API 호출 전에 발생해야 한다.
+
+현재 구현된 `parseToolInput()`은 이 lifecycle에서 execution과 분리된 첫 validation primitive다. Tool Definition을 직접 받아 동기적으로 동작하므로 Tool Registry, Agent Registry, Model Registry, permission, policy 또는 Approval을 조회하지 않는다. Valid input은 Zod schema의 parsed output으로 반환하고 invalid input은 `ToolInputValidationError`가 된다. 이 성공은 Action authorization을 의미하지 않는다.
 
 ---
 
@@ -575,7 +580,7 @@ Tool Registry
 
 runtime 중 임의의 function name을 받아 실행하는 구조를 피한다.
 
-현재 구현된 `ToolRegistry`는 definition registration과 discovery만 제공하는 non-executable foundation이다. `list()`는 insertion order를 보존하는 frozen Registry state snapshot을 반환하며, 그 element는 registration 시 한 번 생성한 Registry-owned frozen definition이다. Registry instance 사이에는 container state나 registered-definition reference를 공유하지 않는다.
+현재 구현된 `ToolRegistry`는 definition registration과 discovery만 제공하는 non-executable foundation이다. `list()`는 insertion order를 보존하는 frozen Registry state snapshot을 반환하며, 그 element는 registration 시 한 번 생성한 Registry-owned frozen definition container다. Registry instance 사이에는 container state나 registered-definition reference를 공유하지 않지만 immutable contract value로 취급하는 Zod schema reference는 공유할 수 있다. Registry는 Tool을 실행하지 않는다.
 
 ---
 
@@ -601,7 +606,7 @@ registered implementation
 
 잘못 구성된 Tool은 application startup 또는 registration 단계에서 가능한 한 빨리 발견한다.
 
-현재 staged registration은 Tool Definition runtime validation과 unique Tool ID만 강제한다. Input/output schema, permission, implementation 및 execution 관련 검증은 해당 contract와 Tool Runtime이 구현된 뒤 추가한다.
+현재 staged registration은 Tool Definition runtime validation, required Zod `inputSchema` 및 unique Tool ID를 강제한다. Output schema, permission, implementation 및 execution 관련 검증은 해당 contract와 Tool Runtime이 구현된 뒤 추가한다.
 
 ---
 
