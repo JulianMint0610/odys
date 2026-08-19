@@ -19,5 +19,8 @@
     "build": "pnpm clean && tsc --project tsconfig.build.json",
     "test": "vitest run src --passWithNoTests",
     "typecheck": "tsc --project tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "zod": "^4.4.3"
   }
 }

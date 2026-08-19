@@ -689,7 +689,7 @@ Second Provider When Needed
 
 External API input, Model structured output 및 Tool input에는 runtime schema validation이 필요하다.
 
-concrete library는 아직 선택하지 않는다.
+현재 첫 concrete runtime-validation library로 Zod 4를 채택했으며, 구현 범위는 `@odys/core`의 Tool input contract validation이다. `ToolDefinition.inputSchema`와 `parseToolInput()`이 이 boundary를 제공한다.
 
 선택 기준:
 
@@ -709,7 +709,7 @@ ecosystem maturity
 
 ```
 
-implementation 시작 전에 후보를 비교하고 하나를 채택한다.
+이 선택은 Pack, Agent, Model, external API 또는 모든 ODYS validation boundary가 Zod로 migration되었다는 의미가 아니다. 각 후속 boundary는 실제 contract가 구현될 때 검토한다.
 
 ---
 
@@ -1241,7 +1241,7 @@ External request와 structured Model output은 runtime schema를 source of truth
 
 TypeScript type과 runtime schema가 drift하지 않는 방식을 선택한다.
 
-concrete library는 runtime validation 선택과 함께 결정한다.
+Tool input에는 현재 채택한 Zod 4를 사용한다. External API와 Model output schema의 concrete 적용은 해당 boundary 구현 시 결정한다.
 
 ---
 
@@ -1451,6 +1451,8 @@ pnpm Workspace
 
 packages/core
 
+Zod 4 for Tool input contract runtime validation
+
 Core Pack identity public contract
 
 Core Pack Registry
@@ -1467,7 +1469,7 @@ GitHub Actions
 
 ```
 
-Runtime schema validation은 실제 external input 또는 structured contract를 구현할 때 선택한다.
+Runtime schema validation은 Tool input contract에 Zod 4로 처음 적용되었다. 다른 external input과 structured contract에는 실제 boundary를 구현할 때 확장 여부를 결정한다.
 
 현재 foundation 단계에서는 Web UI나 external provider를 구현하지 않는다.
 
@@ -1567,7 +1569,7 @@ specific UI library
 
 specific CSS framework
 
-specific runtime validation library
+additional repository-wide runtime validation standard beyond the current Tool input use
 
 Docker
 

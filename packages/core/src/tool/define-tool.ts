@@ -1,3 +1,5 @@
+import { z } from 'zod';
+
 import { InvalidToolDefinitionError } from './tool-errors.js';
 import type { ToolDefinition } from './tool.js';
 
@@ -38,9 +40,15 @@ function validateToolDefinition(definition: unknown): asserts definition is Tool
   if (!toolRisks.has(definition.risk)) {
     rejectInvalidDefinition('risk must be a supported Tool risk');
   }
+
+  if (!(definition.inputSchema instanceof z.ZodType)) {
+    rejectInvalidDefinition('inputSchema must be a Zod schema');
+  }
 }
 
-export function defineTool(definition: ToolDefinition): ToolDefinition {
+export function defineTool<TSchema extends z.ZodType>(
+  definition: ToolDefinition<TSchema>,
+): ToolDefinition<TSchema> {
   validateToolDefinition(definition);
   return definition;
 }

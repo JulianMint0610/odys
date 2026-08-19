@@ -1,4 +1,5 @@
-import { describe, expect, it } from 'vitest';
+import { z } from 'zod';
+import { describe, expect, expectTypeOf, it } from 'vitest';
 
 import {
   defineTool,
@@ -7,11 +8,14 @@ import {
   type ToolRisk,
 } from '../index.js';
 
+const inputSchema = z.object({ query: z.string() });
+
 const validDefinition: ToolDefinition = {
   id: 'web.search',
   name: 'Web Search',
   description: 'Searches public web information.',
   risk: 'low',
+  inputSchema,
 };
 
 function runtimeDefinition(overrides: Record<string, unknown>): ToolDefinition {
@@ -28,7 +32,19 @@ describe('defineTool', () => {
       name: 'Web Search',
       description: 'Searches public web information.',
       risk: 'low',
+      inputSchema,
     });
+  });
+
+  it('preserves concrete schema type information', () => {
+    const definition = defineTool({
+      ...validDefinition,
+      inputSchema: z.object({ query: z.string(), limit: z.number().int().optional() }),
+    });
+
+    expectTypeOf(definition.inputSchema).toEqualTypeOf<
+      z.ZodObject<{ query: z.ZodString; limit: z.ZodOptional<z.ZodNumber> }>
+    >();
   });
 
   it.each([
@@ -120,6 +136,27 @@ describe('defineTool', () => {
     expect(() => defineTool(definition)).toThrow(InvalidToolDefinitionError);
   });
 
+  it('rejects a missing inputSchema', () => {
+    const definition = { ...validDefinition } as Record<string, unknown>;
+    delete definition.inputSchema;
+
+    expect(() => defineTool(definition as unknown as ToolDefinition)).toThrow(
+      InvalidToolDefinitionError,
+    );
+    expect(() => defineTool(definition as unknown as ToolDefinition)).toThrow(
+      'Invalid Tool definition: inputSchema must be a Zod schema',
+    );
+  });
+
+  it.each([null, undefined, 'schema', {}, { safeParse: () => ({ success: true }) }])(
+    'rejects the non-Zod inputSchema %j',
+    (invalidSchema) => {
+      expect(() => defineTool(runtimeDefinition({ inputSchema: invalidSchema }))).toThrow(
+        InvalidToolDefinitionError,
+      );
+    },
+  );
+
   it.each([null, 1, [], {}])(
     'rejects a malformed runtime definition without leaking an incidental TypeError',
     (definition) => {
@@ -138,6 +175,16 @@ describe('defineTool', () => {
 
     expect(definition.name).toBe(' Web Search ');
     expect(definition.description).toBe(' Searches public web information. ');
+  });
+
+  it('does not mutate or freeze the caller-owned definition or its schema', () => {
+    const callerDefinition = { ...validDefinition };
+
+    const definition = defineTool(callerDefinition);
+
+    expect(definition).toBe(callerDefinition);
+    expect(Object.isFrozen(callerDefinition)).toBe(false);
+    expect(Object.isFrozen(inputSchema)).toBe(false);
   });
 
   it('reports which field failed validation', () => {

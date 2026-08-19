@@ -11,3 +11,13 @@ export class DuplicateToolIdError extends Error {
     this.name = 'DuplicateToolIdError';
   }
 }
+
+export class ToolInputValidationError extends Error {
+  public readonly toolId: string;
+
+  public constructor(toolId: string, cause: unknown) {
+    super(`Invalid input for Tool "${toolId}".`, { cause });
+    this.name = 'ToolInputValidationError';
+    this.toolId = toolId;
+  }
+}
