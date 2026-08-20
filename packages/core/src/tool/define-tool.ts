@@ -4,6 +4,7 @@ import { InvalidToolDefinitionError } from './tool-errors.js';
 import type { ToolDefinition } from './tool.js';
 
 const toolIdPattern = /^[a-z][a-z0-9]*(?:[._-][a-z0-9]+)*$/;
+const permissionIdPattern = /^[a-z][a-z0-9]*(?:\.[a-z0-9]+)+$/;
 const toolRisks = new Set<unknown>(['low', 'medium', 'high', 'critical']);
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -47,6 +48,24 @@ function validateToolDefinition(definition: unknown): asserts definition is Tool
 
   if (!(definition.outputSchema instanceof z.ZodType)) {
     rejectInvalidDefinition('outputSchema must be a Zod schema');
+  }
+
+  if (!Array.isArray(definition.requiredPermissions)) {
+    rejectInvalidDefinition('requiredPermissions must be an array');
+  }
+
+  const declaredPermissions = new Set<string>();
+
+  for (const permissionId of definition.requiredPermissions) {
+    if (typeof permissionId !== 'string' || !permissionIdPattern.test(permissionId)) {
+      rejectInvalidDefinition('requiredPermissions must contain canonical permission identifiers');
+    }
+
+    if (declaredPermissions.has(permissionId)) {
+      rejectInvalidDefinition('requiredPermissions must not contain duplicates');
+    }
+
+    declaredPermissions.add(permissionId);
   }
 }
 

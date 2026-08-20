@@ -17,6 +17,7 @@ function createTestTool(id: string): ToolDefinition {
     risk: 'low',
     inputSchema: z.object({ value: z.string() }),
     outputSchema: z.object({ result: z.string() }),
+    requiredPermissions: ['web.read'],
   });
 }
 
@@ -29,7 +30,11 @@ describe('Tool Registry', () => {
     expect(registeredTool).toEqual(tool);
     expect(registeredTool).not.toBe(tool);
     expect(Object.isFrozen(registeredTool)).toBe(true);
+    expect(registeredTool.requiredPermissions).toEqual(['web.read']);
+    expect(registeredTool.requiredPermissions).not.toBe(tool.requiredPermissions);
+    expect(Object.isFrozen(registeredTool.requiredPermissions)).toBe(true);
     expect(Object.isFrozen(tool)).toBe(false);
+    expect(Object.isFrozen(tool.requiredPermissions)).toBe(false);
     expect(registry.has('web.search')).toBe(true);
   });
 
@@ -43,12 +48,33 @@ describe('Tool Registry', () => {
       risk: 'low',
       inputSchema,
       outputSchema,
+      requiredPermissions: [],
     });
     const registry = createToolRegistry();
 
     const registeredTool = registry.register<typeof inputSchema>(tool);
 
     expectTypeOf(registeredTool.inputSchema).toEqualTypeOf<typeof inputSchema>();
+  });
+
+  it('preserves explicit input and output schema register generic compatibility', () => {
+    const inputSchema = z.object({ value: z.string() });
+    const outputSchema = z.object({ result: z.string() });
+    const tool = defineTool({
+      id: 'generic.schemas',
+      name: 'Generic Schema Tool',
+      description: 'Tests both explicit Registry schema generics.',
+      risk: 'low',
+      inputSchema,
+      outputSchema,
+      requiredPermissions: [],
+    });
+    const registry = createToolRegistry();
+
+    const registeredTool = registry.register<typeof inputSchema, typeof outputSchema>(tool);
+
+    expectTypeOf(registeredTool.inputSchema).toEqualTypeOf<typeof inputSchema>();
+    expectTypeOf(registeredTool.outputSchema).toEqualTypeOf<typeof outputSchema>();
   });
 
   it('retrieves a registered Tool by its stable ID', () => {
@@ -95,6 +121,38 @@ describe('Tool Registry', () => {
     expect(registry.get('web.search')).toBe(registeredTool);
     expect(registry.get('web.search')?.risk).toBe('low');
     expect(registry.list()).toEqual([registeredTool]);
+  });
+
+  it('owns one ordered frozen permission snapshot without freezing caller state', () => {
+    const registry = createToolRegistry();
+    const requiredPermissions = ['calendar.write', 'calendar.read'];
+    const tool = defineTool({
+      id: 'calendar.sync',
+      name: 'Calendar Sync Tool',
+      description: 'Exercises nested Registry ownership.',
+      risk: 'high',
+      inputSchema: z.unknown(),
+      outputSchema: z.unknown(),
+      requiredPermissions,
+    });
+
+    const registeredTool = registry.register(tool);
+    const registeredPermissions = registeredTool.requiredPermissions;
+
+    requiredPermissions.push('email.send');
+
+    expect(registeredPermissions).toEqual(['calendar.write', 'calendar.read']);
+    expect(registeredPermissions).not.toBe(requiredPermissions);
+    expect(Object.isFrozen(registeredPermissions)).toBe(true);
+    expect(Object.isFrozen(requiredPermissions)).toBe(false);
+    expect(Object.isFrozen(tool)).toBe(false);
+    expect(registry.get('calendar.sync')).toBe(registeredTool);
+    expect(registry.get('calendar.sync')?.requiredPermissions).toBe(registeredPermissions);
+    expect(registry.list()[0]).toBe(registeredTool);
+    expect(registry.list()[0]?.requiredPermissions).toBe(registeredPermissions);
+    expect(() => {
+      (registeredPermissions as string[]).push('files.write');
+    }).toThrow(TypeError);
   });
 
   it('captures exact schema references without freezing them or following caller replacement', () => {
@@ -202,6 +260,15 @@ describe('Tool Registry', () => {
     expect(firstRegisteredTool.outputSchema).toBe(tool.outputSchema);
     expect(secondRegisteredTool.outputSchema).toBe(tool.outputSchema);
     expect(firstRegisteredTool.outputSchema).toBe(secondRegisteredTool.outputSchema);
+    expect(firstRegisteredTool.requiredPermissions).not.toBe(tool.requiredPermissions);
+    expect(secondRegisteredTool.requiredPermissions).not.toBe(tool.requiredPermissions);
+    expect(firstRegisteredTool.requiredPermissions).not.toBe(
+      secondRegisteredTool.requiredPermissions,
+    );
+    expect(firstRegisteredTool.requiredPermissions).toEqual(['web.read']);
+    expect(secondRegisteredTool.requiredPermissions).toEqual(['web.read']);
+    expect(Object.isFrozen(firstRegisteredTool.requiredPermissions)).toBe(true);
+    expect(Object.isFrozen(secondRegisteredTool.requiredPermissions)).toBe(true);
     expect(firstRegisteredTool).toEqual(tool);
     expect(secondRegisteredTool).toEqual(tool);
     expect(firstRegistry.get('web.search')).toBe(firstRegisteredTool);

@@ -12,4 +12,5 @@ export interface ToolDefinition<
   readonly risk: ToolRisk;
   readonly inputSchema: TInputSchema;
   readonly outputSchema: TOutputSchema;
+  readonly requiredPermissions: readonly string[];
 }

@@ -222,9 +222,11 @@ IMPLEMENTATION-013은 Pack contract를 변경하지 않고 Core Tool Definition�
 
 IMPLEMENTATION-014도 Pack contract를 변경하지 않고 Core Tool Definition에 required Zod 4 output schema를 추가하며, execution-independent Tool output parsing과 ODYS-level validation error foundation을 제공한다. Engineering Pack에 실제 Tool을 추가하거나 Pack lifecycle을 Tool Registry에 연결하지 않으며 Tool Runtime, permission, policy, Approval 또는 execution authority를 구현하지 않는다.
 
+IMPLEMENTATION-015도 Pack contract를 변경하지 않고 Core `ToolDefinition`에 required declarative `requiredPermissions`를 추가하며 canonical identifier validation과 Registry-owned frozen permission-list snapshot을 제공한다. 이 Tool-level declaration은 permission grant/evaluation이 아니며 Pack Manifest의 conceptual `Required Permissions`, Pack-to-Tool lifecycle, Tool Runtime 또는 execution authority를 구현하지 않는다.
+
 IMPLEMENTATION-008은 Pack contract를 변경하지 않고 Core에 runtime request validation, registered-Agent resolution, provider-neutral executor dispatch 및 opaque result return만 제공하는 첫 Common Agent Runtime foundation을 추가한다.
 
-나머지 Manifest 항목, `Registered Agents`, `Registered Tools`, `Required Permissions`, Pack-to-Agent 및 Pack-to-Tool registration semantics는 전체 Pack 표준의 목표 contract이며, 실제 Pack capability와 runtime이 구현되는 단계에서 점진적으로 추가한다.
+나머지 Manifest 항목, `Registered Agents`, `Registered Tools`, Pack Manifest의 `Required Permissions`, Pack-to-Agent 및 Pack-to-Tool registration semantics는 전체 Pack 표준의 목표 contract이며, 실제 Pack capability와 runtime이 구현되는 단계에서 점진적으로 추가한다. `ToolDefinition.requiredPermissions`와 Pack Manifest의 future `Required Permissions`는 서로 다른 contract다.
 
 예를 들어 Engineering Pack의 개념적 식별자는 다음과 같이 정의할 수 있다.
 
@@ -334,7 +336,7 @@ Agent
 
 Pack이 Tool Runtime을 우회하여 직접 외부 Side Effect를 발생시키는 것은 허용하지 않는다.
 
-현재 Core는 `id`, `name`, `description`, 선언적 `risk`, required `inputSchema`와 `outputSchema`로 구성된 non-executable Tool definition, instance-local registration 및 unknown input/output validation foundation을 공개한다. Engineering Pack에는 아직 실제 Tool implementation이 없으며 Pack lifecycle과 Tool Registry의 integration도 구현되지 않았다. Input/output validation 성공이나 Registry 등록은 실행 권한을 부여하지 않고 Tool을 실행하지도 않는다.
+현재 Core는 `id`, `name`, `description`, 선언적 `risk`, required `inputSchema`, `outputSchema`와 declarative `requiredPermissions`로 구성된 non-executable Tool definition, instance-local registration 및 unknown input/output validation foundation을 공개한다. Registry는 caller permission array와 분리된 frozen nested snapshot을 소유한다. Engineering Pack에는 아직 실제 Tool implementation이 없으며 Pack lifecycle과 Tool Registry의 integration도 구현되지 않았다. Permission declaration, input/output validation 성공이나 Registry 등록은 실행 권한을 부여하지 않고 Tool을 실행하지도 않는다.
 
 ---
 
@@ -654,7 +656,7 @@ Pack은 자신이 지원하는 Core Version Range를 명시해야 한다.
 
 - Core Compatibility
 
-현재 구현 범위의 테스트는 Manifest validation, Pack Registry behavior, 최소 Agent Definition validation, Agent Registry behavior, registered-Agent Runtime dispatch와 failure behavior, Tool Definition 및 input/output schema validation, Tool Registry ownership behavior, 최소 Model Definition validation, Model Registry behavior, registered-Model Runtime dispatch와 failure behavior, Engineering Pack contract 및 Core와 Pack 사이의 package boundary를 검증한다. Pack-to-Agent, Pack-to-Tool 및 Pack-to-Model registration, Tool execution, routing, provider execution, Model/Agent/Tool integration 및 나머지 runtime 테스트는 해당 capability가 구현될 때 추가한다.
+현재 구현 범위의 테스트는 Manifest validation, Pack Registry behavior, 최소 Agent Definition validation, Agent Registry behavior, registered-Agent Runtime dispatch와 failure behavior, Tool Definition의 required-permission declaration과 input/output schema validation, Tool Registry ownership behavior, 최소 Model Definition validation, Model Registry behavior, registered-Model Runtime dispatch와 failure behavior, Engineering Pack contract 및 Core와 Pack 사이의 package boundary를 검증한다. Permission evaluation, Pack-to-Agent, Pack-to-Tool 및 Pack-to-Model registration, Tool execution, routing, provider execution, Model/Agent/Tool integration 및 나머지 runtime 테스트는 해당 capability가 구현될 때 추가한다.
 
 LLM 기반 Agent의 품질은 일반 Unit Test만으로 충분하지 않을 수 있다.
 
