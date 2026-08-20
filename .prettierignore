@@ -4,3 +4,7 @@ build
 .next
 coverage
 pnpm-lock.yaml
+
+# Local Obsidian knowledge workspace
+.obsidian/
+workspace/
