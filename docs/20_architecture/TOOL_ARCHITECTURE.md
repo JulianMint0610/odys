@@ -418,15 +418,17 @@ requiredPermissions
 
 `defineTool()`은 metadata, 두 schema 및 required-permission declaration을 runtime에서 검증하고 accepted definition을 정규화하지 않은 채 원래 caller-owned reference로 반환한다. Definition construction은 ownership을 이전하지 않고 caller object, permission array 또는 schema를 copy하거나 freeze하지 않는다. 현재 Tool ID는 IMPLEMENTATION-007의 보수적인 구현 규칙인 `^[a-z][a-z0-9]*(?:[._-][a-z0-9]+)*$`를 사용한다.
 
-`ToolRisk`는 `low`, `medium`, `high`, `critical` 중 하나인 선언적 분류다. `risk`와 `requiredPermissions`는 서로 독립적인 metadata dimension이며 어느 한쪽에서 다른 쪽을 derive하지 않는다. 두 값만으로 자동 실행, permission grant/evaluation, Approval 또는 차단 behavior가 결정되지는 않는다.
+`ToolRisk`는 `low`, `medium`, `high`, `critical` 중 하나인 선언적 분류다. `risk`와 `requiredPermissions`는 서로 독립적인 metadata dimension이며 어느 한쪽에서 다른 쪽을 derive하지 않는다. `risk`는 requirement satisfaction에 영향을 주지 않으며 두 metadata 값만으로 자동 실행, permission grant/resolution, authorization, Approval 또는 차단 behavior가 결정되지는 않는다.
 
 현재 `ToolRegistry` foundation은 성공한 registration마다 scalar metadata, registration 시점의 `inputSchema` 및 `outputSchema` reference와 copied frozen `requiredPermissions` array를 새 frozen object에 포착하여 해당 Registry entry의 canonical immutable snapshot으로 소유한다. Zod schema는 immutable contract value로 취급하므로 deep clone하거나 recursively freeze하지 않고 exact reference를 유지한다. Caller object와 caller permission array는 freeze하지 않으며 이후 caller가 자신의 schema property를 교체하거나 permission array를 변경해도 Registry가 포착한 state는 바뀌지 않는다. `get()`과 `list()`는 canonical definition과 nested permission snapshot을 재사용하고 `list()` outer array도 frozen 상태를 유지한다. 같은 caller object를 별도 Registry instance에 등록하면 각 instance는 서로 다른 definition과 permission-array snapshot을 소유하지만 schema reference는 의도적으로 공유할 수 있다. Registry membership과 definition immutability는 Tool execution capability나 Agent authority를 부여하지 않는다.
+
+`evaluateToolPermissionRequirements()`는 Tool definition과 이미 resolve된 permission identifier 목록을 직접 받아 모든 declaration이 충족되었는지와 누락된 identifier를 반환하는 execution-independent Core primitive다. 비교는 exact case-sensitive string equality만 사용하고 normalization, wildcard, hierarchy 또는 implication을 적용하지 않는다. Extra 또는 duplicate resolved identifier는 결과를 바꾸지 않으며 누락 목록은 declaration order를 보존한다. 반환 object와 Core-owned 누락 목록은 frozen 상태이고 caller-owned definition, required-permission 목록과 resolved 목록은 변경하거나 freeze하지 않는다. 이 함수는 identifier를 다시 검증하거나 schema를 parse하거나 Tool을 실행하지 않는다.
 
 `parseToolInput()`은 Registry membership이나 `risk`와 독립적으로 unknown input을 `inputSchema`로 parse하고 schema가 생성한 parsed/transformed output을 반환한다. Validation failure는 raw input을 message에 포함하지 않는 `ToolInputValidationError`로 변환하며 underlying Zod validation failure를 cause로 보존한다.
 
 `parseToolOutput()`도 execution과 독립적으로 unknown Tool output을 `outputSchema`로 parse하고 schema가 생성한 parsed/transformed output을 반환한다. Validation failure는 raw output을 message에 포함하지 않는 `ToolOutputValidationError`로 변환하며 underlying Zod validation failure를 cause로 보존한다. 두 parser 모두 schema logic이 직접 던진 임의의 exception을 validation error로 잘못 정규화하지 않는다.
 
-두 validation primitive는 `requiredPermissions`를 검사하거나 permission context를 요구하지 않고 Tool을 실행하지 않으며 성공해도 permission, policy, Approval 또는 Agent authority를 부여하지 않는다. `requiredPermissions` declaration은 permission grant/evaluation이 아니다. Agent allowlist, user/workspace authorization, permission evaluation, execution policy, `execute` capability, Tool Runtime, external implementation, output handling lifecycle beyond validation, timeout, retry, Approval integration 및 Audit integration은 전체 목표 Tool architecture에 속하지만 아직 구현되지 않았다.
+두 validation primitive는 `requiredPermissions`를 검사하거나 permission context를 요구하지 않고 Tool을 실행하지 않으며 성공해도 permission, policy, Approval 또는 Agent authority를 부여하지 않는다. `requiredPermissions` declaration과 deterministic requirement satisfaction은 permission grant, persistence, resolution, user/workspace authorization 또는 execution authority가 아니다. Agent allowlist, permission resolution, user/workspace authorization, execution Policy, `execute` capability, Tool Runtime, external implementation, output handling lifecycle beyond validation, timeout, retry, Approval integration 및 Audit integration은 전체 목표 Tool architecture에 속하지만 아직 구현되지 않았다.
 
 ---
 
@@ -614,7 +616,7 @@ registered implementation
 
 잘못 구성된 Tool은 application startup 또는 registration 단계에서 가능한 한 빨리 발견한다.
 
-현재 staged registration은 Tool Definition runtime validation, required Zod `inputSchema`와 `outputSchema`, canonical unique `requiredPermissions` declaration 및 unique Tool ID를 강제한다. Permission grant/evaluation, implementation 및 execution 관련 검증은 해당 contract와 Tool Runtime이 구현된 뒤 추가한다.
+현재 staged registration은 Tool Definition runtime validation, required Zod `inputSchema`와 `outputSchema`, canonical unique `requiredPermissions` declaration 및 unique Tool ID를 강제한다. 별도의 deterministic evaluator는 이미 resolve된 identifier에 대한 exact requirement satisfaction만 계산한다. Permission grant, persistence, resolution, authorization, Policy, Approval, implementation 및 execution 관련 검증은 해당 contract와 Tool Runtime이 구현된 뒤 추가한다.
 
 ---
 
