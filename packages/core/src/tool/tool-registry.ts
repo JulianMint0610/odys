@@ -29,6 +29,7 @@ class CoreToolRegistry implements ToolRegistry {
       throw new DuplicateToolIdError(id);
     }
 
+    const requiredPermissions = Object.freeze([...validTool.requiredPermissions]);
     const registeredTool = Object.freeze({
       id: validTool.id,
       name: validTool.name,
@@ -36,6 +37,7 @@ class CoreToolRegistry implements ToolRegistry {
       risk: validTool.risk,
       inputSchema: validTool.inputSchema,
       outputSchema: validTool.outputSchema,
+      requiredPermissions,
     });
 
     this.#tools.set(id, registeredTool);

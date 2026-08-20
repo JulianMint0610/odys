@@ -14,6 +14,7 @@ function createTool(risk: ToolRisk = 'low') {
       query: z.string().trim(),
       count: z.coerce.number().int().nonnegative().default(0),
     }),
+    requiredPermissions: ['web.read'],
   });
 }
 
@@ -29,6 +30,16 @@ describe('parseToolOutput', () => {
     expectTypeOf(parsed).toEqualTypeOf<{ query: string; count: number }>();
   });
 
+  it('parses schema output without evaluating non-empty required permissions', () => {
+    const tool = createTool();
+
+    expect(tool.requiredPermissions).toEqual(['web.read']);
+    expect(parseToolOutput(tool, { query: 'permission-independent' })).toEqual({
+      query: 'permission-independent',
+      count: 0,
+    });
+  });
+
   it('returns schema defaults and transformed output', () => {
     const tool = defineTool({
       id: 'numbers.summary',
@@ -39,6 +50,7 @@ describe('parseToolOutput', () => {
       outputSchema: z
         .object({ value: z.coerce.number(), label: z.string().default('result') })
         .transform(({ value, label }) => ({ doubled: value * 2, label })),
+      requiredPermissions: [],
     });
 
     const parsed = parseToolOutput(tool, { value: '4' });
@@ -79,6 +91,7 @@ describe('parseToolOutput', () => {
       outputSchema: z.unknown().transform(() => {
         throw schemaError;
       }),
+      requiredPermissions: [],
     });
 
     expect(() => parseToolOutput(tool, 'raw output')).toThrow(schemaError);

@@ -18,6 +18,7 @@ const validDefinition: ToolDefinition = {
   risk: 'low',
   inputSchema,
   outputSchema,
+  requiredPermissions: [],
 };
 
 function runtimeDefinition(overrides: Record<string, unknown>): ToolDefinition {
@@ -36,6 +37,7 @@ describe('defineTool', () => {
       risk: 'low',
       inputSchema,
       outputSchema,
+      requiredPermissions: [],
     });
   });
 
@@ -61,6 +63,17 @@ describe('defineTool', () => {
     expectTypeOf(definition.outputSchema).toEqualTypeOf<z.ZodCoercedNumber<unknown>>();
   });
 
+  it('preserves explicit input and output schema generic compatibility', () => {
+    const definition = defineTool<typeof inputSchema, typeof outputSchema>({
+      ...validDefinition,
+      inputSchema,
+      outputSchema,
+    });
+
+    expectTypeOf(definition.inputSchema).toEqualTypeOf<typeof inputSchema>();
+    expectTypeOf(definition.outputSchema).toEqualTypeOf<typeof outputSchema>();
+  });
+
   it('keeps the first ToolDefinition generic assigned to the input schema', () => {
     const definition: ToolDefinition<typeof inputSchema> = { ...validDefinition, inputSchema };
 
@@ -74,6 +87,87 @@ describe('defineTool', () => {
     });
 
     expectTypeOf(definition.inputSchema).toEqualTypeOf<typeof inputSchema>();
+  });
+
+  it.each([
+    { label: 'an empty list', requiredPermissions: [] },
+    { label: 'one identifier', requiredPermissions: ['web.read'] },
+    {
+      label: 'multiple identifiers',
+      requiredPermissions: ['calendar.read', 'calendar.write'],
+    },
+    { label: 'a multi-segment identifier', requiredPermissions: ['model.context.read'] },
+  ])('accepts $label', ({ requiredPermissions }) => {
+    expect(() => defineTool({ ...validDefinition, requiredPermissions })).not.toThrow();
+  });
+
+  it('preserves required permission declaration order', () => {
+    const requiredPermissions = ['calendar.write', 'calendar.read', 'email.send'];
+
+    const definition = defineTool({ ...validDefinition, requiredPermissions });
+
+    expect(definition.requiredPermissions).toEqual([
+      'calendar.write',
+      'calendar.read',
+      'email.send',
+    ]);
+  });
+
+  it('rejects a missing requiredPermissions declaration', () => {
+    const definition = { ...validDefinition } as Record<string, unknown>;
+    delete definition.requiredPermissions;
+
+    expect(() => defineTool(definition as unknown as ToolDefinition)).toThrow(
+      InvalidToolDefinitionError,
+    );
+    expect(() => defineTool(definition as unknown as ToolDefinition)).toThrow(
+      'Invalid Tool definition: requiredPermissions must be an array',
+    );
+  });
+
+  it.each([undefined, null, 'web.read', 1, {}])(
+    'rejects the non-array requiredPermissions value %j',
+    (requiredPermissions) => {
+      expect(() => defineTool(runtimeDefinition({ requiredPermissions }))).toThrow(
+        InvalidToolDefinitionError,
+      );
+    },
+  );
+
+  it.each([
+    ['', 'an empty identifier'],
+    [' ', 'a whitespace-only identifier'],
+    ['web', 'an identifier without a dot-qualified action'],
+    ['Web.read', 'an uppercase namespace'],
+    ['web.Read', 'an uppercase action'],
+    ['.web.read', 'a leading dot'],
+    ['web.', 'a trailing dot'],
+    ['web..read', 'a repeated dot'],
+    ['web read', 'a space'],
+    ['web_read', 'an underscore'],
+    ['web-read', 'a hyphen'],
+  ])('rejects required permission %j containing %s', (permissionId) => {
+    expect(() => defineTool(runtimeDefinition({ requiredPermissions: [permissionId] }))).toThrow(
+      InvalidToolDefinitionError,
+    );
+  });
+
+  it.each([null, undefined, 1, {}, []])(
+    'rejects the non-string required permission member %j',
+    (permissionId) => {
+      expect(() =>
+        defineTool(runtimeDefinition({ requiredPermissions: ['web.read', permissionId] })),
+      ).toThrow(InvalidToolDefinitionError);
+    },
+  );
+
+  it('rejects exact duplicate required permissions without normalizing the declaration', () => {
+    expect(() =>
+      defineTool(runtimeDefinition({ requiredPermissions: ['calendar.read', 'calendar.read'] })),
+    ).toThrow(InvalidToolDefinitionError);
+    expect(() =>
+      defineTool(runtimeDefinition({ requiredPermissions: ['calendar.read', 'calendar.read'] })),
+    ).toThrow('Invalid Tool definition: requiredPermissions must not contain duplicates');
   });
 
   it.each([
@@ -227,13 +321,18 @@ describe('defineTool', () => {
     expect(definition.description).toBe(' Searches public web information. ');
   });
 
-  it('does not mutate or freeze the caller-owned definition or its schema', () => {
-    const callerDefinition = { ...validDefinition };
+  it('does not mutate or freeze the caller-owned definition, permission list, or schemas', () => {
+    const requiredPermissions = ['calendar.write', 'calendar.read'];
+    const declaredPermissions = [...requiredPermissions];
+    const callerDefinition = { ...validDefinition, requiredPermissions };
 
     const definition = defineTool(callerDefinition);
 
     expect(definition).toBe(callerDefinition);
+    expect(definition.requiredPermissions).toBe(requiredPermissions);
+    expect(requiredPermissions).toEqual(declaredPermissions);
     expect(Object.isFrozen(callerDefinition)).toBe(false);
+    expect(Object.isFrozen(requiredPermissions)).toBe(false);
     expect(Object.isFrozen(inputSchema)).toBe(false);
     expect(Object.isFrozen(outputSchema)).toBe(false);
   });

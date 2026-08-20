@@ -233,6 +233,7 @@ describe('Agent Runtime', () => {
         risk: 'low',
         inputSchema: z.unknown(),
         outputSchema: z.unknown(),
+        requiredPermissions: [],
       }),
     );
 

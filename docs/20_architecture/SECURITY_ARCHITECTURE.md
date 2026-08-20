@@ -480,6 +480,8 @@ code.execute
 
 permission naming은 capability 의미를 명확하게 표현한다.
 
+현재 staged Core Tool contract는 각 Tool이 canonical dot-separated `requiredPermissions`를 명시하도록 강제한다. 이 declaration은 required capability metadata일 뿐 user authorization, permission grant 또는 evaluation의 증거가 아니다. 현재 Runtime은 이 값을 소비하지 않으며 deterministic permission enforcement는 후속 Core security/runtime 단계다.
+
 ---
 
 ## 13. Agent Permissions
@@ -965,6 +967,8 @@ Execution
 ```
 
 Model Provider의 native Tool Calling을 사용하더라도 이 boundary를 우회하지 않는다.
+
+현재 구현은 이 lifecycle의 declarative Tool permission requirement와 input/output validation foundation까지만 제공한다. Tool Runtime, permission evaluation, Policy, Approval 및 execution은 구현되지 않았으므로 `requiredPermissions` declaration이나 Tool Registry membership만으로 external Action authority가 생기지 않는다.
 
 ---
 
