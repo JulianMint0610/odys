@@ -15,6 +15,7 @@ function createTestAgent(id: string): AgentDefinition {
     version: '0.1.0',
     description: `Fixture for ${id}.`,
     responsibility: `Test the ${id} registration path.`,
+    allowedTools: ['files.read', 'code.execute'],
   });
 }
 
@@ -26,8 +27,12 @@ describe('Agent Registry', () => {
 
     expect(registeredAgent).toEqual(agent);
     expect(registeredAgent).not.toBe(agent);
+    expect(registeredAgent.allowedTools).not.toBe(agent.allowedTools);
     expect(Object.isFrozen(registeredAgent)).toBe(true);
+    expect(Object.isFrozen(registeredAgent.allowedTools)).toBe(true);
     expect(Object.isFrozen(agent)).toBe(false);
+    expect(Object.isFrozen(agent.allowedTools)).toBe(false);
+    expect(registeredAgent.allowedTools).toEqual(['files.read', 'code.execute']);
     expect(registry.has('example-agent')).toBe(true);
   });
 
@@ -60,6 +65,8 @@ describe('Agent Registry', () => {
     expect(listedAgents).toEqual([firstAgent, secondAgent]);
     expect(listedAgents[0]).toBe(registeredFirstAgent);
     expect(listedAgents[1]).toBe(registeredSecondAgent);
+    expect(listedAgents[0]?.allowedTools).toBe(registeredFirstAgent.allowedTools);
+    expect(listedAgents[1]?.allowedTools).toBe(registeredSecondAgent.allowedTools);
     expect(Object.isFrozen(listedAgents)).toBe(true);
     expect(listedAgents.every((agent) => Object.isFrozen(agent))).toBe(true);
     expect(registry.list()).not.toBe(listedAgents);
@@ -83,9 +90,11 @@ describe('Agent Registry', () => {
     const registeredAgent = registry.register(agent);
 
     (agent as { name: string }).name = 'Caller-mutated Agent';
+    (agent.allowedTools as string[]).splice(0, 2, 'caller.mutated');
 
     expect(registry.get('example-agent')).toBe(registeredAgent);
     expect(registry.get('example-agent')?.name).toBe('example-agent Agent');
+    expect(registry.get('example-agent')?.allowedTools).toEqual(['files.read', 'code.execute']);
     expect(registry.list()).toEqual([registeredAgent]);
   });
 
@@ -96,7 +105,11 @@ describe('Agent Registry', () => {
     expect(() => {
       (registeredAgent as { name: string }).name = 'Mutated Agent';
     }).toThrow(TypeError);
+    expect(() => {
+      (registeredAgent.allowedTools as string[]).push('files.write');
+    }).toThrow(TypeError);
     expect(registry.get('example-agent')?.name).toBe('example-agent Agent');
+    expect(registry.get('example-agent')?.allowedTools).toEqual(['files.read', 'code.execute']);
   });
 
   it('rejects duplicate Agent IDs without replacing the first registration', () => {
@@ -142,6 +155,9 @@ describe('Agent Registry', () => {
     expect(firstRegisteredAgent).not.toBe(agent);
     expect(secondRegisteredAgent).not.toBe(agent);
     expect(firstRegisteredAgent).not.toBe(secondRegisteredAgent);
+    expect(firstRegisteredAgent.allowedTools).not.toBe(agent.allowedTools);
+    expect(secondRegisteredAgent.allowedTools).not.toBe(agent.allowedTools);
+    expect(firstRegisteredAgent.allowedTools).not.toBe(secondRegisteredAgent.allowedTools);
     expect(firstRegisteredAgent).toEqual(agent);
     expect(secondRegisteredAgent).toEqual(agent);
     expect(firstRegistry.get('example-agent')).toBe(firstRegisteredAgent);

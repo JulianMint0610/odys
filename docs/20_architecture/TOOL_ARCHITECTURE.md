@@ -430,7 +430,7 @@ requiredPermissions
 
 `parseToolOutput()`도 execution과 독립적으로 unknown Tool output을 `outputSchema`로 parse하고 schema가 생성한 parsed/transformed output을 반환한다. Validation failure는 raw output을 message에 포함하지 않는 `ToolOutputValidationError`로 변환하며 underlying Zod validation failure를 cause로 보존한다. 두 parser 모두 schema logic이 직접 던진 임의의 exception을 validation error로 잘못 정규화하지 않는다.
 
-두 validation primitive는 `requiredPermissions`를 검사하거나 permission context를 요구하지 않고 Tool을 실행하지 않으며 성공해도 permission, policy, Approval 또는 Agent authority를 부여하지 않는다. 현재 staged permission foundation은 `permission declaration → deterministic requirement evaluation → deterministic requirement enforcement guard`까지 제공한다. Requirement satisfaction이나 guard 성공은 permission grant, persistence, resolution, user/workspace authorization 또는 execution authority가 아니다. Agent allowlist, complete Permission System, user/workspace authorization, execution Policy, external implementation, timeout, retry, Approval integration 및 Audit integration은 전체 목표 Tool architecture에 속하지만 아직 구현되지 않았다.
+두 validation primitive는 `requiredPermissions`를 검사하거나 permission context를 요구하지 않고 Tool을 실행하지 않으며 성공해도 permission, policy, Approval 또는 Agent authority를 부여하지 않는다. 현재 staged permission foundation은 `permission declaration → deterministic requirement evaluation → deterministic requirement enforcement guard`까지 제공한다. Requirement satisfaction이나 guard 성공은 permission grant, persistence, resolution, user/workspace authorization 또는 execution authority가 아니다. Agent `allowedTools` declaration은 별도의 Agent-side contract로 구현되어 있으며 Tool `requiredPermissions`에서 derive되지 않는다. Agent-to-Tool allowlist enforcement, complete Permission System, user/workspace authorization, execution Policy, external implementation, timeout, retry, Approval integration 및 Audit integration은 전체 목표 Tool architecture에 속하지만 아직 구현되지 않았다.
 
 ### 10.2 Current Staged Guarded Tool Runtime
 
@@ -442,7 +442,7 @@ Tool의 `requiredPermissions`가 비어 있으면 permission identifier resolver
 
 성공한 pre-execution check 뒤 Runtime은 exact Tool snapshot과 parsed input을 injected executor에 한 번 전달하고 raw executor output을 `parseToolOutput()`으로 검증한 뒤 canonical Tool ID와 parsed output을 반환한다. Executor의 synchronous throw와 asynchronous rejection은 wrapping이나 retry 없이 그대로 전파된다. Runtime은 Registry를 construction 시 snapshot하지 않으므로 이후 등록된 Tool도 후속 `run()`에서 보인다.
 
-현재 Runtime은 request validation, exact Tool resolution, input parsing, conditional permission-requirement enforcement, injected execution 및 output parsing만 구성한다. Resolver seam은 permission grant, identity, Workspace membership, Agent authorization, Policy, Approval 또는 execution authority를 확립하지 않는다. 실제 side-effecting Tool, Agent allowlist, complete authorization, Policy, risk handling, Approval, Audit, timeout, retry 및 Pack lifecycle integration은 아직 구현되지 않았다.
+현재 Runtime은 request validation, exact Tool resolution, input parsing, conditional permission-requirement enforcement, injected execution 및 output parsing만 구성한다. Tool Runtime request에는 Agent ID나 Agent definition이 없고 Runtime은 Agent Registry에 의존하거나 `allowedTools`를 평가하지 않는다. Resolver seam은 permission grant, identity, Workspace membership, Agent authorization, Policy, Approval 또는 execution authority를 확립하지 않는다. 실제 side-effecting Tool, Agent-to-Tool allowlist enforcement, complete authorization, Policy, risk handling, Approval, Audit, timeout, retry 및 Pack lifecycle integration은 아직 구현되지 않았다. Tool Registry membership과 Agent allowlist membership을 함께 충족해도 user/Workspace authorization, permission grant, Policy approval, user Approval 또는 production external-Action authority가 생기지 않는다.
 
 ---
 

@@ -310,15 +310,18 @@ name
 version
 description
 responsibility
+allowedTools
 ```
 
-`defineAgent()`는 이 metadata를 runtime에서 검증하며, Agent ID는 lowercase kebab-case 형식을 사용한다. Definition construction은 ownership을 이전하지 않으므로 `defineAgent()`는 accepted caller-owned definition reference를 그대로 반환한다. 성공한 `AgentRegistry.register()`는 현재 scalar metadata를 새 object에 복사하고 freeze하여 해당 Registry entry의 canonical immutable snapshot으로 소유한다. Caller object 자체는 freeze하지 않으며, 이후 caller mutation은 Registry state에 영향을 주지 않는다. 각 factory instance는 같은 caller object를 등록해도 서로 다른 snapshot을 소유한다.
+`allowedTools`는 Agent가 사용할 수 있다고 선언하는 exact Tool identifier의 required list이며 Tool을 선언하지 않는 Agent도 `[]`를 명시한다. 각 member는 Tool module과 동일한 canonical Tool ID validator를 사용하고 exact duplicate를 거부하며 declaration order를 보존한다. `defineAgent()`는 Tool Registry를 조회하지 않으므로 syntactically valid하지만 아직 등록되지 않은 Tool ID도 유효한 declaration이다. Wildcard, prefix, hierarchy, normalization 또는 case-folding semantics는 없다.
+
+`defineAgent()`는 이 metadata를 runtime에서 검증하며, Agent ID는 lowercase kebab-case 형식을 사용한다. Definition construction은 ownership을 이전하지 않으므로 `defineAgent()`는 accepted caller-owned definition과 `allowedTools` reference를 그대로 반환하고 어느 쪽도 freeze하거나 변경하지 않는다. 성공한 `AgentRegistry.register()`는 scalar metadata와 copied frozen `allowedTools` array를 새 frozen object에 포착하여 해당 Registry entry의 canonical immutable snapshot으로 소유한다. Caller object와 caller allowlist는 freeze하지 않으며, 이후 caller mutation은 Registry state에 영향을 주지 않는다. 각 factory instance는 같은 caller object를 등록해도 서로 다른 outer snapshot과 allowlist snapshot을 소유한다.
 
 `get()`과 `list()`는 이 canonical snapshot을 재사용하므로 한 번 등록된 Agent definition은 해당 Registry entry의 lifetime 동안 안정적이다. `list()`의 snapshot array도 frozen 상태를 유지한다.
 
-Allowed Tools, Model Strategy, Execution Policy, Context, input/output contract, permission, autonomy 및 failure behavior는 전체 목표 Agent Definition에 속하지만, 관련 Core contract와 완전한 execution lifecycle이 아직 없으므로 이 단계의 TypeScript API에는 placeholder로 추가하지 않는다.
+Model Strategy, Execution Policy, Context, input/output contract, permission, autonomy 및 failure behavior는 전체 목표 Agent Definition에 속하지만, 관련 Core contract와 완전한 execution lifecycle이 아직 없으므로 이 단계의 TypeScript API에는 placeholder로 추가하지 않는다.
 
-Core에는 이제 별도의 최소 Tool Definition과 Tool Registry foundation이 존재하지만, staged `AgentDefinition`은 여전히 `allowedTools`를 포함하지 않는다. Tool definition을 등록할 수 있다는 사실만으로 Agent-to-Tool authorization semantics가 완성되지는 않는다.
+Staged `AgentDefinition.allowedTools`는 declaration-only contract다. Agent allowlist membership과 Tool Registry membership은 Agent-to-Tool execution eligibility를 평가하거나 Tool 실행을 authorize하지 않는다. 이 둘은 user authorization, Workspace authorization, permission grant, Policy approval, user Approval 또는 production external-Action authority도 확립하지 않는다. Tool-side `requiredPermissions`는 별개의 독립 contract이며 어느 쪽에서도 다른 쪽을 derive하지 않는다.
 
 Core에는 별도의 최소 Model Definition, Model Registry 및 registered-Model dispatch Runtime foundation도 존재하지만, staged `AgentDefinition`은 `model`, `modelStrategy` 또는 `allowedModels`를 포함하지 않는다. Common Agent Runtime은 Model Registry나 Model Runtime에 연결되지 않으며 계속해서 IMPLEMENTATION-008에서 도입한 injected provider-neutral `AgentRuntimeExecutor` seam만 사용한다.
 
@@ -512,7 +515,7 @@ Agent마다 별도의 runtime implementation을 만드는 대신 공통 runtime�
 
 현재 `@odys/core`의 첫 Common Agent Runtime foundation은 runtime request를 검증하고, injected `AgentRegistry`에서 stable ID로 Agent를 조회하고, Registry가 소유하는 정확한 immutable `AgentDefinition` snapshot과 opaque input을 injected `AgentRuntimeExecutor`에 한 번 전달한 뒤 opaque result를 반환한다. Runtime은 definition을 다시 clone하지 않는다. Runtime은 Registry reference를 유지하므로 Runtime 생성 후 등록된 Agent도 이후 request에서 조회할 수 있으며, Registry와 Runtime instance 사이에 global mutable state를 공유하지 않는다.
 
-이 staged executor는 Registry lookup을 넘어서는 dispatch behavior를 검증하기 위한 provider-neutral seam이며 최종 Agent execution architecture나 authority boundary가 아니다. 별도의 Model Definition/Registry와 Model Runtime foundation이 존재하지만 Agent Runtime은 Model Registry 또는 Model Runtime에 의존하지 않는다. Context assembly, Model strategy, Model invocation, Tool request handling, Tool allowlist, Tool Runtime, permission, policy, Approval, Task lifecycle, Memory processing, Audit, execution persistence 또는 Pack-to-Agent registration도 구현하지 않는다. Agent registration은 dispatch eligibility만 의미하며 Model 또는 Tool execution authority를 부여하지 않는다.
+이 staged executor는 Registry lookup을 넘어서는 dispatch behavior를 검증하기 위한 provider-neutral seam이며 최종 Agent execution architecture나 authority boundary가 아니다. 별도의 Model Definition/Registry와 Model Runtime foundation이 존재하지만 Agent Runtime은 Model Registry 또는 Model Runtime에 의존하지 않는다. Executor는 Registry-owned Agent snapshot의 `allowedTools` declaration을 자연스럽게 관찰하지만 Runtime은 이를 평가하거나 enforce하지 않는다. Context assembly, Model strategy, Model invocation, Tool request handling, Tool allowlist enforcement, Tool Runtime integration, permission, policy, Approval, Task lifecycle, Memory processing, Audit, execution persistence 또는 Pack-to-Agent registration도 구현하지 않는다. Agent registration은 dispatch eligibility만 의미하며 Model 또는 Tool execution authority를 부여하지 않는다.
 
 ---
 
@@ -886,7 +889,9 @@ Coding Agent
 
 Agent가 Tool Registry에 존재하는 모든 Tool을 자동으로 사용할 수 있게 하지 않는다.
 
-현재 Core에는 Tool definition/Registry/input-output parser/permission-requirement guard를 조합하는 첫 Guarded Tool Runtime foundation이 존재한다. 이 Runtime은 `toolId`와 raw input을 받아 exact registered Tool을 resolve하고, required permission이 있는 경우 trusted injected identifier resolver와 기존 guard를 거친 뒤 injected executor output을 검증한다. 그러나 Registry membership이나 Runtime construction은 어떤 Agent에도 Tool authority를 부여하지 않으며 staged `AgentDefinition`에도 `allowedTools`가 없다. 첫 Common Agent Runtime foundation은 Tool Registry나 Tool Runtime에 의존하지 않고 두 Runtime 사이의 호출 또는 authorization integration도 없다. Agent-to-Tool allowlist와 그 validation, user/workspace authorization, Policy 및 Approval은 후속 단계다.
+현재 staged `AgentDefinition`은 required `allowedTools` declaration을 가지며 canonical Tool ID syntax와 exact uniqueness만 검증한다. 이 exact identifier list에는 wildcard나 hierarchy가 없고 unknown-but-canonical Tool ID도 선언할 수 있다. 그러나 `defineAgent()`는 Tool Registry를 조회하지 않으며 Agent Runtime은 allowlist를 평가하거나 Tool Registry 또는 Tool Runtime을 호출하지 않는다.
+
+별도의 Guarded Tool Runtime foundation은 exact registered Tool resolution, input/output parsing과 Tool-side `requiredPermissions` enforcement를 조합하지만 Agent definition이나 Agent Registry에 의존하지 않는다. Agent `allowedTools`와 Tool `requiredPermissions`는 서로 다른 control axis다. Agent allowlist membership과 Tool Registry membership을 함께 충족해도 user/Workspace authorization, permission grant, Policy approval, user Approval 또는 production external-Action authority가 생기지 않는다. Agent-to-Tool allowlist enforcement와 두 Runtime 사이의 execution composition은 후속 단계다.
 
 ---
 
@@ -1464,7 +1469,7 @@ valid output contract
 
 ```
 
-현재 구현된 Agent Registry foundation은 Agent Definition 자체의 runtime validation과 unique Agent ID만 강제한다. Common Agent Runtime foundation은 valid request가 이 Registry에 등록된 Agent를 대상으로 할 때만 executor dispatch를 허용한다. Tool reference, Model Strategy, execution policy 및 output contract 검증은 해당 contract와 완전한 execution lifecycle이 구현된 뒤 추가한다. Registry 자체는 Agent를 실행하거나 Pack lifecycle에 연결하지 않는다.
+현재 구현된 Agent Registry foundation은 Agent Definition 자체의 runtime validation, canonical unique `allowedTools` declaration과 unique Agent ID를 강제한다. 등록 시 Tool Registry membership은 검증하지 않으므로 unknown-but-canonical Tool reference도 유효하다. Common Agent Runtime foundation은 valid request가 이 Registry에 등록된 Agent를 대상으로 할 때만 executor dispatch를 허용하며 allowlist를 enforce하지 않는다. Registered Tool 존재 여부, Model Strategy, execution policy 및 output contract 검증은 해당 contract와 완전한 execution lifecycle이 구현된 뒤 추가한다. Registry 자체는 Agent를 실행하거나 Pack lifecycle에 연결하지 않는다.
 
 ---
 

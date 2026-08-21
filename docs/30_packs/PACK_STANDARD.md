@@ -230,6 +230,8 @@ IMPLEMENTATION-017도 Pack contract를 변경하지 않고 기존 evaluator를 �
 
 IMPLEMENTATION-018도 Pack contract를 변경하지 않고 Core에 첫 Guarded Tool Runtime foundation을 추가한다. Runtime은 request validation, live Tool Registry resolution, input parsing, required permission이 있는 Tool에 한정된 trusted identifier resolver와 기존 guard, injected executor 및 output parsing을 조합한다. Empty-permission Tool은 identifier resolver를 호출하지 않는다. 이 staged Runtime은 Pack registration/install을 Tool Registry와 연결하거나 Tool을 activate/authorize하지 않고 Engineering Pack에 concrete Tool 또는 external side effect를 추가하지 않는다.
 
+IMPLEMENTATION-019도 Pack contract를 변경하지 않고 Core `AgentDefinition`에 required declarative `allowedTools`를 추가한다. Agent Registry는 caller allowlist와 분리된 frozen nested snapshot을 소유한다. 이 declaration은 canonical exact Tool identifier만 표현하고 unknown-but-canonical ID를 허용하며 Agent-to-Tool enforcement, Agent Runtime과 Tool Runtime의 연결, permission, authorization, Policy, Approval 또는 execution authority를 추가하지 않는다. Engineering Pack에도 concrete Tool execution capability를 추가하지 않는다.
+
 IMPLEMENTATION-008은 Pack contract를 변경하지 않고 Core에 runtime request validation, registered-Agent resolution, provider-neutral executor dispatch 및 opaque result return만 제공하는 첫 Common Agent Runtime foundation을 추가한다.
 
 나머지 Manifest 항목, `Registered Agents`, `Registered Tools`, Pack Manifest의 `Required Permissions`, Pack-to-Agent 및 Pack-to-Tool registration semantics는 전체 Pack 표준의 목표 contract이며, 실제 Pack capability와 runtime이 구현되는 단계에서 점진적으로 추가한다. `ToolDefinition.requiredPermissions`와 Pack Manifest의 future `Required Permissions`는 서로 다른 contract다.
@@ -286,7 +288,7 @@ Agent는 자신의 Runtime을 직접 구현하지 않는다.
 
 실제 실행은 ODYS Core의 Agent Runtime이 담당한다.
 
-현재 구현된 첫 단계 Core `AgentDefinition`은 `id`, `name`, `version`, `description`, `responsibility`만 제공하며, `AgentRegistry`는 이 definition의 검증, 등록 및 조회만 담당한다. 첫 Common Agent Runtime foundation은 valid request가 Registry에 등록된 Agent만 provider-neutral executor seam으로 dispatch하도록 제한하지만 Pack을 Agent Registry에 자동 연결하지 않는다. 위의 supported tasks, capability, Tool, Memory, input/output, autonomy 및 failure contract와 Pack-to-Agent registration은 관련 Core contract와 완전한 execution lifecycle이 구현될 때 점진적으로 추가한다. Agent registration과 Runtime dispatch eligibility는 Tool 또는 external Action authority를 의미하지 않는다.
+현재 구현된 첫 단계 Core `AgentDefinition`은 `id`, `name`, `version`, `description`, `responsibility`와 required declarative `allowedTools`를 제공하며, `AgentRegistry`는 이 definition과 nested allowlist의 검증, immutable registration 및 조회만 담당한다. Allowlist는 exact canonical Tool ID의 declaration이고 empty list와 unknown-but-canonical ID를 허용한다. 첫 Common Agent Runtime foundation은 valid request가 Registry에 등록된 Agent만 provider-neutral executor seam으로 dispatch하도록 제한하지만 allowlist를 enforce하거나 Tool Runtime을 호출하지 않고 Pack을 Agent Registry에 자동 연결하지 않는다. 위의 supported tasks, 나머지 capability, Memory, input/output, autonomy 및 failure contract와 Pack-to-Agent registration은 관련 Core contract와 완전한 execution lifecycle이 구현될 때 점진적으로 추가한다. Agent registration, allowlist membership과 Runtime dispatch eligibility는 permission, user/Workspace authorization, Policy approval, user Approval, Tool execution 또는 production external-Action authority를 의미하지 않는다. Tool `requiredPermissions`는 별개의 Tool-side contract다.
 
 ---
 
@@ -662,7 +664,7 @@ Pack은 자신이 지원하는 Core Version Range를 명시해야 한다.
 
 - Core Compatibility
 
-현재 구현 범위의 테스트는 Manifest validation, Pack Registry behavior, 최소 Agent Definition validation, Agent Registry behavior, registered-Agent Runtime dispatch와 failure behavior, Tool Definition의 required-permission declaration, deterministic requirement evaluation과 enforcement guard, input/output schema validation, Tool Registry ownership behavior, Guarded Tool Runtime의 request/lookup/parser/conditional permission resolver/injected executor composition과 failure behavior, 최소 Model Definition validation, Model Registry behavior, registered-Model Runtime dispatch와 failure behavior, Engineering Pack contract 및 Core와 Pack 사이의 package boundary를 검증한다. Permission grant/persistence/authorization, Pack-to-Agent, Pack-to-Tool 및 Pack-to-Model registration, real external Tool execution, routing, provider execution, Model/Agent/Tool integration 및 나머지 runtime 테스트는 해당 capability가 구현될 때 추가한다.
+현재 구현 범위의 테스트는 Manifest validation, Pack Registry behavior, Agent Definition의 required canonical Tool allowlist declaration과 validation-only ownership, Agent Registry의 nested immutable ownership, registered-Agent Runtime dispatch와 failure behavior, Tool Definition의 required-permission declaration, deterministic requirement evaluation과 enforcement guard, input/output schema validation, Tool Registry ownership behavior, Guarded Tool Runtime의 request/lookup/parser/conditional permission resolver/injected executor composition과 failure behavior, 최소 Model Definition validation, Model Registry behavior, registered-Model Runtime dispatch와 failure behavior, Engineering Pack contract 및 Core와 Pack 사이의 package boundary를 검증한다. Agent-to-Tool allowlist enforcement, Permission grant/persistence/authorization, Pack-to-Agent, Pack-to-Tool 및 Pack-to-Model registration, real external Tool execution, routing, provider execution, Model/Agent/Tool integration 및 나머지 runtime 테스트는 해당 capability가 구현될 때 추가한다.
 
 LLM 기반 Agent의 품질은 일반 Unit Test만으로 충분하지 않을 수 있다.
 
