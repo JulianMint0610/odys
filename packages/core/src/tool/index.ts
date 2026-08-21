@@ -4,10 +4,12 @@ export {
   InvalidToolDefinitionError,
   ToolInputValidationError,
   ToolOutputValidationError,
+  ToolPermissionDeniedError,
 } from './tool-errors.js';
 export { parseToolInput } from './tool-input.js';
 export { parseToolOutput } from './tool-output.js';
 export {
+  assertToolPermissionRequirements,
   evaluateToolPermissionRequirements,
   type ToolPermissionRequirementResult,
 } from './tool-permission.js';

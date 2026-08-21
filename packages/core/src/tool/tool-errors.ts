@@ -31,3 +31,15 @@ export class ToolOutputValidationError extends Error {
     this.toolId = toolId;
   }
 }
+
+export class ToolPermissionDeniedError extends Error {
+  public readonly toolId: string;
+  public readonly missingPermissions: readonly string[];
+
+  public constructor(toolId: string, missingPermissions: readonly string[]) {
+    super(`Tool "${toolId}" is missing required permissions.`);
+    this.name = 'ToolPermissionDeniedError';
+    this.toolId = toolId;
+    this.missingPermissions = Object.freeze([...missingPermissions]);
+  }
+}

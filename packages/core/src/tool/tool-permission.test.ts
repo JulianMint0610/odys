@@ -2,8 +2,11 @@ import { z } from 'zod';
 import { describe, expect, expectTypeOf, it, vi } from 'vitest';
 
 import {
+  assertToolPermissionRequirements,
+  createToolRegistry,
   defineTool,
   evaluateToolPermissionRequirements,
+  ToolPermissionDeniedError,
   type ToolDefinition,
   type ToolPermissionRequirementResult,
   type ToolRisk,
@@ -206,5 +209,193 @@ describe('evaluateToolPermissionRequirements', () => {
     expect(() => {
       (result.missingPermissions as string[]).push('files.write');
     }).toThrow(TypeError);
+  });
+});
+
+describe('assertToolPermissionRequirements', () => {
+  it('returns normally when every required permission is resolved', () => {
+    expect(
+      assertToolPermissionRequirements(createTestTool(), ['calendar.read', 'calendar.write']),
+    ).toBeUndefined();
+  });
+
+  it('allows an empty requirement declaration with no resolved permissions', () => {
+    expect(() =>
+      assertToolPermissionRequirements(createTestTool({ requiredPermissions: [] }), []),
+    ).not.toThrow();
+  });
+
+  it('ignores extra resolved permissions', () => {
+    expect(() =>
+      assertToolPermissionRequirements(createTestTool(), [
+        'files.read',
+        'calendar.write',
+        'calendar.read',
+      ]),
+    ).not.toThrow();
+  });
+
+  it('does not give duplicate resolved identifiers additional semantics', () => {
+    const tool = createTestTool();
+
+    for (const resolvedPermissions of [['calendar.read'], ['calendar.read', 'calendar.read']]) {
+      expect(() => assertToolPermissionRequirements(tool, resolvedPermissions)).toThrow(
+        ToolPermissionDeniedError,
+      );
+
+      try {
+        assertToolPermissionRequirements(tool, resolvedPermissions);
+      } catch (error) {
+        expect(error).toMatchObject({ missingPermissions: ['calendar.write'] });
+      }
+    }
+  });
+
+  it('throws a structured permission-denied error for one missing requirement', () => {
+    let thrown: unknown;
+
+    try {
+      assertToolPermissionRequirements(createTestTool(), ['calendar.read']);
+    } catch (error) {
+      thrown = error;
+    }
+
+    expect(thrown).toBeInstanceOf(ToolPermissionDeniedError);
+    expect(thrown).toMatchObject({
+      name: 'ToolPermissionDeniedError',
+      message: 'Tool "calendar.sync" is missing required permissions.',
+      toolId: 'calendar.sync',
+      missingPermissions: ['calendar.write'],
+    });
+  });
+
+  it('reports multiple missing requirements in evaluator declaration order', () => {
+    const tool = createTestTool({
+      requiredPermissions: ['calendar.write', 'calendar.read', 'email.send'],
+    });
+
+    let thrown: unknown;
+    try {
+      assertToolPermissionRequirements(tool, []);
+    } catch (error) {
+      thrown = error;
+    }
+
+    expect(thrown).toBeInstanceOf(ToolPermissionDeniedError);
+    expect(thrown).toMatchObject({
+      toolId: 'calendar.sync',
+      missingPermissions: ['calendar.write', 'calendar.read', 'email.send'],
+    });
+    expect(Object.isFrozen((thrown as ToolPermissionDeniedError).missingPermissions)).toBe(true);
+    expect(() => {
+      ((thrown as ToolPermissionDeniedError).missingPermissions as string[]).push('files.write');
+    }).toThrow(TypeError);
+  });
+
+  it.each([
+    {
+      label: 'case-insensitive matching',
+      requiredPermissions: ['calendar.read'],
+      resolvedPermissions: ['Calendar.read'],
+    },
+    {
+      label: 'wildcard matching',
+      requiredPermissions: ['calendar.read'],
+      resolvedPermissions: ['calendar.*'],
+    },
+    {
+      label: 'implicit hierarchy matching',
+      requiredPermissions: ['calendar.read.events'],
+      resolvedPermissions: ['calendar.read'],
+    },
+  ])('does not introduce $label', ({ requiredPermissions, resolvedPermissions }) => {
+    expect(() =>
+      assertToolPermissionRequirements(
+        createTestTool({ requiredPermissions }),
+        resolvedPermissions,
+      ),
+    ).toThrow(ToolPermissionDeniedError);
+  });
+
+  it('does not parse schemas, execute the Tool, or inspect risk', () => {
+    const inputSchemaCheck = vi.fn(() => true);
+    const outputSchemaCheck = vi.fn(() => true);
+    const readRisk = vi.fn(() => 'critical' as const);
+    const execute = vi.fn();
+    const tool = Object.assign(
+      defineTool({
+        id: 'calendar.sync',
+        name: 'Calendar Sync',
+        description: 'Synchronizes calendar data.',
+        get risk() {
+          return readRisk();
+        },
+        inputSchema: z.custom(inputSchemaCheck),
+        outputSchema: z.custom(outputSchemaCheck),
+        requiredPermissions: ['calendar.read'],
+      }),
+      { execute },
+    );
+    readRisk.mockClear();
+
+    expect(() => assertToolPermissionRequirements(tool, ['calendar.read'])).not.toThrow();
+    expect(inputSchemaCheck).not.toHaveBeenCalled();
+    expect(outputSchemaCheck).not.toHaveBeenCalled();
+    expect(execute).not.toHaveBeenCalled();
+    expect(readRisk).not.toHaveBeenCalled();
+  });
+
+  it('does not mutate or freeze caller state and owns the thrown missing snapshot', () => {
+    const requiredPermissions = ['calendar.write', 'calendar.read'];
+    const resolvedPermissions = ['calendar.read'];
+    const tool = createTestTool({ requiredPermissions });
+    const requiredBefore = [...requiredPermissions];
+    const resolvedBefore = [...resolvedPermissions];
+    const definitionBefore = { ...tool };
+
+    let thrown: unknown;
+    try {
+      assertToolPermissionRequirements(tool, resolvedPermissions);
+    } catch (error) {
+      thrown = error;
+    }
+
+    expect(requiredPermissions).toEqual(requiredBefore);
+    expect(resolvedPermissions).toEqual(resolvedBefore);
+    expect(tool).toEqual(definitionBefore);
+    expect(Object.isFrozen(requiredPermissions)).toBe(false);
+    expect(Object.isFrozen(resolvedPermissions)).toBe(false);
+    expect(Object.isFrozen(tool)).toBe(false);
+
+    requiredPermissions.splice(0, requiredPermissions.length, 'files.write');
+    resolvedPermissions.push('calendar.write');
+
+    expect(thrown).toBeInstanceOf(ToolPermissionDeniedError);
+    expect((thrown as ToolPermissionDeniedError).missingPermissions).toEqual(['calendar.write']);
+  });
+
+  it('copies a mutable missing-permission collection passed to the public error', () => {
+    const missingPermissions = ['calendar.write'];
+    const error = new ToolPermissionDeniedError('calendar.sync', missingPermissions);
+
+    missingPermissions.push('email.send');
+
+    expect(error.missingPermissions).toEqual(['calendar.write']);
+    expect(error.missingPermissions).not.toBe(missingPermissions);
+    expect(Object.isFrozen(error.missingPermissions)).toBe(true);
+  });
+
+  it('composes with the Registry-owned canonical Tool snapshot', () => {
+    const registry = createToolRegistry();
+    const registeredTool = registry.register(createTestTool());
+
+    expect(Object.isFrozen(registeredTool)).toBe(true);
+    expect(Object.isFrozen(registeredTool.requiredPermissions)).toBe(true);
+    expect(() =>
+      assertToolPermissionRequirements(registeredTool, ['calendar.read', 'calendar.write']),
+    ).not.toThrow();
+    expect(() => assertToolPermissionRequirements(registeredTool, ['calendar.read'])).toThrow(
+      ToolPermissionDeniedError,
+    );
   });
 });
