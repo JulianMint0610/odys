@@ -20,12 +20,14 @@ class CoreAgentRegistry implements AgentRegistry {
       throw new DuplicateAgentIdError(id);
     }
 
+    const allowedTools = Object.freeze([...validAgent.allowedTools]);
     const registeredAgent = Object.freeze({
       id: validAgent.id,
       name: validAgent.name,
       version: validAgent.version,
       description: validAgent.description,
       responsibility: validAgent.responsibility,
+      allowedTools,
     });
 
     this.#agents.set(id, registeredAgent);

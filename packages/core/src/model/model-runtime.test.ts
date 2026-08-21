@@ -313,6 +313,7 @@ describe('Model Runtime', () => {
         version: '0.1.0',
         description: 'A Model Runtime boundary fixture.',
         responsibility: 'Verify Registry independence.',
+        allowedTools: [],
       }),
     );
     toolRegistry.register(

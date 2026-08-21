@@ -482,6 +482,8 @@ permission naming은 capability 의미를 명확하게 표현한다.
 
 현재 staged Core Tool contract는 각 Tool이 canonical dot-separated `requiredPermissions`를 명시하도록 강제한다. Core의 execution-independent evaluator는 이 declaration과 이미 resolve된 permission identifier 목록을 exact case-sensitive equality로 비교하여 satisfaction과 ordered missing requirements만 반환한다. Fail-closed enforcement guard는 matching을 이 evaluator에 위임하고 불충분한 목록을 구조화된 `ToolPermissionDeniedError`로 거부한다. 이 guard는 불충분한 already-resolved permission set을 거부할 수 있지만 그 permission set이 어떻게 authorization되었는지는 확립하지 않는다. Declaration, evaluation result와 guard 통과는 user/workspace authorization, permission grant, persistence, resolution, Policy, Approval 또는 execution authority의 증거가 아니다. 첫 Guarded Tool Runtime은 required permission이 있는 Tool에 한해 이 requirement-enforcement guard를 호출하지만, 이는 Tool permission-requirement enforcement일 뿐 user/Workspace/Agent authorization, Policy, Approval 또는 production external-Action authority를 확립하지 않으며 Runtime은 불완전한 staged foundation으로 남는다.
 
+현재 staged Agent contract의 required `allowedTools`는 Agent가 사용할 수 있다고 선언한 exact canonical Tool ID 목록일 뿐이다. 이 declaration은 Tool execution authority, permission grant, user authorization, Workspace authorization, Policy approval, user Approval 또는 production external-Action authority가 아니다. Agent allowlist membership과 Tool Registry membership을 함께 충족해도 같은 경계가 유지된다. `defineAgent()`는 unknown-but-canonical Tool ID를 허용하고 Agent Runtime은 allowlist를 enforce하거나 Tool Runtime과 연결하지 않는다. Tool `requiredPermissions`는 이 Agent-side declaration과 별개의 control axis다.
+
 ---
 
 ## 13. Agent Permissions
@@ -970,7 +972,7 @@ Model Provider의 native Tool Calling을 사용하더라도 이 boundary를 우�
 
 현재 구현은 declarative Tool permission requirement, already-resolved identifier에 대한 deterministic requirement evaluation, fail-closed requirement enforcement guard, input/output validation과 이를 조합하는 첫 Guarded Tool Runtime foundation을 제공한다. Runtime `run()` caller는 `toolId`와 raw input만 제공하며 resolved/granted permission이나 authorization assertion을 제공할 수 없다. Required permission이 있는 Tool의 identifier 목록은 Runtime construction 시 주입된 trusted `resolvePermissionIdentifiers` seam에서만 얻고 malformed non-array 또는 non-string-member result는 execution 전에 fail closed한다. Required permission이 없는 Tool은 이 narrow resolver를 호출하지 않는다.
 
-이 resolver seam은 이미 resolve된 identifier string을 공급할 뿐 permission grant, identity, Workspace membership, Agent authorization, Policy 또는 Approval을 확립하지 않는다. Runtime은 실제 high-risk external Tool, authorization context, Agent allowlist, Policy, risk handling, Approval 또는 Audit와 연결되어 있지 않다. 따라서 `requiredPermissions` declaration, resolver result, guard 통과, Registry membership이나 staged Runtime 존재만으로 external Action authority가 생기지 않는다.
+이 resolver seam은 이미 resolve된 identifier string을 공급할 뿐 permission grant, identity, Workspace membership, Agent authorization, Policy 또는 Approval을 확립하지 않는다. Agent `allowedTools` declaration은 존재하지만 Runtime은 실제 high-risk external Tool, authorization context, Agent allowlist enforcement, Policy, risk handling, Approval 또는 Audit와 연결되어 있지 않다. 따라서 `requiredPermissions` declaration, Agent `allowedTools` declaration, resolver result, guard 통과, Registry membership이나 staged Runtime 존재만으로 external Action authority가 생기지 않는다.
 
 ---
 

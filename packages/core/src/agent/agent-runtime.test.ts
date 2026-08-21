@@ -23,6 +23,7 @@ function createTestAgent(id: string): AgentDefinition {
     version: '0.1.0',
     description: `Fixture for ${id}.`,
     responsibility: `Test the ${id} Runtime path.`,
+    allowedTools: ['code.execute'],
   });
 }
 
@@ -40,6 +41,9 @@ describe('Agent Runtime', () => {
     const executor: AgentRuntimeExecutor = vi.fn(async (request) => {
       expect(request.agent).toBe(registeredAgent);
       expect(request.agent).not.toBe(agent);
+      expect(request.agent.allowedTools).toBe(registeredAgent.allowedTools);
+      expect(request.agent.allowedTools).toEqual(['code.execute']);
+      expect(Object.isFrozen(request.agent.allowedTools)).toBe(true);
       expect(request.input).toBe(input);
       return output;
     });

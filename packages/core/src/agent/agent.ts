@@ -4,4 +4,5 @@ export interface AgentDefinition {
   readonly version: string;
   readonly description: string;
   readonly responsibility: string;
+  readonly allowedTools: readonly string[];
 }
