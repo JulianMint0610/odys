@@ -480,7 +480,7 @@ code.execute
 
 permission naming은 capability 의미를 명확하게 표현한다.
 
-현재 staged Core Tool contract는 각 Tool이 canonical dot-separated `requiredPermissions`를 명시하도록 강제한다. Core의 execution-independent evaluator는 이 declaration과 이미 resolve된 permission identifier 목록을 exact case-sensitive equality로 비교하여 satisfaction과 ordered missing requirements만 반환한다. 이 declaration과 evaluation result는 user/workspace authorization, permission grant, persistence, resolution, Policy, Approval 또는 execution authority의 증거가 아니다. 현재 Runtime은 이 값을 소비하지 않으며 deterministic permission enforcement는 후속 Core security/runtime 단계다.
+현재 staged Core Tool contract는 각 Tool이 canonical dot-separated `requiredPermissions`를 명시하도록 강제한다. Core의 execution-independent evaluator는 이 declaration과 이미 resolve된 permission identifier 목록을 exact case-sensitive equality로 비교하여 satisfaction과 ordered missing requirements만 반환한다. Fail-closed enforcement guard는 matching을 이 evaluator에 위임하고 불충분한 목록을 구조화된 `ToolPermissionDeniedError`로 거부한다. 이 guard는 불충분한 already-resolved permission set을 거부할 수 있지만 그 permission set이 어떻게 authorization되었는지는 확립하지 않는다. Declaration, evaluation result와 guard 통과는 user/workspace authorization, permission grant, persistence, resolution, Policy, Approval 또는 execution authority의 증거가 아니며 이 guard는 Tool Runtime에 연결되어 있지 않다.
 
 ---
 
@@ -968,7 +968,7 @@ Execution
 
 Model Provider의 native Tool Calling을 사용하더라도 이 boundary를 우회하지 않는다.
 
-현재 구현은 이 lifecycle과 독립적인 declarative Tool permission requirement, already-resolved identifier에 대한 deterministic requirement evaluation 및 input/output validation foundation까지만 제공한다. Permission grant/persistence/resolution, user/workspace authorization, Tool Runtime, Policy, Approval 및 execution은 구현되지 않았으므로 `requiredPermissions` declaration, satisfied requirements나 Tool Registry membership만으로 external Action authority가 생기지 않는다.
+현재 구현은 이 lifecycle과 독립적인 declarative Tool permission requirement, already-resolved identifier에 대한 deterministic requirement evaluation, fail-closed requirement enforcement guard 및 input/output validation foundation까지만 제공한다. Guard는 누락 requirement가 있으면 거부하지만 permission grant/persistence/resolution, user/workspace authorization, Tool Runtime, Policy, Approval 및 execution은 구현되지 않았으므로 `requiredPermissions` declaration, satisfied requirements, guard 통과나 Tool Registry membership만으로 external Action authority가 생기지 않는다.
 
 ---
 

@@ -1,3 +1,4 @@
+import { ToolPermissionDeniedError } from './tool-errors.js';
 import type { ToolDefinition } from './tool.js';
 
 export interface ToolPermissionRequirementResult {
@@ -20,4 +21,15 @@ export function evaluateToolPermissionRequirements(
     satisfied: missingPermissions.length === 0,
     missingPermissions,
   });
+}
+
+export function assertToolPermissionRequirements(
+  definition: ToolDefinition,
+  resolvedPermissions: readonly string[],
+): void {
+  const result = evaluateToolPermissionRequirements(definition, resolvedPermissions);
+
+  if (!result.satisfied) {
+    throw new ToolPermissionDeniedError(definition.id, result.missingPermissions);
+  }
 }

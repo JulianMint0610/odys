@@ -41,6 +41,7 @@ export {
 } from './model/index.js';
 
 export {
+  assertToolPermissionRequirements,
   createToolRegistry,
   defineTool,
   DuplicateToolIdError,
@@ -50,6 +51,7 @@ export {
   parseToolOutput,
   ToolInputValidationError,
   ToolOutputValidationError,
+  ToolPermissionDeniedError,
   type ToolDefinition,
   type ToolPermissionRequirementResult,
   type ToolRegistry,
