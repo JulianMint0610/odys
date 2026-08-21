@@ -228,6 +228,8 @@ IMPLEMENTATION-016도 Pack contract를 변경하지 않고 Core에 Tool declarat
 
 IMPLEMENTATION-017도 Pack contract를 변경하지 않고 기존 evaluator를 재사용하는 fail-closed Tool permission requirement enforcement guard와 구조화된 permission-denied error를 Core에 추가한다. Pack 설치 또는 등록은 permission을 grant하지 않으며 이 Tool-level requirement enforcement는 future Pack Manifest `Required Permissions`와 별개다. Pack lifecycle, Tool Runtime 또는 execution authority는 추가하지 않는다.
 
+IMPLEMENTATION-018도 Pack contract를 변경하지 않고 Core에 첫 Guarded Tool Runtime foundation을 추가한다. Runtime은 request validation, live Tool Registry resolution, input parsing, required permission이 있는 Tool에 한정된 trusted identifier resolver와 기존 guard, injected executor 및 output parsing을 조합한다. Empty-permission Tool은 identifier resolver를 호출하지 않는다. 이 staged Runtime은 Pack registration/install을 Tool Registry와 연결하거나 Tool을 activate/authorize하지 않고 Engineering Pack에 concrete Tool 또는 external side effect를 추가하지 않는다.
+
 IMPLEMENTATION-008은 Pack contract를 변경하지 않고 Core에 runtime request validation, registered-Agent resolution, provider-neutral executor dispatch 및 opaque result return만 제공하는 첫 Common Agent Runtime foundation을 추가한다.
 
 나머지 Manifest 항목, `Registered Agents`, `Registered Tools`, Pack Manifest의 `Required Permissions`, Pack-to-Agent 및 Pack-to-Tool registration semantics는 전체 Pack 표준의 목표 contract이며, 실제 Pack capability와 runtime이 구현되는 단계에서 점진적으로 추가한다. `ToolDefinition.requiredPermissions`와 Pack Manifest의 future `Required Permissions`는 서로 다른 contract다.
@@ -340,7 +342,7 @@ Agent
 
 Pack이 Tool Runtime을 우회하여 직접 외부 Side Effect를 발생시키는 것은 허용하지 않는다.
 
-현재 Core는 `id`, `name`, `description`, 선언적 `risk`, required `inputSchema`, `outputSchema`와 declarative `requiredPermissions`로 구성된 non-executable Tool definition, instance-local registration, unknown input/output validation, already-resolved identifier에 대한 deterministic requirement evaluation 및 fail-closed enforcement guard foundation을 공개한다. Registry는 caller permission array와 분리된 frozen nested snapshot을 소유한다. Requirement evaluation result와 누락 목록은 Core-owned frozen snapshot이며 permission-denied error도 독립된 frozen 누락 목록을 소유한다. Guard는 누락 requirement를 거부하지만 permission을 resolve하거나 authorization을 확립하지 않는다. Engineering Pack에는 아직 실제 Tool implementation이 없으며 Pack lifecycle과 Tool Registry의 integration도 구현되지 않았다. Permission declaration, satisfied requirements, guard 통과, input/output validation 성공이나 Registry 등록은 실행 권한을 부여하지 않고 Tool을 실행하지도 않는다.
+현재 Core는 `id`, `name`, `description`, 선언적 `risk`, required `inputSchema`, `outputSchema`와 declarative `requiredPermissions`로 구성된 Tool definition, instance-local registration, unknown input/output validation, already-resolved identifier에 대한 deterministic requirement evaluation 및 fail-closed enforcement guard와 첫 Guarded Tool Runtime foundation을 공개한다. Registry는 caller permission array와 분리된 frozen nested snapshot을 소유한다. Runtime은 exact Registry-owned snapshot을 사용하고 required permission이 있는 Tool만 trusted construction-time identifier resolver를 호출한 뒤 guard를 재사용하며, empty-permission Tool은 resolver를 건너뛴다. Engineering Pack에는 아직 실제 Tool implementation이 없고 Pack lifecycle과 Tool Registry/Runtime integration도 구현되지 않았다. Pack installation/registration, permission declaration, resolver result, guard 통과, input/output validation 성공이나 Registry 등록은 permission grant, authorization, Tool activation 또는 production external Action authority를 부여하지 않는다.
 
 ---
 
@@ -660,7 +662,7 @@ Pack은 자신이 지원하는 Core Version Range를 명시해야 한다.
 
 - Core Compatibility
 
-현재 구현 범위의 테스트는 Manifest validation, Pack Registry behavior, 최소 Agent Definition validation, Agent Registry behavior, registered-Agent Runtime dispatch와 failure behavior, Tool Definition의 required-permission declaration, deterministic requirement evaluation과 enforcement guard, input/output schema validation, Tool Registry ownership behavior, 최소 Model Definition validation, Model Registry behavior, registered-Model Runtime dispatch와 failure behavior, Engineering Pack contract 및 Core와 Pack 사이의 package boundary를 검증한다. Permission grant/persistence/resolution/authorization, Pack-to-Agent, Pack-to-Tool 및 Pack-to-Model registration, Tool execution, routing, provider execution, Model/Agent/Tool integration 및 나머지 runtime 테스트는 해당 capability가 구현될 때 추가한다.
+현재 구현 범위의 테스트는 Manifest validation, Pack Registry behavior, 최소 Agent Definition validation, Agent Registry behavior, registered-Agent Runtime dispatch와 failure behavior, Tool Definition의 required-permission declaration, deterministic requirement evaluation과 enforcement guard, input/output schema validation, Tool Registry ownership behavior, Guarded Tool Runtime의 request/lookup/parser/conditional permission resolver/injected executor composition과 failure behavior, 최소 Model Definition validation, Model Registry behavior, registered-Model Runtime dispatch와 failure behavior, Engineering Pack contract 및 Core와 Pack 사이의 package boundary를 검증한다. Permission grant/persistence/authorization, Pack-to-Agent, Pack-to-Tool 및 Pack-to-Model registration, real external Tool execution, routing, provider execution, Model/Agent/Tool integration 및 나머지 runtime 테스트는 해당 capability가 구현될 때 추가한다.
 
 LLM 기반 Agent의 품질은 일반 Unit Test만으로 충분하지 않을 수 있다.
 

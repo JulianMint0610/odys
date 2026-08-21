@@ -886,7 +886,7 @@ Coding Agent
 
 Agent가 Tool Registry에 존재하는 모든 Tool을 자동으로 사용할 수 있게 하지 않는다.
 
-현재 Core의 `ToolRegistry`는 non-executable definition registration과 discovery만 제공한다. Registry membership은 어떤 Agent에도 Tool authority를 부여하지 않으며, staged `AgentDefinition`에도 `allowedTools`가 없다. 첫 Common Agent Runtime foundation 역시 Tool Registry에 의존하지 않는다. Agent-to-Tool allowlist와 그 validation은 Tool Runtime, permission 및 policy contract가 구현되는 후속 단계에서 추가한다.
+현재 Core에는 Tool definition/Registry/input-output parser/permission-requirement guard를 조합하는 첫 Guarded Tool Runtime foundation이 존재한다. 이 Runtime은 `toolId`와 raw input을 받아 exact registered Tool을 resolve하고, required permission이 있는 경우 trusted injected identifier resolver와 기존 guard를 거친 뒤 injected executor output을 검증한다. 그러나 Registry membership이나 Runtime construction은 어떤 Agent에도 Tool authority를 부여하지 않으며 staged `AgentDefinition`에도 `allowedTools`가 없다. 첫 Common Agent Runtime foundation은 Tool Registry나 Tool Runtime에 의존하지 않고 두 Runtime 사이의 호출 또는 authorization integration도 없다. Agent-to-Tool allowlist와 그 validation, user/workspace authorization, Policy 및 Approval은 후속 단계다.
 
 ---
 

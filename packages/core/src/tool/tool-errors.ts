@@ -43,3 +43,27 @@ export class ToolPermissionDeniedError extends Error {
     this.missingPermissions = Object.freeze([...missingPermissions]);
   }
 }
+
+export class InvalidToolRuntimeRequestError extends Error {
+  public constructor(message: string) {
+    super(message);
+    this.name = 'InvalidToolRuntimeRequestError';
+  }
+}
+
+export class UnknownToolError extends Error {
+  public constructor(toolId: string) {
+    super(`Tool with id "${toolId}" is not registered`);
+    this.name = 'UnknownToolError';
+  }
+}
+
+export class InvalidToolRuntimePermissionResolutionError extends Error {
+  public readonly toolId: string;
+
+  public constructor(toolId: string) {
+    super(`Invalid permission identifier resolution for Tool "${toolId}".`);
+    this.name = 'InvalidToolRuntimePermissionResolutionError';
+    this.toolId = toolId;
+  }
+}
