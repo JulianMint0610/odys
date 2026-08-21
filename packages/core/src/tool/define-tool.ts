@@ -1,9 +1,9 @@
 import { z } from 'zod';
 
 import { InvalidToolDefinitionError } from './tool-errors.js';
+import { isCanonicalToolId } from './tool-id.js';
 import type { ToolDefinition } from './tool.js';
 
-const toolIdPattern = /^[a-z][a-z0-9]*(?:[._-][a-z0-9]+)*$/;
 const permissionIdPattern = /^[a-z][a-z0-9]*(?:\.[a-z0-9]+)+$/;
 const toolRisks = new Set<unknown>(['low', 'medium', 'high', 'critical']);
 
@@ -31,7 +31,7 @@ function validateToolDefinition(definition: unknown): asserts definition is Tool
     rejectInvalidDefinition('definition must be an object');
   }
 
-  if (typeof definition.id !== 'string' || !toolIdPattern.test(definition.id)) {
+  if (!isCanonicalToolId(definition.id)) {
     rejectInvalidDefinition('id must be a canonical Tool identifier');
   }
 
