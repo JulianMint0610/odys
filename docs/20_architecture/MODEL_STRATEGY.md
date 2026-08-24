@@ -386,6 +386,10 @@ Registry는 실제 implementation에 따라 configuration 또는 code로 관리�
 
 IMPLEMENTATION-022는 existing Common Agent Runtime의 executor seam을 구현하는 model-backed adapter를 추가한다. Trusted construction-time `AgentModelIdResolver`가 Registry-owned Agent definition과 original opaque input을 받아 logical ODYS Model ID를 선택하면 adapter가 같은 executor request object를 `ModelRuntime.input`으로 전달한다. Existing Model Runtime은 request와 logical ID validation, Model Registry resolution 및 provider-independent executor dispatch를 계속 소유한다. Agent input의 `modelId`, `provider` 또는 `providerModelId` field는 selection authority가 아니며 Model result는 해석 없이 opaque data로 반환된다. 이 temporary resolver는 final Model Strategy나 capability-based Model Router가 아니다.
 
+IMPLEMENTATION-023은 opaque Model output에 명시적으로 적용할 수 있는 provider-independent `parseModelOutcome()` validation primitive를 추가한다. 이 parser는 own required property와 exact discriminant를 검증하여 opaque `output`을 가진 `final` 또는 canonical Tool ID와 opaque `input`을 가진 하나의 `tool-request`로 해석하고, arbitrary extra top-level field를 버린 새 frozen canonical outer object를 반환한다. Nested payload reference는 clone하거나 freeze하지 않는다. Tool ID syntax는 existing Tool identifier helper를 재사용하지만 Tool Registry를 조회하지 않으므로 unknown-but-canonical Tool ID도 syntactically valid하다. Validated `tool-request`는 Tool existence, Agent allowance, permission, authorization, Policy, Approval 또는 execution authority가 아니다.
+
+이 narrow `ModelOutcome`은 complete ODYS Model Response가 아니며 initial execution-relevant interpretation contract다. `ModelRuntimeResult.output`은 계속 `unknown`이고 `ModelRuntime`과 model-backed Agent executor는 parser를 자동 호출하지 않는다. 따라서 현재 flow는 `opaque Model output → explicit parseModelOutcome() → validated staged ModelOutcome` primitive만 제공하며 Agent-to-Model path와 Agent-to-Tool path는 아직 연결되지 않았다.
+
 Normalized provider Model request/response, Model Gateway, concrete Provider Adapter와 Provider SDK integration, Model Capability, complete Model Strategy, Model Router, complete integrated Agent execution, Tool calling integration, structured output, timeout, retry, fallback 및 usage accounting은 아직 구현되지 않았다.
 
 ---
@@ -1708,7 +1712,7 @@ concrete provider adapter의 실제 위치는 implementation 단계에서 결정
 
 별도의 service가 필요하지 않은 동안 Modular Monolith 내부에 유지한다.
 
-현재는 이 위치에 최소 `ModelDefinition`, definition/runtime request validation, Registry-owned immutable definition snapshot을 보관하는 instance-local `ModelRegistry`, registered-Model dispatch를 위한 `ModelRuntime` request/result contract와 provider-independent injected executor seam이 구현되어 있다. Agent module에는 existing Agent Runtime executor seam을 trusted logical Model resolver와 existing Model Runtime에 연결하는 staged adapter가 구현되어 있다. 이 adapter는 exact Agent executor request를 opaque Model input으로 전달하고 exact `ModelRuntimeResult`를 해석 없이 반환한다. Normalized provider execution request/response, Model Gateway 및 concrete Provider Adapter는 후속 단계다.
+현재는 이 위치에 최소 `ModelDefinition`, definition/runtime request validation, Registry-owned immutable definition snapshot을 보관하는 instance-local `ModelRegistry`, registered-Model dispatch를 위한 `ModelRuntime` request/result contract와 provider-independent injected executor seam, opaque Model output을 narrow canonical `final | tool-request` execution meaning으로 명시적으로 검증하는 standalone `parseModelOutcome()` primitive가 구현되어 있다. Agent module에는 existing Agent Runtime executor seam을 trusted logical Model resolver와 existing Model Runtime에 연결하는 staged adapter가 구현되어 있다. 이 adapter는 exact Agent executor request를 opaque Model input으로 전달하고 exact `ModelRuntimeResult`를 해석 없이 반환하며 parser를 호출하지 않는다. Normalized provider execution request/response, complete Model Response, Model Gateway 및 concrete Provider Adapter는 후속 단계다.
 
 ---
 
