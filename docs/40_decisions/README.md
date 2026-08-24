@@ -57,7 +57,7 @@ ODYS는 개인용 AI 도구에서 출발하지만 장기적으로는 다양한 �
 | Superseded | 새로운 ADR에 의해 대체된 결정                      |
 | Rejected   | 검토했지만 채택하지 않은 결정                      |
 
-현재 `ADR-001`부터 `ADR-007`까지는 모두 `Accepted` 상태다.
+현재 `ADR-001`부터 `ADR-008`까지는 모두 `Accepted` 상태다.
 
 ---
 
@@ -72,6 +72,7 @@ ODYS는 개인용 AI 도구에서 출발하지만 장기적으로는 다양한 �
 | ADR-005 | AI SDK / Model Independence | Accepted |
 | ADR-006 | Supabase                    | Accepted |
 | ADR-007 | Progressive Autonomy        | Accepted |
+| ADR-008 | Integrated Agent Execution  | Accepted |
 
 ---
 
@@ -105,6 +106,18 @@ ODYS 애플리케이션의 기본 언어는 **TypeScript**로 한다.
 ### ADR-007 — Progressive Autonomy
 
 Agent 자율성은 낮은 위험의 관찰과 제안에서 시작하여 사용자 신뢰와 검증 수준에 따라 점진적으로 확대한다.
+
+### ADR-008 — Integrated Agent Execution
+
+Generic Agent execution orchestration은 ODYS Core Agent Runtime이 소유한다.
+
+Agent Runtime은 Model 및 Tool capability를 명시적인 Core-controlled boundary를 통해 composition하며, 현재의 staged runtime seam을 permanent architecture로 고정하지 않는다.
+
+Model execution은 provider-independent Model boundary를 사용하고, Model output은 validation 및 normalization 없이 trusted execution state나 Action authority로 취급하지 않는다.
+
+Agent-originated Tool request는 Agent-specific Tool capability boundary와 Tool Runtime을 통과해야 하며, Model reasoning 또는 Tool request 자체는 user, Workspace, Policy, Approval 또는 production external-Action authority를 생성하지 않는다.
+
+Model / Tool continuation과 retry는 명시적인 execution bound를 가지며, 초기 implementation limitation을 불필요한 장기 architectural restriction으로 고정하지 않는다.
 
 ---
 
