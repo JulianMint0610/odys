@@ -213,6 +213,29 @@ pnpm check
 
 세부 원칙은 `TEST_STRATEGY.md`를 따른다.
 
+### 10.1 Read-Only Repository Status
+
+로컬 검증을 시작하기 전에 다음 command로 현재 repository 사실을 확인할 수 있다.
+
+```bash
+corepack pnpm dev:status
+```
+
+Implemented:
+
+- 로컬 repository root, branch/분리된 HEAD, HEAD와 local `main` commit을 조회한다.
+- modified tracked file, untracked file과 local `main` 기준 ahead/behind count를 읽기 전용으로 보고한다.
+
+Not implemented:
+
+- readiness policy 또는 state-machine transition
+- 자동 검증 또는 `pnpm check` 실행
+- AI orchestration
+- commit, push, Pull Request, CI polling, merge 또는 branch cleanup 자동화
+- source bundle synchronization 또는 smoke-test 자동화
+
+이 command는 local Git state만 수집하며 commit, merge, push, release 또는 다음 작업 진행 가능 여부를 판단하지 않는다.
+
 ---
 
 ## 11. Step 6 — Review
