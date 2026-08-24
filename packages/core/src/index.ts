@@ -1,6 +1,7 @@
 export {
   AgentToolNotAllowedError,
   assertAgentToolAllowed,
+  createModelBackedAgentRuntimeExecutor,
   createAgentRegistry,
   createAgentRuntime,
   createAgentToolRuntime,
@@ -12,6 +13,7 @@ export {
   InvalidAgentToolRuntimeRequestError,
   UnknownAgentError,
   type AgentDefinition,
+  type AgentModelIdResolver,
   type AgentToolAllowanceEvaluation,
   type AgentRegistry,
   type AgentRuntime,

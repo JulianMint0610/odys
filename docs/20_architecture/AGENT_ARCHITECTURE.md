@@ -325,7 +325,7 @@ Model Strategy, Execution Policy, Context, input/output contract, permission, au
 
 `assertAgentToolAllowed()`는 matching을 이 evaluator에 전적으로 위임하는 fail-closed guard다. Exact declaration이 있으면 정상 반환하고 없으면 exact Agent ID와 requested Tool ID를 가진 `AgentToolNotAllowedError`를 던진다. Declaration, successful evaluation 또는 guard 통과는 Tool existence, Tool request handling, permission grant/resolution, user/Workspace authorization, Policy, Approval, Audit 또는 Tool execution authority를 확립하지 않는다. Tool-side `requiredPermissions`는 별개의 독립 contract이며 어느 쪽에서도 다른 쪽을 derive하지 않는다.
 
-Core에는 별도의 최소 Model Definition, Model Registry 및 registered-Model dispatch Runtime foundation도 존재하지만, staged `AgentDefinition`은 `model`, `modelStrategy` 또는 `allowedModels`를 포함하지 않는다. Common Agent Runtime은 Model Registry나 Model Runtime에 연결되지 않으며 계속해서 IMPLEMENTATION-008에서 도입한 injected provider-neutral `AgentRuntimeExecutor` seam만 사용한다.
+Core에는 별도의 최소 Model Definition, Model Registry 및 registered-Model dispatch Runtime foundation도 존재한다. Staged `AgentDefinition`은 계속해서 `model`, `modelStrategy` 또는 `allowedModels`를 포함하지 않으며 `createAgentRuntime()`의 public contract도 변경되지 않았다. IMPLEMENTATION-022는 existing `AgentRuntimeExecutor` seam을 구현하는 별도 model-backed adapter를 추가하여 trusted construction-time resolver가 logical ODYS Model ID를 선택하고 existing Model Runtime에 위임할 수 있게 한다. 이 resolver는 final Model Strategy나 capability-based Model Router가 아니다.
 
 ---
 
@@ -517,7 +517,9 @@ Agent마다 별도의 runtime implementation을 만드는 대신 공통 runtime�
 
 현재 `@odys/core`의 첫 Common Agent Runtime foundation은 runtime request를 검증하고, injected `AgentRegistry`에서 stable ID로 Agent를 조회하고, Registry가 소유하는 정확한 immutable `AgentDefinition` snapshot과 opaque input을 injected `AgentRuntimeExecutor`에 한 번 전달한 뒤 opaque result를 반환한다. Runtime은 definition을 다시 clone하지 않는다. Runtime은 Registry reference를 유지하므로 Runtime 생성 후 등록된 Agent도 이후 request에서 조회할 수 있으며, Registry와 Runtime instance 사이에 global mutable state를 공유하지 않는다.
 
-이 staged executor는 Registry lookup을 넘어서는 dispatch behavior를 검증하기 위한 provider-neutral seam이며 최종 Agent execution architecture나 authority boundary가 아니다. 별도의 Model Definition/Registry와 Model Runtime foundation이 존재하지만 Agent Runtime은 Model Registry 또는 Model Runtime에 의존하지 않는다. 기존 Common Agent Runtime contract도 변경되지 않았다. 별도의 최소 `AgentToolRuntime` composition이 `{ agentId, toolId, input }` request를 검증하고 exact Registry-owned Agent snapshot을 resolve한 뒤 `assertAgentToolAllowed()`를 호출하고, allowed request만 기존 Tool Runtime에 위임하여 기존 result를 그대로 반환한다. Context assembly, Model strategy, Model invocation, model-generated Tool request handling과 continuation, permission grant/persistence, user/Workspace authorization, Policy, Approval, Task lifecycle, Memory processing, Audit, execution persistence 또는 Pack-to-Agent registration은 구현하지 않는다. Agent registration과 allowlist guard 통과는 Model 또는 production Tool execution authority를 부여하지 않는다.
+이 staged executor는 Registry lookup을 넘어서는 dispatch behavior를 검증하기 위한 provider-neutral seam이며 최종 Agent execution architecture나 authority boundary가 아니다. `createAgentRuntime()` 자체는 Model Registry 또는 Model Runtime에 직접 의존하지 않고 기존 public contract를 유지한다. IMPLEMENTATION-022의 `createModelBackedAgentRuntimeExecutor()`는 exact executor request를 trusted `AgentModelIdResolver`에 한 번 전달하고 resolver가 반환한 logical Model ID와 같은 request object를 existing `ModelRuntime.run()`에 전달한 뒤 exact `ModelRuntimeResult`를 opaque Agent executor output으로 반환한다. Model Runtime은 계속해서 request validation, Model Registry resolution과 provider-independent executor dispatch를 소유한다. `AgentModelIdResolver`는 final Model Strategy나 capability-based Model Router가 아니며 Agent input의 `modelId`, `provider` 또는 `providerModelId` field는 selection authority가 아니다.
+
+별도의 최소 `AgentToolRuntime` composition은 `{ agentId, toolId, input }` request를 검증하고 exact Registry-owned Agent snapshot을 resolve한 뒤 `assertAgentToolAllowed()`를 호출하고, allowed request만 기존 Tool Runtime에 위임하여 기존 result를 그대로 반환한다. Agent-to-Model path와 Agent-to-Tool path는 아직 연결되지 않았다. Context assembly, complete Model Strategy, normalized Model execution, Model outcome interpretation, model-generated Tool request handling과 continuation, permission grant/persistence, user/Workspace authorization, Policy, Approval, Task lifecycle, Memory processing, Audit, execution persistence 또는 Pack-to-Agent registration은 구현하지 않는다. Agent registration, Model resolution과 allowlist guard 통과는 Model trust 또는 production Tool execution authority를 부여하지 않는다.
 
 ---
 
@@ -1697,7 +1699,7 @@ packages/core/src/agent/
 
 ```
 
-현재 `packages/core/src/agent/`에는 최소 contract와 Registry foundation, execution-independent exact Tool allowlist evaluator와 fail-closed guard에 더해 request validation, registered-Agent resolution, provider-neutral executor dispatch 및 opaque result return만 담당하는 첫 Common Agent Runtime foundation이 구현되어 있다. 또한 dedicated `AgentToolRuntime`이 exact Registry-owned Agent snapshot의 allowlist를 guard한 뒤 existing Tool Runtime에 allowed request를 위임한다. 별도 `packages/core/src/tool/`에는 최소 Tool Definition과 Registry foundation이, `packages/core/src/model/`에는 최소 Model Definition/Registry와 registered-Model dispatch Runtime foundation이 구현되어 있다. Common Agent Runtime은 Model Registry 또는 Model Runtime과 integration을 추가하지 않았으며, concrete Agent definition, model-generated Tool request lifecycle, Model integration과 production authority를 포함한 완전한 실행 lifecycle은 후속 단계다.
+현재 `packages/core/src/agent/`에는 최소 contract와 Registry foundation, execution-independent exact Tool allowlist evaluator와 fail-closed guard에 더해 request validation, registered-Agent resolution, provider-neutral executor dispatch 및 opaque result return만 담당하는 첫 Common Agent Runtime foundation이 구현되어 있다. Dedicated `AgentToolRuntime`은 exact Registry-owned Agent snapshot의 allowlist를 guard한 뒤 existing Tool Runtime에 allowed request를 위임한다. 별도의 model-backed `AgentRuntimeExecutor` adapter는 trusted construction-time resolver가 선택한 logical Model ID를 exact Agent executor request와 함께 existing Model Runtime에 전달하고 그 opaque result를 그대로 반환한다. 별도 `packages/core/src/tool/`에는 최소 Tool Definition과 Registry foundation이, `packages/core/src/model/`에는 최소 Model Definition/Registry와 registered-Model dispatch Runtime foundation이 구현되어 있다. Final Model Strategy, normalized Model execution, Model outcome interpretation, model-generated Tool request lifecycle과 production authority를 포함한 완전한 실행 lifecycle은 후속 단계다.
 
 ---
 
@@ -1791,7 +1793,7 @@ Repeated Real Usage
 
 ```
 
-현재는 Agent declaration, execution-independent exact Tool allowlist evaluation과 fail-closed guard, Common Agent Runtime의 registered-Agent dispatch foundation, allowed request를 existing Guarded Tool Runtime에 전달하는 최소 Agent-to-Tool composition까지 구현되어 있다. 이 foundation만으로 Model 호출, model-generated Tool request handling과 continuation, real external Action authority 또는 complete Agent behavior가 제공되는 것은 아니다.
+현재는 Agent declaration, execution-independent exact Tool allowlist evaluation과 fail-closed guard, Common Agent Runtime의 registered-Agent dispatch foundation, trusted logical Model ID resolver를 통해 existing Model Runtime에 한 번 위임하는 staged Agent-to-Model composition, allowed request를 existing Guarded Tool Runtime에 전달하는 별도의 최소 Agent-to-Tool composition까지 구현되어 있다. Model result는 아직 opaque하며 두 composition path는 연결되지 않았다. 이 foundation만으로 complete Model Strategy, normalized Model execution, model-generated Tool request handling과 continuation, real external Action authority 또는 complete Agent behavior가 제공되는 것은 아니다.
 
 첫 번째 Agent가 실제 workflow에서 유용하다는 것이 검증된 이후 다른 Agent를 단계적으로 추가한다.
 
@@ -1878,6 +1880,8 @@ Agent architecture가 발전하더라도 다음 원칙은 유지한다.
 - `../40_decisions/ADR-005-ai-sdk-model-independence.md`
 
 - `../40_decisions/ADR-007-progressive-autonomy.md`
+
+- `../40_decisions/ADR-008-integrated-agent-execution.md`
 
 ---
 
