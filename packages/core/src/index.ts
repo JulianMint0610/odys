@@ -3,11 +3,13 @@ export {
   assertAgentToolAllowed,
   createAgentRegistry,
   createAgentRuntime,
+  createAgentToolRuntime,
   defineAgent,
   DuplicateAgentIdError,
   evaluateAgentToolAllowance,
   InvalidAgentDefinitionError,
   InvalidAgentRuntimeRequestError,
+  InvalidAgentToolRuntimeRequestError,
   UnknownAgentError,
   type AgentDefinition,
   type AgentToolAllowanceEvaluation,
@@ -16,6 +18,8 @@ export {
   type AgentRuntimeExecutor,
   type AgentRuntimeRequest,
   type AgentRuntimeResult,
+  type AgentToolRuntime,
+  type AgentToolRuntimeRequest,
 } from './agent/index.js';
 
 export {
