@@ -512,7 +512,7 @@ Agent Runtime은 domain-specific 전문지식 자체를 가지고 있지 않는�
 
 Runtime의 책임은 서로 다른 Agent를 동일한 실행 모델 위에서 일관되고 안전하게 실행하는 것이다.
 
-현재 구현된 첫 Agent Runtime foundation은 이 전체 lifecycle 중 runtime request validation, registered-Agent resolution, injected provider-neutral executor dispatch 및 opaque result return만 제공한다. Registry-owned Agent snapshot에는 required declarative `allowedTools`가 포함되지만 Runtime은 이 list를 평가하거나 Tool Runtime에 연결하지 않는다. 이 dispatch는 Agent registration 여부만 확인하며 Tool 또는 external Action authority를 만들지 않는다.
+현재 Core에는 required declarative `allowedTools`, execution-independent exact allowlist evaluator와 fail-closed guard가 구현되어 있다. 그러나 첫 Agent Runtime foundation은 이 전체 lifecycle 중 runtime request validation, registered-Agent resolution, injected provider-neutral executor dispatch 및 opaque result return만 제공하며 evaluator/guard를 호출하거나 Tool Runtime에 연결하지 않는다. 이 dispatch는 Agent registration 여부만 확인하며 Tool 또는 external Action authority를 만들지 않는다.
 
 ---
 
@@ -624,7 +624,9 @@ Agent Runtime은 ODYS Core에 속한다.
 
 Definition construction은 ownership을 이전하지 않으며 caller object나 allowlist를 clone, freeze 또는 변경하지 않는다. 성공한 registration은 caller object를 freeze하지 않고 새 frozen outer object와 copied frozen `allowedTools` array를 해당 Registry entry의 canonical snapshot으로 소유한다. 따라서 등록된 Agent definition과 nested allowlist는 entry lifetime 동안 caller mutation과 다른 Registry instance로부터 격리된다.
 
-현재 Runtime은 valid request가 Registry에 등록된 exact canonical Agent snapshot만 provider-neutral executor seam으로 한 번 dispatch하고 opaque result를 반환한다. Executor가 snapshot의 `allowedTools`를 관찰할 수는 있지만 Runtime은 allowlist를 enforce하거나 Tool Runtime을 호출하지 않는다. Agent registration, allowlist membership과 definition immutability는 Tool authority를 부여하지 않는다. Context 조합, Model 호출, Tool 호출, Agent-to-Tool allowlist enforcement, permission, policy, Approval, Task lifecycle, Memory processing, Audit 및 execution persistence를 포함한 완전한 Agent execution lifecycle은 아직 구현되지 않았다.
+`evaluateAgentToolAllowance()`는 supplied definition의 `allowedTools`에서 requested string의 exact case-sensitive membership만 평가하여 frozen `{ isAllowed }` result를 반환한다. Empty allowlist는 항상 deny하며 wildcard, prefix, hierarchy, normalization 또는 case-folding semantics는 없다. Candidate validation이나 Tool/Agent Registry lookup을 수행하지 않으므로 unknown-but-declared canonical Tool ID도 allow될 수 있다. `assertAgentToolAllowed()`는 이 evaluator를 single source of truth로 재사용하고 denial이면 exact Agent ID와 requested Tool ID를 가진 `AgentToolNotAllowedError`를 던진다. 두 primitive는 caller-owned definition이나 allowlist를 변경 또는 freeze하지 않는다.
+
+현재 Runtime은 valid request가 Registry에 등록된 exact canonical Agent snapshot만 provider-neutral executor seam으로 한 번 dispatch하고 opaque result를 반환한다. Executor가 snapshot의 `allowedTools`를 관찰할 수는 있지만 Runtime은 allowlist guard를 호출하거나 Tool Runtime과 연결되지 않는다. Agent registration, allowlist membership, successful guard 또는 definition immutability는 Tool authority를 부여하지 않는다. Context 조합, Model 호출, Tool request handling, Agent Runtime ↔ Tool Runtime integration, permission grant/resolution, user/Workspace authorization, Policy, Approval, Task lifecycle, Memory processing, Audit 및 execution persistence를 포함한 완전한 Agent execution lifecycle은 아직 구현되지 않았다.
 
 ---
 
@@ -666,7 +668,7 @@ Definition construction은 ownership을 이전하지 않고 caller permission ar
 
 `createToolRuntime()`은 runtime request validation, live Registry resolution, input parsing, conditional permission-requirement enforcement, injected execution 및 output parsing을 구성한다. `run()` caller는 `toolId`와 raw `input`만 제공한다. Required permission이 있는 Tool만 trusted construction-time `resolvePermissionIdentifiers` seam을 호출하며 Runtime은 결과가 string array인지 검증한 뒤 기존 guard를 재사용한다. Empty-permission Tool은 resolver를 호출하지 않는다. Resolver와 executor는 exact Registry-owned Tool snapshot과 parsed input을 받으며 dependency failure는 wrapping이나 retry 없이 그대로 전파된다.
 
-Required-permission declaration, resolver가 제공한 identifier, successful requirement evaluation과 guard 통과는 permission grant, persistence, user/workspace authorization, Policy, Approval 또는 production execution authority가 아니다. Agent Tool allowlist declaration은 별도로 구현되어 있지만 Agent-to-Tool allowlist enforcement, complete Permission System, real authorization context, external Tool implementation, Policy, Approval, risk handling 및 Audit execution integration은 아직 구현되지 않았다. 따라서 staged Runtime의 존재, Registry registration 또는 Agent allowlist membership만으로 Agent authority 또는 안전한 external Action authority가 생기지 않는다.
+Required-permission declaration, resolver가 제공한 identifier, successful requirement evaluation과 guard 통과는 permission grant, persistence, user/workspace authorization, Policy, Approval 또는 production execution authority가 아니다. Agent Tool allowlist declaration, execution-independent exact evaluator와 fail-closed guard는 별도로 구현되어 있지만 Tool Runtime은 이를 호출하지 않는다. Agent Runtime ↔ Tool Runtime integration, Tool request handling, complete Permission System, real authorization context, external Tool implementation, Policy, Approval, risk handling 및 Audit execution integration은 아직 구현되지 않았다. 따라서 staged Runtime의 존재, Registry registration, Agent allowlist membership 또는 allowlist guard 통과만으로 Agent authority나 안전한 external Action authority가 생기지 않는다.
 
 ---
 
@@ -1356,7 +1358,7 @@ Pack은 Core가 제공하는 다음 extension point를 사용할 수 있다.
 
 - knowledge source configuration
 
-현재 코드에는 네 필드 manifest의 Pack identity validation과 instance-local Pack Registry가 구현되어 있다. 성공한 Pack registration은 caller-owned Pack을 저장하거나 freeze하지 않고 새 frozen `PackDefinition`과 새 frozen nested manifest를 Registry entry의 canonical snapshot으로 소유하며, `get()`과 `list()`는 이 snapshot을 재사용한다. 또한 required declarative Tool allowlist를 포함하는 최소 Agent Definition public contract와 nested immutable ownership을 가진 Agent Registry foundation, registered-Agent dispatch만 제공하는 첫 Common Agent Runtime foundation, declarative required-permission metadata와 already-resolved identifier에 대한 deterministic requirement evaluation 및 enforcement guard를 조합하는 Guarded Tool Runtime foundation, 최소 Model Definition/Registry와 registered-Model dispatch만 제공하는 Model Runtime foundation이 구현되어 있다. Agent-to-Tool allowlist enforcement, Pack lifecycle/composition, Pack-to-Agent/Tool/Model registration, 완전한 Agent execution lifecycle, real provider/Tool execution, permission grant/persistence/authorization, Policy, Approval, Audit, Memory/runtime extension point, workflow 및 knowledge source 관련 extension point는 계획된 아키텍처이며 아직 구현되지 않았다.
+현재 코드에는 네 필드 manifest의 Pack identity validation과 instance-local Pack Registry가 구현되어 있다. 성공한 Pack registration은 caller-owned Pack을 저장하거나 freeze하지 않고 새 frozen `PackDefinition`과 새 frozen nested manifest를 Registry entry의 canonical snapshot으로 소유하며, `get()`과 `list()`는 이 snapshot을 재사용한다. 또한 required declarative Tool allowlist를 포함하는 최소 Agent Definition public contract, nested immutable ownership을 가진 Agent Registry foundation, execution-independent exact allowlist evaluator와 fail-closed guard, registered-Agent dispatch만 제공하는 첫 Common Agent Runtime foundation, declarative required-permission metadata와 already-resolved identifier에 대한 deterministic requirement evaluation 및 enforcement guard를 조합하는 Guarded Tool Runtime foundation, 최소 Model Definition/Registry와 registered-Model dispatch만 제공하는 Model Runtime foundation이 구현되어 있다. Agent Runtime ↔ Tool Runtime integration, Tool request handling, Pack lifecycle/composition, Pack-to-Agent/Tool/Model registration, 완전한 Agent execution lifecycle, real provider/Tool execution, permission grant/persistence/resolution, user/Workspace authorization, Policy, Approval, Audit, Memory/runtime extension point, workflow 및 knowledge source 관련 extension point는 계획된 아키텍처이며 아직 구현되지 않았다.
 
 현재 Tool Registry는 definition registration과 discovery만 담당하며 Tool을 실행하지 않는다.
 
@@ -1400,7 +1402,7 @@ Notification Channel
 
 ## 33. Initial Core Package Boundary
 
-실제 Core 구현은 `packages/core/`에 위치한다. 현재 구현 범위는 Pack identity public contract와 Pack Registry, `packages/core/src/agent/`의 최소 Agent Definition contract, Agent Registry 및 registered-Agent dispatch Runtime foundation, `packages/core/src/tool/`의 Tool Definition / Registry / input-output-validation / permission-requirement-enforcement / Guarded Tool Runtime foundation, `packages/core/src/model/`의 최소 Model Definition contract, Model Registry 및 registered-Model dispatch Runtime foundation이다. 아래의 나머지 구조는 후속 capability를 위한 개념적 방향이다.
+실제 Core 구현은 `packages/core/`에 위치한다. 현재 구현 범위는 Pack identity public contract와 Pack Registry, `packages/core/src/agent/`의 최소 Agent Definition contract, Agent Registry, execution-independent exact Tool allowlist evaluation과 fail-closed guard 및 registered-Agent dispatch Runtime foundation, `packages/core/src/tool/`의 Tool Definition / Registry / input-output-validation / permission-requirement-enforcement / Guarded Tool Runtime foundation, `packages/core/src/model/`의 최소 Model Definition contract, Model Registry 및 registered-Model dispatch Runtime foundation이다. 아래의 나머지 구조는 후속 capability를 위한 개념적 방향이다.
 
 예상 구조는 다음과 같다.
 

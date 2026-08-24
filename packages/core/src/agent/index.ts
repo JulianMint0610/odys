@@ -1,9 +1,15 @@
 export {
+  AgentToolNotAllowedError,
   DuplicateAgentIdError,
   InvalidAgentDefinitionError,
   InvalidAgentRuntimeRequestError,
   UnknownAgentError,
 } from './agent-errors.js';
+export {
+  assertAgentToolAllowed,
+  evaluateAgentToolAllowance,
+  type AgentToolAllowanceEvaluation,
+} from './agent-tool-allowlist.js';
 export { createAgentRegistry, type AgentRegistry } from './agent-registry.js';
 export {
   createAgentRuntime,
