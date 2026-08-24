@@ -16,6 +16,10 @@ export {
   type AgentToolRuntime,
   type AgentToolRuntimeRequest,
 } from './agent-tool-runtime.js';
+export {
+  createModelBackedAgentRuntimeExecutor,
+  type AgentModelIdResolver,
+} from './agent-model-runtime-executor.js';
 export { createAgentRegistry, type AgentRegistry } from './agent-registry.js';
 export {
   createAgentRuntime,

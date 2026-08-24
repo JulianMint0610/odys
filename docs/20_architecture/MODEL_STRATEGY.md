@@ -384,7 +384,9 @@ Registry는 실제 implementation에 따라 configuration 또는 code로 관리�
 
 `ModelRuntime`은 request의 canonical logical Model ID를 검증하고 injected `ModelRegistry`에서 Registry-owned exact immutable `ModelDefinition` snapshot을 resolve한 뒤, definition을 다시 clone하지 않고 opaque input과 함께 provider-independent injected `ModelRuntimeExecutor` seam으로 정확히 한 번 dispatch하며 opaque output을 반환한다. 이 ownership hardening은 concrete Provider execution 도입 전에 `provider`와 `providerModelId`가 caller mutation으로 바뀌지 않도록 보장한다. Registry membership과 definition immutability는 이 staged Runtime composition에서 dispatch eligibility만 제공하며, 그 자체로 concrete Provider authority, Provider SDK 또는 network execution을 제공하지 않는다.
 
-Normalized provider Model request/response, Model Gateway, concrete Provider Adapter와 Provider SDK integration, Model Capability, Model Strategy, Model Router, Agent Runtime integration, Tool calling integration, structured output, timeout, retry, fallback 및 usage accounting은 아직 구현되지 않았다.
+IMPLEMENTATION-022는 existing Common Agent Runtime의 executor seam을 구현하는 model-backed adapter를 추가한다. Trusted construction-time `AgentModelIdResolver`가 Registry-owned Agent definition과 original opaque input을 받아 logical ODYS Model ID를 선택하면 adapter가 같은 executor request object를 `ModelRuntime.input`으로 전달한다. Existing Model Runtime은 request와 logical ID validation, Model Registry resolution 및 provider-independent executor dispatch를 계속 소유한다. Agent input의 `modelId`, `provider` 또는 `providerModelId` field는 selection authority가 아니며 Model result는 해석 없이 opaque data로 반환된다. 이 temporary resolver는 final Model Strategy나 capability-based Model Router가 아니다.
+
+Normalized provider Model request/response, Model Gateway, concrete Provider Adapter와 Provider SDK integration, Model Capability, complete Model Strategy, Model Router, complete integrated Agent execution, Tool calling integration, structured output, timeout, retry, fallback 및 usage accounting은 아직 구현되지 않았다.
 
 ---
 
@@ -1706,7 +1708,7 @@ concrete provider adapter의 실제 위치는 implementation 단계에서 결정
 
 별도의 service가 필요하지 않은 동안 Modular Monolith 내부에 유지한다.
 
-현재는 이 위치에 최소 `ModelDefinition`, definition/runtime request validation, Registry-owned immutable definition snapshot을 보관하는 instance-local `ModelRegistry`, registered-Model dispatch를 위한 `ModelRuntime` request/result contract와 provider-independent injected executor seam이 구현되어 있다. Normalized provider execution request/response, Model Gateway 및 concrete Provider Adapter는 후속 단계다.
+현재는 이 위치에 최소 `ModelDefinition`, definition/runtime request validation, Registry-owned immutable definition snapshot을 보관하는 instance-local `ModelRegistry`, registered-Model dispatch를 위한 `ModelRuntime` request/result contract와 provider-independent injected executor seam이 구현되어 있다. Agent module에는 existing Agent Runtime executor seam을 trusted logical Model resolver와 existing Model Runtime에 연결하는 staged adapter가 구현되어 있다. 이 adapter는 exact Agent executor request를 opaque Model input으로 전달하고 exact `ModelRuntimeResult`를 해석 없이 반환한다. Normalized provider execution request/response, Model Gateway 및 concrete Provider Adapter는 후속 단계다.
 
 ---
 
@@ -1755,6 +1757,8 @@ Second Provider or Routing When Needed
 처음부터 여러 provider를 연결하는 것이 model independence의 필수 조건은 아니다.
 
 **교체 가능한 경계를 만드는 것**이 우선이다.
+
+현재 staged Agent-to-Model adapter는 위 target progression의 final Agent Integration을 구현한 것이 아니다. 이는 complete Model Strategy 이전에 logical Model ID resolution과 existing Runtime boundary composition만 검증하는 temporary seam이며 capability-based routing을 대체하지 않는다.
 
 ---
 
@@ -1851,6 +1855,8 @@ Model architecture가 발전하더라도 다음 원칙은 유지한다.
 - `../40_decisions/ADR-005-ai-sdk-model-independence.md`
 
 - `../40_decisions/ADR-007-progressive-autonomy.md`
+
+- `../40_decisions/ADR-008-integrated-agent-execution.md`
 
 ---
 
