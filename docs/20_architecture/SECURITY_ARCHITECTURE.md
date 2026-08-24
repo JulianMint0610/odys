@@ -914,6 +914,18 @@ structured domain object creation
 
 Model이 JSON을 생성했다는 이유만으로 valid하지 않다.
 
+IMPLEMENTATION-023은 untrusted opaque Model output에 명시적으로 적용하는 `parseModelOutcome()` boundary를 제공한다.
+
+```text
+untrusted Model output
+        ↓
+parseModelOutcome()
+        ↓
+canonical frozen outer ModelOutcome
+```
+
+Parser는 own required property와 exact `final | tool-request` discriminant, Tool request의 canonical Tool ID syntax만 검증한다. Authority, permission, Policy, Approval, provider 또는 model metadata처럼 보이는 arbitrary extra top-level field는 해석하지 않고 canonical outcome에서 제거한다. Nested `output`과 `input`은 clone하거나 freeze하지 않는 opaque untrusted value로 유지한다. 따라서 successful ModelOutcome parsing은 staged execution-control shape만 검증하며 Tool existence, Agent allowance, Tool input validation, permission, user/Workspace authorization, Policy, Approval, Audit 또는 execution authority를 확립하지 않는다. Existing Model Runtime과 Agent Runtime은 아직 이 parser를 자동 호출하지 않고 Model-generated Tool execution도 구현하지 않는다.
+
 ---
 
 ## 26. Tool Security Boundary

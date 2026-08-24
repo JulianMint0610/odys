@@ -3,8 +3,10 @@ export {
   DuplicateModelIdError,
   InvalidModelDefinitionError,
   InvalidModelRuntimeRequestError,
+  ModelOutcomeValidationError,
   UnknownModelError,
 } from './model-errors.js';
+export { parseModelOutcome, type ModelOutcome } from './model-outcome.js';
 export { createModelRegistry, type ModelRegistry } from './model-registry.js';
 export {
   createModelRuntime,
