@@ -238,6 +238,40 @@ Not implemented:
 
 ---
 
+### 10.2 Developer Worktree Preflight
+
+Run the deterministic local worktree topology check from the repository root:
+
+```bash
+corepack pnpm dev:preflight
+```
+
+The result has exactly two policy states: `READY` and `BLOCKED`. `READY` has a narrow meaning: the current local worktree has a structurally valid topology for development relative to the currently available local `main`.
+
+`READY` does not mean that tests passed, the implementation is correct, the worktree is safe to stage, commit, push, or merge, the local `main` is current with a remote, CI passed, or a release is ready.
+
+The preflight returns blocking reasons in this stable policy order:
+
+1. `detached_head` — a named development branch is required.
+2. `on_main` — development work must not run directly on `main`.
+3. `local_main_unavailable` — the local comparison baseline is unavailable.
+4. `behind_local_main` — the current branch is behind local `main`, including divergence.
+
+A dirty worktree, tracked modifications, untracked files, and being ahead of local `main` do not block readiness. These remain visible repository facts because an in-progress development worktree is normally dirty.
+
+The command is local-only and read-only. It reuses the repository facts collected by `dev:status`; it does not fetch, inspect, or infer remote state. Exit code `0` means `READY`, exit code `2` means a deterministic policy `BLOCKED`, and exit code `1` means an unexpected collection or runtime failure.
+
+Still not implemented:
+
+- remote freshness
+- automatic `pnpm check`
+- state-machine transitions
+- Git mutation, commit, push, Pull Request, CI polling, merge, or branch cleanup
+- source synchronization or smoke-test orchestration
+- AI or model orchestration
+
+---
+
 ## 11. Step 6 — Review
 
 ### Correctness
