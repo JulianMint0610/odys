@@ -12,6 +12,18 @@ export class DuplicateAgentIdError extends Error {
   }
 }
 
+export class AgentToolNotAllowedError extends Error {
+  public readonly agentId: string;
+  public readonly toolId: string;
+
+  public constructor(agentId: string, toolId: string) {
+    super(`Agent "${agentId}" does not declare Tool "${toolId}" in allowedTools.`);
+    this.name = 'AgentToolNotAllowedError';
+    this.agentId = agentId;
+    this.toolId = toolId;
+  }
+}
+
 export class InvalidAgentRuntimeRequestError extends Error {
   public constructor(message: string) {
     super(message);
