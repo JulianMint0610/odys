@@ -517,7 +517,7 @@ Agent마다 별도의 runtime implementation을 만드는 대신 공통 runtime�
 
 현재 `@odys/core`의 첫 Common Agent Runtime foundation은 runtime request를 검증하고, injected `AgentRegistry`에서 stable ID로 Agent를 조회하고, Registry가 소유하는 정확한 immutable `AgentDefinition` snapshot과 opaque input을 injected `AgentRuntimeExecutor`에 한 번 전달한 뒤 opaque result를 반환한다. Runtime은 definition을 다시 clone하지 않는다. Runtime은 Registry reference를 유지하므로 Runtime 생성 후 등록된 Agent도 이후 request에서 조회할 수 있으며, Registry와 Runtime instance 사이에 global mutable state를 공유하지 않는다.
 
-이 staged executor는 Registry lookup을 넘어서는 dispatch behavior를 검증하기 위한 provider-neutral seam이며 최종 Agent execution architecture나 authority boundary가 아니다. 별도의 Model Definition/Registry와 Model Runtime foundation이 존재하지만 Agent Runtime은 Model Registry 또는 Model Runtime에 의존하지 않는다. Execution-independent allowlist evaluator와 guard가 별도로 존재하지만 Agent Runtime은 이를 호출하지 않고 Tool Runtime과도 연결되지 않는다. Context assembly, Model strategy, Model invocation, Tool request handling, Agent Runtime ↔ Tool Runtime integration, permission grant/resolution, user/Workspace authorization, Policy, Approval, Task lifecycle, Memory processing, Audit, execution persistence 또는 Pack-to-Agent registration도 구현하지 않는다. Agent registration은 dispatch eligibility만 의미하며 Model 또는 Tool execution authority를 부여하지 않는다.
+이 staged executor는 Registry lookup을 넘어서는 dispatch behavior를 검증하기 위한 provider-neutral seam이며 최종 Agent execution architecture나 authority boundary가 아니다. 별도의 Model Definition/Registry와 Model Runtime foundation이 존재하지만 Agent Runtime은 Model Registry 또는 Model Runtime에 의존하지 않는다. 기존 Common Agent Runtime contract도 변경되지 않았다. 별도의 최소 `AgentToolRuntime` composition이 `{ agentId, toolId, input }` request를 검증하고 exact Registry-owned Agent snapshot을 resolve한 뒤 `assertAgentToolAllowed()`를 호출하고, allowed request만 기존 Tool Runtime에 위임하여 기존 result를 그대로 반환한다. Context assembly, Model strategy, Model invocation, model-generated Tool request handling과 continuation, permission grant/persistence, user/Workspace authorization, Policy, Approval, Task lifecycle, Memory processing, Audit, execution persistence 또는 Pack-to-Agent registration은 구현하지 않는다. Agent registration과 allowlist guard 통과는 Model 또는 production Tool execution authority를 부여하지 않는다.
 
 ---
 
@@ -893,7 +893,7 @@ Agent가 Tool Registry에 존재하는 모든 Tool을 자동으로 사용할 수
 
 현재 staged `AgentDefinition`은 required `allowedTools` declaration을 가지며 canonical Tool ID syntax와 exact uniqueness를 검증한다. Execution-independent `evaluateAgentToolAllowance()`는 requested string의 exact case-sensitive membership만 frozen result로 반환하고, `assertAgentToolAllowed()`는 이 evaluator를 재사용하여 denial을 `AgentToolNotAllowedError`로 fail closed한다. Empty allowlist는 모든 Tool ID를 거부하고 wildcard, prefix, hierarchy, normalization 또는 case-folding semantics는 없다. Unknown-but-declared canonical Tool ID도 Registry lookup 없이 allowed일 수 있다.
 
-별도의 Guarded Tool Runtime foundation은 exact registered Tool resolution, input/output parsing과 Tool-side `requiredPermissions` enforcement를 조합하지만 Agent definition이나 Agent Registry에 의존하지 않는다. 반대로 Agent allowlist primitive는 Tool Registry나 Tool Runtime에 의존하지 않고 Tool existence를 검증하지 않는다. Agent `allowedTools`와 Tool `requiredPermissions`는 서로 다른 control axis다. Allowlist guard 통과와 Tool Registry membership을 함께 충족해도 permission grant/resolution, user/Workspace authorization, Policy approval, user Approval, Audit 또는 production external-Action authority가 생기지 않는다. Tool request handling과 Agent Runtime ↔ Tool Runtime execution composition은 후속 단계다.
+별도의 Guarded Tool Runtime foundation은 exact registered Tool resolution, input/output parsing과 Tool-side `requiredPermissions` enforcement를 조합하지만 Agent definition이나 Agent Registry에 의존하지 않는다. 반대로 Agent allowlist primitive는 Tool Registry나 Tool Runtime에 의존하지 않고 Tool existence를 검증하지 않는다. `AgentToolRuntime`은 Registry-owned Agent snapshot에 이 guard를 적용한 뒤 existing Tool Runtime을 호출하는 최소 composition boundary다. Denied request는 Tool Runtime의 permission resolver나 executor에 도달하지 않고, unknown-but-declared Tool ID는 allowlist를 통과한 뒤 Tool Runtime의 unknown-Tool semantics로 실패한다. Agent `allowedTools`와 Tool `requiredPermissions`는 서로 다른 control axis다. Allowlist guard 통과와 Tool Registry membership을 함께 충족해도 permission grant/persistence, user/Workspace authorization, Policy approval, user Approval, Audit 또는 production external-Action authority가 생기지 않는다. Model-generated Tool request handling과 complete Agent Tool-request lifecycle은 후속 단계다.
 
 ---
 
@@ -1471,7 +1471,7 @@ valid output contract
 
 ```
 
-현재 구현된 Agent Registry foundation은 Agent Definition 자체의 runtime validation, canonical unique `allowedTools` declaration과 unique Agent ID를 강제한다. 등록 시 Tool Registry membership은 검증하지 않으므로 unknown-but-canonical Tool reference도 유효하다. 별도의 evaluator와 fail-closed guard는 supplied definition만 사용하며 Agent Registry를 조회하지 않는다. Common Agent Runtime foundation은 valid request가 Registry에 등록된 Agent를 대상으로 할 때만 executor dispatch를 허용하고 이 guard를 호출하거나 Tool Runtime과 연결하지 않는다. Registered Tool 존재 여부, Model Strategy, execution policy 및 output contract 검증은 해당 contract와 완전한 execution lifecycle이 구현된 뒤 추가한다. Registry 자체는 Agent를 실행하거나 Pack lifecycle에 연결하지 않는다.
+현재 구현된 Agent Registry foundation은 Agent Definition 자체의 runtime validation, canonical unique `allowedTools` declaration과 unique Agent ID를 강제한다. 등록 시 Tool Registry membership은 검증하지 않으므로 unknown-but-canonical Tool reference도 유효하다. 별도의 evaluator와 fail-closed guard는 supplied definition만 사용하며 Agent Registry를 조회하지 않는다. Common Agent Runtime foundation은 valid request가 Registry에 등록된 Agent를 대상으로 할 때만 provider-neutral executor dispatch를 허용한다. 별도의 `AgentToolRuntime`은 Agent Registry가 반환한 exact canonical snapshot을 다시 만들지 않고 allowlist guard에 전달한 다음 existing Tool Runtime에 위임한다. Registered Tool 존재 여부와 Tool-side validation 및 permission requirement enforcement는 Tool Runtime이 담당한다. Model Strategy와 complete output contract는 완전한 execution lifecycle이 구현된 뒤 추가한다. Registry 자체는 Agent를 실행하거나 Pack lifecycle에 연결하지 않는다.
 
 ---
 
@@ -1697,7 +1697,7 @@ packages/core/src/agent/
 
 ```
 
-현재 `packages/core/src/agent/`에는 최소 contract와 Registry foundation, execution-independent exact Tool allowlist evaluator와 fail-closed guard에 더해 request validation, registered-Agent resolution, provider-neutral executor dispatch 및 opaque result return만 담당하는 첫 Common Agent Runtime foundation이 구현되어 있다. 별도 `packages/core/src/tool/`에는 최소 Tool Definition과 Registry foundation이, `packages/core/src/model/`에는 최소 Model Definition/Registry와 registered-Model dispatch Runtime foundation이 구현되어 있다. Agent Runtime은 allowlist guard, Model Registry, Model Runtime 또는 Tool Runtime과 execution integration을 추가하지 않았으며, concrete Agent definition, Model 및 Tool integration과 production authority를 포함한 완전한 실행 lifecycle은 후속 단계다.
+현재 `packages/core/src/agent/`에는 최소 contract와 Registry foundation, execution-independent exact Tool allowlist evaluator와 fail-closed guard에 더해 request validation, registered-Agent resolution, provider-neutral executor dispatch 및 opaque result return만 담당하는 첫 Common Agent Runtime foundation이 구현되어 있다. 또한 dedicated `AgentToolRuntime`이 exact Registry-owned Agent snapshot의 allowlist를 guard한 뒤 existing Tool Runtime에 allowed request를 위임한다. 별도 `packages/core/src/tool/`에는 최소 Tool Definition과 Registry foundation이, `packages/core/src/model/`에는 최소 Model Definition/Registry와 registered-Model dispatch Runtime foundation이 구현되어 있다. Common Agent Runtime은 Model Registry 또는 Model Runtime과 integration을 추가하지 않았으며, concrete Agent definition, model-generated Tool request lifecycle, Model integration과 production authority를 포함한 완전한 실행 lifecycle은 후속 단계다.
 
 ---
 
@@ -1791,7 +1791,7 @@ Repeated Real Usage
 
 ```
 
-현재는 Agent declaration, execution-independent exact Tool allowlist evaluation과 fail-closed guard, Common Agent Runtime의 registered-Agent dispatch foundation까지 서로 분리된 단계로 구현되어 있다. 이 foundation만으로 Model 호출, Tool request handling, Tool 실행 또는 real Agent behavior가 제공되는 것은 아니다.
+현재는 Agent declaration, execution-independent exact Tool allowlist evaluation과 fail-closed guard, Common Agent Runtime의 registered-Agent dispatch foundation, allowed request를 existing Guarded Tool Runtime에 전달하는 최소 Agent-to-Tool composition까지 구현되어 있다. 이 foundation만으로 Model 호출, model-generated Tool request handling과 continuation, real external Action authority 또는 complete Agent behavior가 제공되는 것은 아니다.
 
 첫 번째 Agent가 실제 workflow에서 유용하다는 것이 검증된 이후 다른 Agent를 단계적으로 추가한다.
 

@@ -31,6 +31,13 @@ export class InvalidAgentRuntimeRequestError extends Error {
   }
 }
 
+export class InvalidAgentToolRuntimeRequestError extends Error {
+  public constructor(message: string) {
+    super(message);
+    this.name = 'InvalidAgentToolRuntimeRequestError';
+  }
+}
+
 export class UnknownAgentError extends Error {
   public constructor(agentId: string) {
     super(`Agent with id "${agentId}" is not registered`);

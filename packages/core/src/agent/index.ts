@@ -3,6 +3,7 @@ export {
   DuplicateAgentIdError,
   InvalidAgentDefinitionError,
   InvalidAgentRuntimeRequestError,
+  InvalidAgentToolRuntimeRequestError,
   UnknownAgentError,
 } from './agent-errors.js';
 export {
@@ -10,6 +11,11 @@ export {
   evaluateAgentToolAllowance,
   type AgentToolAllowanceEvaluation,
 } from './agent-tool-allowlist.js';
+export {
+  createAgentToolRuntime,
+  type AgentToolRuntime,
+  type AgentToolRuntimeRequest,
+} from './agent-tool-runtime.js';
 export { createAgentRegistry, type AgentRegistry } from './agent-registry.js';
 export {
   createAgentRuntime,
