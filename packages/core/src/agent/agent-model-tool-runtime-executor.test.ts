@@ -20,6 +20,7 @@ import {
   type AgentToolRuntime,
   type ModelRuntime,
   type ModelRuntimeResult,
+  type ModelTurn,
   type ToolRuntimeExecutor,
   type ToolRuntimePermissionIdentifierResolver,
   type ToolRuntimeResult,
@@ -100,10 +101,12 @@ describe('Agent Model Tool Runtime Executor', () => {
       expect(received).toBe(request);
       return modelId;
     });
+    let initialTurn: unknown;
     const modelRuntime: ModelRuntime = {
       run: vi.fn(async (received) => {
         expect(received.modelId).toBe(modelId);
-        expect(received.input).toBe(request);
+        initialTurn = received.input;
+        expect(received.input).toMatchObject({ kind: 'initial', input: request });
         return modelResult({ kind: 'final', output });
       }),
     };
@@ -120,6 +123,11 @@ describe('Agent Model Tool Runtime Executor', () => {
     expect(resolveModelId).toHaveBeenCalledOnce();
     expect(modelRuntime.run).toHaveBeenCalledOnce();
     expect(agentToolRuntime.run).not.toHaveBeenCalled();
+    expect(Object.keys(initialTurn as object)).toEqual(['kind', 'input']);
+    expect(Object.isFrozen(initialTurn)).toBe(true);
+    const ownedInitialTurn = initialTurn as Extract<ModelTurn, { kind: 'initial' }>;
+    expect(ownedInitialTurn.input).toBe(request);
+    expect(Object.isFrozen(request)).toBe(false);
   });
 
   it('executes one canonical Tool request and returns the continued final output', async () => {
@@ -136,18 +144,21 @@ describe('Agent Model Tool Runtime Executor', () => {
       }),
     };
     const resolveModelId: AgentModelIdResolver = vi.fn(async () => modelId);
+    const rawToolRequest = {
+      kind: 'tool-request',
+      toolId,
+      input: toolInput,
+      ignoredProviderMetadata: true,
+    };
+    let initialTurn: unknown;
     let continuation: unknown;
     const modelRuntime: ModelRuntime = {
       run: vi.fn(async (received) => {
         if (vi.mocked(modelRuntime.run).mock.calls.length === 1) {
-          expect(received).toEqual({ modelId, input: request });
-          expect(received.input).toBe(request);
-          return modelResult({
-            kind: 'tool-request',
-            toolId,
-            input: toolInput,
-            ignoredProviderMetadata: true,
-          });
+          initialTurn = received.input;
+          expect(received.modelId).toBe(modelId);
+          expect(received.input).toMatchObject({ kind: 'initial', input: request });
+          return modelResult(rawToolRequest);
         }
 
         continuation = received.input;
@@ -168,26 +179,29 @@ describe('Agent Model Tool Runtime Executor', () => {
     expect(modelRuntime.run).toHaveBeenCalledTimes(2);
     expect(agentToolRuntime.run).toHaveBeenCalledOnce();
     expect(real.toolExecutor).toHaveBeenCalledOnce();
+    expect(initialTurn).toMatchObject({ kind: 'initial', input: request });
+    expect(Object.keys(initialTurn as object)).toEqual(['kind', 'input']);
+    expect(Object.isFrozen(initialTurn)).toBe(true);
+    const ownedInitialTurn = initialTurn as Extract<ModelTurn, { kind: 'initial' }>;
+    expect(ownedInitialTurn.input).toBe(request);
     expect(continuation).toMatchObject({
       kind: 'tool-result',
-      request,
+      input: request,
       toolRequest: { kind: 'tool-request', toolId, input: toolInput },
       toolResult: { toolId, output: { eventId: 'event-1' } },
     });
     expect(Object.keys(continuation as object)).toEqual([
       'kind',
-      'request',
+      'input',
       'toolRequest',
       'toolResult',
     ]);
-    const ownedContinuation = continuation as {
-      request: unknown;
-      toolRequest: { input: unknown };
-      toolResult: ToolRuntimeResult;
-    };
+    const ownedContinuation = continuation as Extract<ModelTurn, { kind: 'tool-result' }>;
     expect(Object.isFrozen(continuation)).toBe(true);
-    expect(ownedContinuation.request).toBe(request);
+    expect(ownedContinuation.input).toBe(request);
     expect(Object.isFrozen(ownedContinuation.toolRequest)).toBe(true);
+    expect(ownedContinuation.toolRequest).not.toBe(rawToolRequest);
+    expect(Object.keys(ownedContinuation.toolRequest)).toEqual(['kind', 'toolId', 'input']);
     expect(ownedContinuation.toolRequest.input).toBe(toolInput);
     expect(ownedContinuation.toolResult).toBe(exactToolResult);
     expect(Object.isFrozen(request)).toBe(false);
@@ -234,6 +248,30 @@ describe('Agent Model Tool Runtime Executor', () => {
     await expect(executor(request)).rejects.toBe(failure);
     expect(modelRuntime.run).toHaveBeenCalledOnce();
     expect(agentToolRuntime.run).toHaveBeenCalledOnce();
+  });
+
+  it('propagates a Tool executor failure unchanged without continuation or retry', async () => {
+    const { request } = createExecutorRequest();
+    const failure = new Error('Tool executor failed');
+    const real = createRealAgentToolRuntime({
+      executor: vi.fn(async () => {
+        throw failure;
+      }),
+    });
+    const modelRuntime: ModelRuntime = {
+      run: vi.fn(async () =>
+        modelResult({ kind: 'tool-request', toolId, input: { query: 'review' } }),
+      ),
+    };
+    const executor = createAgentModelToolRuntimeExecutor({
+      modelRuntime,
+      agentToolRuntime: real.agentToolRuntime,
+      resolveModelId: vi.fn(async () => modelId),
+    });
+
+    await expect(executor(request)).rejects.toBe(failure);
+    expect(real.toolExecutor).toHaveBeenCalledOnce();
+    expect(modelRuntime.run).toHaveBeenCalledOnce();
   });
 
   it('stops after Agent Tool denial without permission resolution, Tool execution, or continuation', async () => {
