@@ -390,7 +390,9 @@ IMPLEMENTATION-023은 opaque Model output에 명시적으로 적용할 수 있�
 
 이 narrow `ModelOutcome`은 complete ODYS Model Response가 아니며 initial execution-relevant interpretation contract다. `ModelRuntimeResult.output`은 계속 `unknown`이고 `ModelRuntime`과 existing opaque model-backed Agent executor는 parser를 자동 호출하지 않는다. 별도의 bounded Agent Model/Tool executor만 initial 및 continuation output에 parser를 명시적으로 적용하고 parsed Tool request 하나를 `AgentToolRuntime`에 연결한다. 이 staged composition은 complete Model Response나 general execution loop가 아니다.
 
-Normalized provider Model request/response, Model Gateway, concrete Provider Adapter와 Provider SDK integration, Model Capability, complete Model Strategy, Model Router, complete integrated Agent execution, Tool calling integration, structured output, timeout, retry, fallback 및 usage accounting은 아직 구현되지 않았다.
+IMPLEMENTATION-025는 Core Model module에 provider-independent `ModelTurn` contract와 `createInitialModelTurn()`, `createToolResultModelTurn()` construction primitive를 추가한다. `initial` turn은 opaque upstream `input`을, `tool-result` continuation turn은 opaque original `input`, exact canonical parsed Model Tool request 및 exact canonical Tool result reference를 표현한다. Core는 매번 새 frozen outer turn object만 소유하고 supplied nested reference를 clone, freeze, normalize 또는 mutate하지 않는다. 이 constructor는 Model output parser가 아니므로 untrusted output validation은 계속 `parseModelOutcome()`만 담당하며 Tool Registry, Agent allowance, permission 또는 authority를 평가하지 않는다. IMPLEMENTATION-024 bounded executor의 initial 및 continuation `ModelRuntime.input`만 이 explicit turn object로 이관되며 logical Model ID와 maximum one-Tool-turn / two-Model-invocation / no-retry bound는 유지된다.
+
+이 Model Turn foundation은 complete normalized Model Request/Response, Model Gateway, concrete Provider Adapter와 Provider SDK integration, Model Capability, complete Model Strategy, Model Router, complete integrated Agent execution, general Tool calling loop, Context assembly, structured output, timeout, retry, fallback 또는 usage accounting을 구현하지 않는다. Model-generated Tool request와 turn construction은 authorization, Policy approval, user Approval, Audit 또는 external Action authority를 부여하지 않는다.
 
 ---
 
@@ -1713,6 +1715,8 @@ concrete provider adapter의 실제 위치는 implementation 단계에서 결정
 별도의 service가 필요하지 않은 동안 Modular Monolith 내부에 유지한다.
 
 현재는 이 위치에 최소 `ModelDefinition`, definition/runtime request validation, Registry-owned immutable definition snapshot을 보관하는 instance-local `ModelRegistry`, registered-Model dispatch를 위한 `ModelRuntime` request/result contract와 provider-independent injected executor seam, opaque Model output을 narrow canonical `final | tool-request` execution meaning으로 명시적으로 검증하는 standalone `parseModelOutcome()` primitive가 구현되어 있다. Agent module의 existing staged adapter는 exact Agent executor request를 trusted logical Model resolver와 Model Runtime에 연결하고 exact opaque `ModelRuntimeResult`를 해석 없이 반환한다. 별도의 IMPLEMENTATION-024 bounded executor는 resolver를 invocation당 한 번 호출하고 같은 logical Model ID로 최대 두 번 Model Runtime을 사용한다. 각 opaque output은 parser를 통과하며 initial Tool request는 `AgentToolRuntime`을 통해 실행되고 canonical Tool result가 frozen outer continuation으로 같은 Model에 반환된다. 두 번째 Tool request는 실행하지 않고 명시적으로 실패하며 retry는 없다. 이 one-Tool-turn bound는 current staged implementation limitation이지 permanent Model architecture가 아니다. Normalized provider execution request/response, complete Model Response, Model Gateway 및 concrete Provider Adapter는 후속 단계다.
+
+IMPLEMENTATION-025 이후 이 frozen outer continuation은 Agent-specific shape가 아니라 Model module의 explicit `tool-result` turn이며 initial call도 explicit `initial` turn을 사용한다. 두 turn 모두 original opaque Agent executor request reference를 `input`으로 유지하고 Tool-result turn은 parsed Tool request와 Tool Runtime result의 exact identity를 보존한다. 이는 execution meaning만 formalize하며 complete Model Request/Response 또는 Provider Adapter를 앞당기지 않는다.
 
 ---
 

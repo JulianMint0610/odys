@@ -13,6 +13,8 @@ export type ModelOutcome =
       readonly input: unknown;
     };
 
+export type ModelToolRequest = Extract<ModelOutcome, { readonly kind: 'tool-request' }>;
+
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
 }

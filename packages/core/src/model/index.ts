@@ -6,7 +6,7 @@ export {
   ModelOutcomeValidationError,
   UnknownModelError,
 } from './model-errors.js';
-export { parseModelOutcome, type ModelOutcome } from './model-outcome.js';
+export { parseModelOutcome, type ModelOutcome, type ModelToolRequest } from './model-outcome.js';
 export { createModelRegistry, type ModelRegistry } from './model-registry.js';
 export {
   createModelRuntime,
@@ -15,4 +15,5 @@ export {
   type ModelRuntimeRequest,
   type ModelRuntimeResult,
 } from './model-runtime.js';
+export { createInitialModelTurn, createToolResultModelTurn, type ModelTurn } from './model-turn.js';
 export type { ModelDefinition } from './model.js';

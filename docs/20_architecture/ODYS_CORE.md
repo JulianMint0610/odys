@@ -516,6 +516,8 @@ Runtime의 책임은 서로 다른 Agent를 동일한 실행 모델 위에서 �
 
 IMPLEMENTATION-024의 별도 bounded executor composition은 logical Model ID를 invocation당 한 번 resolve하고 initial Model output을 parser로 검증한다. Direct final은 exact output을 반환하고, parsed Tool request는 `AgentToolRuntime`을 통과한다. Canonical Tool result는 frozen Core-owned continuation outer object로 같은 Model에 한 번 돌아가며 continuation output도 다시 검증된다. 두 번째 Tool request는 실행되지 않고 명시적인 Agent error로 종료된다. 현재 구현은 최대 Tool turn 1이고 retry는 없으며 이 bound는 영구 architecture restriction이 아니다. `createAgentRuntime()`과 기존 opaque `createModelBackedAgentRuntimeExecutor()` contract는 변경되지 않았다. 이 composition도 완전한 Agent lifecycle이나 user/Workspace authorization, Policy, Approval, Audit 또는 Tool/external Action authority를 만들지 않는다.
 
+IMPLEMENTATION-025는 Core Model module에 provider-independent `initial | tool-result` Model Turn contract를 추가하고 bounded executor가 existing `ModelRuntime.input`을 통해 explicit turn을 전달하게 한다. Core-owned turn outer object는 frozen이지만 original opaque Agent executor request, canonical parsed Tool request 및 canonical Tool result의 exact nested identity를 보존하며 caller-owned nested object를 freeze하거나 mutate하지 않는다. 이는 execution meaning만 formalize하고 `ModelRuntime.run()` contract나 one-Tool-turn, maximum two-Model-invocation, no-retry bound를 변경하지 않는다. Complete normalized Model Request/Response, Model Strategy, Provider Adapter, Context, authorization, Policy, Approval, Audit, Task persistence, multiple Tool turns 및 real external Action은 추가되지 않았으며 turn construction도 어떤 Action authority도 부여하지 않는다.
+
 ---
 
 ## 13. Agent Execution Lifecycle

@@ -1,21 +1,11 @@
-import { parseModelOutcome, type ModelOutcome } from '../model/model-outcome.js';
+import { parseModelOutcome } from '../model/model-outcome.js';
 import type { ModelRuntime } from '../model/model-runtime.js';
-import type { ToolRuntimeResult } from '../tool/tool-runtime.js';
+import { createInitialModelTurn, createToolResultModelTurn } from '../model/model-turn.js';
 
 import { AgentToolTurnLimitExceededError } from './agent-errors.js';
 import type { AgentModelIdResolver } from './agent-model-runtime-executor.js';
 import type { AgentRuntimeExecutor } from './agent-runtime.js';
 import type { AgentToolRuntime } from './agent-tool-runtime.js';
-
-type AgentRuntimeExecutorRequest = Parameters<AgentRuntimeExecutor>[0];
-type ModelToolRequest = Extract<ModelOutcome, { readonly kind: 'tool-request' }>;
-
-interface AgentModelToolContinuation {
-  readonly kind: 'tool-result';
-  readonly request: AgentRuntimeExecutorRequest;
-  readonly toolRequest: ModelToolRequest;
-  readonly toolResult: ToolRuntimeResult;
-}
 
 export function createAgentModelToolRuntimeExecutor(options: {
   readonly modelRuntime: ModelRuntime;
@@ -26,7 +16,8 @@ export function createAgentModelToolRuntimeExecutor(options: {
 
   return async (request) => {
     const modelId = await resolveModelId(request);
-    const initialResult = await modelRuntime.run({ modelId, input: request });
+    const initialTurn = createInitialModelTurn(request);
+    const initialResult = await modelRuntime.run({ modelId, input: initialTurn });
     const initialOutcome = parseModelOutcome(initialResult.output);
 
     if (initialOutcome.kind === 'final') {
@@ -38,13 +29,12 @@ export function createAgentModelToolRuntimeExecutor(options: {
       toolId: initialOutcome.toolId,
       input: initialOutcome.input,
     });
-    const continuation: AgentModelToolContinuation = Object.freeze({
-      kind: 'tool-result',
-      request,
+    const continuationTurn = createToolResultModelTurn({
+      input: request,
       toolRequest: initialOutcome,
       toolResult,
     });
-    const continuedResult = await modelRuntime.run({ modelId, input: continuation });
+    const continuedResult = await modelRuntime.run({ modelId, input: continuationTurn });
     const continuedOutcome = parseModelOutcome(continuedResult.output);
 
     if (continuedOutcome.kind === 'tool-request') {

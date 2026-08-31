@@ -37,8 +37,10 @@ export {
 } from './pack/index.js';
 
 export {
+  createInitialModelTurn,
   createModelRegistry,
   createModelRuntime,
+  createToolResultModelTurn,
   defineModel,
   DuplicateModelIdError,
   InvalidModelDefinitionError,
@@ -48,11 +50,13 @@ export {
   UnknownModelError,
   type ModelDefinition,
   type ModelOutcome,
+  type ModelToolRequest,
   type ModelRegistry,
   type ModelRuntime,
   type ModelRuntimeExecutor,
   type ModelRuntimeRequest,
   type ModelRuntimeResult,
+  type ModelTurn,
 } from './model/index.js';
 
 export {
