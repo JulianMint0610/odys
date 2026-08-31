@@ -388,7 +388,7 @@ IMPLEMENTATION-022는 existing Common Agent Runtime의 executor seam을 구현�
 
 IMPLEMENTATION-023은 opaque Model output에 명시적으로 적용할 수 있는 provider-independent `parseModelOutcome()` validation primitive를 추가한다. 이 parser는 own required property와 exact discriminant를 검증하여 opaque `output`을 가진 `final` 또는 canonical Tool ID와 opaque `input`을 가진 하나의 `tool-request`로 해석하고, arbitrary extra top-level field를 버린 새 frozen canonical outer object를 반환한다. Nested payload reference는 clone하거나 freeze하지 않는다. Tool ID syntax는 existing Tool identifier helper를 재사용하지만 Tool Registry를 조회하지 않으므로 unknown-but-canonical Tool ID도 syntactically valid하다. Validated `tool-request`는 Tool existence, Agent allowance, permission, authorization, Policy, Approval 또는 execution authority가 아니다.
 
-이 narrow `ModelOutcome`은 complete ODYS Model Response가 아니며 initial execution-relevant interpretation contract다. `ModelRuntimeResult.output`은 계속 `unknown`이고 `ModelRuntime`과 model-backed Agent executor는 parser를 자동 호출하지 않는다. 따라서 현재 flow는 `opaque Model output → explicit parseModelOutcome() → validated staged ModelOutcome` primitive만 제공하며 Agent-to-Model path와 Agent-to-Tool path는 아직 연결되지 않았다.
+이 narrow `ModelOutcome`은 complete ODYS Model Response가 아니며 initial execution-relevant interpretation contract다. `ModelRuntimeResult.output`은 계속 `unknown`이고 `ModelRuntime`과 existing opaque model-backed Agent executor는 parser를 자동 호출하지 않는다. 별도의 bounded Agent Model/Tool executor만 initial 및 continuation output에 parser를 명시적으로 적용하고 parsed Tool request 하나를 `AgentToolRuntime`에 연결한다. 이 staged composition은 complete Model Response나 general execution loop가 아니다.
 
 Normalized provider Model request/response, Model Gateway, concrete Provider Adapter와 Provider SDK integration, Model Capability, complete Model Strategy, Model Router, complete integrated Agent execution, Tool calling integration, structured output, timeout, retry, fallback 및 usage accounting은 아직 구현되지 않았다.
 
@@ -1712,7 +1712,7 @@ concrete provider adapter의 실제 위치는 implementation 단계에서 결정
 
 별도의 service가 필요하지 않은 동안 Modular Monolith 내부에 유지한다.
 
-현재는 이 위치에 최소 `ModelDefinition`, definition/runtime request validation, Registry-owned immutable definition snapshot을 보관하는 instance-local `ModelRegistry`, registered-Model dispatch를 위한 `ModelRuntime` request/result contract와 provider-independent injected executor seam, opaque Model output을 narrow canonical `final | tool-request` execution meaning으로 명시적으로 검증하는 standalone `parseModelOutcome()` primitive가 구현되어 있다. Agent module에는 existing Agent Runtime executor seam을 trusted logical Model resolver와 existing Model Runtime에 연결하는 staged adapter가 구현되어 있다. 이 adapter는 exact Agent executor request를 opaque Model input으로 전달하고 exact `ModelRuntimeResult`를 해석 없이 반환하며 parser를 호출하지 않는다. Normalized provider execution request/response, complete Model Response, Model Gateway 및 concrete Provider Adapter는 후속 단계다.
+현재는 이 위치에 최소 `ModelDefinition`, definition/runtime request validation, Registry-owned immutable definition snapshot을 보관하는 instance-local `ModelRegistry`, registered-Model dispatch를 위한 `ModelRuntime` request/result contract와 provider-independent injected executor seam, opaque Model output을 narrow canonical `final | tool-request` execution meaning으로 명시적으로 검증하는 standalone `parseModelOutcome()` primitive가 구현되어 있다. Agent module의 existing staged adapter는 exact Agent executor request를 trusted logical Model resolver와 Model Runtime에 연결하고 exact opaque `ModelRuntimeResult`를 해석 없이 반환한다. 별도의 IMPLEMENTATION-024 bounded executor는 resolver를 invocation당 한 번 호출하고 같은 logical Model ID로 최대 두 번 Model Runtime을 사용한다. 각 opaque output은 parser를 통과하며 initial Tool request는 `AgentToolRuntime`을 통해 실행되고 canonical Tool result가 frozen outer continuation으로 같은 Model에 반환된다. 두 번째 Tool request는 실행하지 않고 명시적으로 실패하며 retry는 없다. 이 one-Tool-turn bound는 current staged implementation limitation이지 permanent Model architecture가 아니다. Normalized provider execution request/response, complete Model Response, Model Gateway 및 concrete Provider Adapter는 후속 단계다.
 
 ---
 
@@ -1762,7 +1762,7 @@ Second Provider or Routing When Needed
 
 **교체 가능한 경계를 만드는 것**이 우선이다.
 
-현재 staged Agent-to-Model adapter는 위 target progression의 final Agent Integration을 구현한 것이 아니다. 이는 complete Model Strategy 이전에 logical Model ID resolution과 existing Runtime boundary composition만 검증하는 temporary seam이며 capability-based routing을 대체하지 않는다.
+현재 staged Agent-to-Model adapter와 bounded Agent Model/Tool executor는 위 target progression의 final Agent Integration을 구현한 것이 아니다. 둘은 complete Model Strategy 이전의 trusted logical Model ID resolver를 재사용하는 temporary seam이며 capability-based routing, fallback 또는 provider selection을 대체하지 않는다. Bounded executor는 resolver를 한 번만 사용하고 continuation에서도 같은 logical Model을 유지한다.
 
 ---
 

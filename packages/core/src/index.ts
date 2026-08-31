@@ -1,6 +1,8 @@
 export {
   AgentToolNotAllowedError,
+  AgentToolTurnLimitExceededError,
   assertAgentToolAllowed,
+  createAgentModelToolRuntimeExecutor,
   createModelBackedAgentRuntimeExecutor,
   createAgentRegistry,
   createAgentRuntime,

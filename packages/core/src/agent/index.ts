@@ -1,11 +1,13 @@
 export {
   AgentToolNotAllowedError,
+  AgentToolTurnLimitExceededError,
   DuplicateAgentIdError,
   InvalidAgentDefinitionError,
   InvalidAgentRuntimeRequestError,
   InvalidAgentToolRuntimeRequestError,
   UnknownAgentError,
 } from './agent-errors.js';
+export { createAgentModelToolRuntimeExecutor } from './agent-model-tool-runtime-executor.js';
 export {
   assertAgentToolAllowed,
   evaluateAgentToolAllowance,
