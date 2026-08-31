@@ -24,6 +24,21 @@ export class AgentToolNotAllowedError extends Error {
   }
 }
 
+export class AgentToolTurnLimitExceededError extends Error {
+  public readonly agentId: string;
+  public readonly toolId: string;
+  public readonly maximumToolTurns = 1;
+
+  public constructor(agentId: string, toolId: string) {
+    super(
+      `Agent "${agentId}" exceeded the maximum supported Tool turns (1) while requesting Tool "${toolId}".`,
+    );
+    this.name = 'AgentToolTurnLimitExceededError';
+    this.agentId = agentId;
+    this.toolId = toolId;
+  }
+}
+
 export class InvalidAgentRuntimeRequestError extends Error {
   public constructor(message: string) {
     super(message);

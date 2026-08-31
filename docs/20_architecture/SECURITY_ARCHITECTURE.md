@@ -924,7 +924,9 @@ parseModelOutcome()
 canonical frozen outer ModelOutcome
 ```
 
-Parser는 own required property와 exact `final | tool-request` discriminant, Tool request의 canonical Tool ID syntax만 검증한다. Authority, permission, Policy, Approval, provider 또는 model metadata처럼 보이는 arbitrary extra top-level field는 해석하지 않고 canonical outcome에서 제거한다. Nested `output`과 `input`은 clone하거나 freeze하지 않는 opaque untrusted value로 유지한다. 따라서 successful ModelOutcome parsing은 staged execution-control shape만 검증하며 Tool existence, Agent allowance, Tool input validation, permission, user/Workspace authorization, Policy, Approval, Audit 또는 execution authority를 확립하지 않는다. Existing Model Runtime과 Agent Runtime은 아직 이 parser를 자동 호출하지 않고 Model-generated Tool execution도 구현하지 않는다.
+Parser는 own required property와 exact `final | tool-request` discriminant, Tool request의 canonical Tool ID syntax만 검증한다. Authority, permission, Policy, Approval, provider 또는 model metadata처럼 보이는 arbitrary extra top-level field는 해석하지 않고 canonical outcome에서 제거한다. Nested `output`과 `input`은 clone하거나 freeze하지 않는 opaque untrusted value로 유지한다. 따라서 successful ModelOutcome parsing은 staged execution-control shape만 검증하며 Tool existence, Agent allowance, Tool input validation, permission, user/Workspace authorization, Policy, Approval, Audit 또는 execution authority를 확립하지 않는다.
+
+IMPLEMENTATION-024의 별도 bounded Agent executor는 initial 및 continuation `ModelRuntimeResult.output`을 모두 이 parser에 통과시킨다. Parsed initial Tool request만 `AgentToolRuntime`으로 전달되므로 registered Agent allowlist guard 뒤 existing Tool Runtime의 input validation, permission-requirement enforcement, execution과 output validation 순서를 우회하지 않는다. Exact canonical Tool result는 Core-owned frozen outer continuation으로 같은 logical Model에 한 번 반환된다. 두 번째 parsed Tool request는 Agent boundary에서 실행 전에 명시적으로 거부된다. 이 composition은 최대 Tool turn 1이며 retry가 없고, one-turn bound는 현재 implementation limitation이다. Successful parsing, Agent allowance, permission-requirement satisfaction, Tool execution 또는 final continuation 어느 것도 user/Workspace authorization, Policy, Approval, Audit 또는 production external-Action authority를 생성하지 않는다.
 
 ---
 
