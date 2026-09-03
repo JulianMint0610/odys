@@ -38,6 +38,8 @@ export {
 
 export {
   createInitialModelTurn,
+  createModelExecutionRequest,
+  createModelExecutionResult,
   createModelRegistry,
   createModelRuntime,
   createToolResultModelTurn,
@@ -49,6 +51,8 @@ export {
   parseModelOutcome,
   UnknownModelError,
   type ModelDefinition,
+  type ModelExecutionRequest,
+  type ModelExecutionResult,
   type ModelOutcome,
   type ModelToolRequest,
   type ModelRegistry,

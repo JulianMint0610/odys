@@ -518,6 +518,8 @@ IMPLEMENTATION-024의 별도 bounded executor composition은 logical Model ID를
 
 IMPLEMENTATION-025는 Core Model module에 provider-independent `initial | tool-result` Model Turn contract를 추가하고 bounded executor가 existing `ModelRuntime.input`을 통해 explicit turn을 전달하게 한다. Core-owned turn outer object는 frozen이지만 original opaque Agent executor request, canonical parsed Tool request 및 canonical Tool result의 exact nested identity를 보존하며 caller-owned nested object를 freeze하거나 mutate하지 않는다. 이는 execution meaning만 formalize하고 `ModelRuntime.run()` contract나 one-Tool-turn, maximum two-Model-invocation, no-retry bound를 변경하지 않는다. Complete normalized Model Request/Response, Model Strategy, Provider Adapter, Context, authorization, Policy, Approval, Audit, Task persistence, multiple Tool turns 및 real external Action은 추가되지 않았으며 turn construction도 어떤 Action authority도 부여하지 않는다.
 
+IMPLEMENTATION-026은 future Provider Adapter 앞의 first explicit Core-owned provider-independent `ModelExecutionRequest` / `ModelExecutionResult` contract를 추가한다. Request는 exact supplied resolved `ModelDefinition`과 existing `ModelTurn`을, result는 exact opaque untrusted `output`을 보존하며 constructor는 새 frozen outer object만 소유한다. Nested value는 clone, deep-freeze, normalize, parse 또는 mutate하지 않는다. 이 contract는 existing `ModelRuntimeRequest` / `ModelRuntimeResult`와 역할이 다르고 current Model Runtime 및 Agent executors에는 아직 통합되지 않았다. Complete normalized Model Request, complete canonical Model Response, Model Gateway, Provider Adapter/SDK, Model Capability/Strategy/Router, Context, structured output, timeout, retry, fallback, usage accounting, authorization, Policy, Approval, Audit, Task persistence, multiple Tool turns 및 real external Action authority는 계속 deferred 상태다.
+
 ---
 
 ## 13. Agent Execution Lifecycle
@@ -779,6 +781,8 @@ Agent domain logic은 특정 provider SDK에 가능한 한 직접 의존하지 �
 이 staged Runtime은 concrete Provider Adapter, Provider SDK 또는 network Model invocation이 아니다. Model registration과 definition immutability는 injected Runtime composition의 dispatch eligibility만 제공하며 독립적인 concrete Provider execution authority를 만들지 않는다. IMPLEMENTATION-022의 model-backed Agent executor adapter는 trusted resolver가 선택한 logical Model ID로 이 existing Runtime을 호출하지만 Model Runtime contract 자체를 변경하지 않는다. Normalized provider request/response, Model Gateway, capability, complete strategy, routing, complete Agent execution 및 Tool integration, timeout, retry, fallback과 usage accounting은 아직 구현되지 않았다.
 
 IMPLEMENTATION-023은 같은 Model module에 `parseModelOutcome()`과 provider-independent `ModelOutcome` contract를 추가한다. Parser는 untrusted unknown value의 own required property와 exact `final | tool-request` discriminant를 검증하고 arbitrary extra top-level field를 제거한 새 frozen outer outcome을 반환한다. Nested `output`과 `input`은 opaque reference로 유지하고, Tool request ID에는 existing canonical Tool ID syntax만 적용하며 Registry membership을 조회하지 않는다. `validated ModelOutcome ≠ trusted Action authority`이며 Model Runtime과 Agent Runtime은 이 standalone primitive를 자동 소비하지 않는다. `ModelRuntimeResult.output`은 계속 `unknown`이다.
+
+IMPLEMENTATION-026의 별도 Model execution contract는 Registry-owned definition과 provider-independent turn을 하나의 request envelope로 표현하고 opaque provider-independent output을 result envelope로 표현한다. 이는 complete canonical Model Response나 `ModelOutcome`과 동일하지 않으며 output을 신뢰하거나 parse하지 않는다. Request/result construction은 Provider 선택, Provider permission, Tool authority 또는 external Action authority를 부여하지 않고 network invocation도 수행하지 않는다.
 
 ---
 
