@@ -1,5 +1,11 @@
 export { defineModel } from './define-model.js';
 export {
+  createModelExecutionRequest,
+  createModelExecutionResult,
+  type ModelExecutionRequest,
+  type ModelExecutionResult,
+} from './model-execution.js';
+export {
   DuplicateModelIdError,
   InvalidModelDefinitionError,
   InvalidModelRuntimeRequestError,
