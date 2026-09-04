@@ -26,6 +26,13 @@ export class ModelOutcomeValidationError extends Error {
   }
 }
 
+export class InvalidModelResponseError extends Error {
+  public constructor(message: string) {
+    super(message);
+    this.name = 'InvalidModelResponseError';
+  }
+}
+
 export class UnknownModelError extends Error {
   public constructor(modelId: string) {
     super(`Model with id "${modelId}" is not registered`);

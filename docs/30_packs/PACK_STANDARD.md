@@ -246,6 +246,8 @@ IMPLEMENTATION-025도 Pack contract와 Engineering Pack을 변경하지 않고 C
 
 IMPLEMENTATION-026도 Pack contract와 Engineering Pack을 변경하지 않고 Core Model module에 first explicit provider-independent `ModelExecutionRequest` / `ModelExecutionResult` contract를 추가한다. Request는 exact supplied resolved `ModelDefinition`과 `ModelTurn`을, result는 exact opaque untrusted output을 보존하고 constructor는 새 outer object만 freeze한다. Pack은 이 envelope를 구성하거나 Provider를 선택하지 않으며 current Runtime/Agent execution에도 통합되지 않는다. Complete normalized Model Request, complete canonical Model Response, Model Gateway, concrete Provider Adapter/SDK, Model Capability/Strategy/Router, Context assembly, structured output, timeout, retry, fallback, usage accounting, multiple Tool turns, authorization, Policy, Approval, Audit, Task persistence, Pack lifecycle 및 real external Action authority는 계속 deferred 상태다.
 
+IMPLEMENTATION-027도 Pack contract와 Engineering Pack을 변경하지 않고 Core Model module에 first provider-independent canonical `ModelResponse` foundation을 추가한다. Opaque content와 structured-output location, ordered canonical Tool-request collection 및 narrow finish reason을 표현하며 Core-owned outer response, request array와 request wrapper만 snapshot/freeze한다. 이 response는 Provider SDK response, `ModelExecutionResult` 및 `ModelOutcome`과 구분되고 current Runtime/Agent execution에는 통합되지 않는다. Pack은 response를 구성하거나 Provider를 호출하지 않으며 Model Response Tool request는 Tool execution authority가 아니다. Actual Provider normalization, Model Gateway/Adapter/SDK, Model Capability/Strategy/Router, structured-output schema validation, usage/timeout/retry/fallback, multiple Tool execution, authorization, Policy, Approval, Audit, Task persistence, Pack lifecycle 및 real external Action은 계속 deferred 상태다.
+
 IMPLEMENTATION-008은 Pack contract를 변경하지 않고 Core에 runtime request validation, registered-Agent resolution, provider-neutral executor dispatch 및 opaque result return만 제공하는 첫 Common Agent Runtime foundation을 추가한다.
 
 나머지 Manifest 항목, `Registered Agents`, `Registered Tools`, Pack Manifest의 `Required Permissions`, Pack-to-Agent 및 Pack-to-Tool registration semantics는 전체 Pack 표준의 목표 contract이며, 실제 Pack capability와 runtime이 구현되는 단계에서 점진적으로 추가한다. `ToolDefinition.requiredPermissions`와 Pack Manifest의 future `Required Permissions`는 서로 다른 contract다.
@@ -627,6 +629,8 @@ IMPLEMENTATION-009는 Core에 최소 Model Definition과 instance-local Model Re
 IMPLEMENTATION-025의 Model Turn은 이 bounded executor의 initial 및 Tool-result continuation meaning만 Model-owned provider-independent contract로 명시한다. Pack은 turn을 구성하거나 Provider-specific representation을 소유하지 않으며 turn contract는 Model selection 또는 external Action authority가 아니다.
 
 IMPLEMENTATION-026의 Model execution envelope도 Core Model module이 소유한다. Pack은 `ModelExecutionRequest`에 arbitrary Provider metadata를 주입하거나 `ModelExecutionResult.output`을 trusted state 또는 Tool/external Action authority로 취급하지 않는다. Concrete Provider invocation과 provider switching은 아직 구현되지 않았다.
+
+IMPLEMENTATION-027의 canonical `ModelResponse` foundation도 Core Model module이 소유한다. Pack은 Provider-specific response type을 canonical contract로 사용하거나 response-level Tool request를 allowance, permission 또는 Action authority로 해석하지 않는다. Multiple Tool requests를 표현할 수 있다는 사실도 current one-Tool execution bound를 확장하지 않는다.
 
 ---
 
