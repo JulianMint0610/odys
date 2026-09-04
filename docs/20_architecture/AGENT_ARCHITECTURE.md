@@ -529,7 +529,9 @@ IMPLEMENTATION-025는 이 execution meaning을 provider-independent Core Model `
 
 IMPLEMENTATION-026의 Model module은 future Provider Adapter 직전의 first provider-independent `ModelExecutionRequest` / `ModelExecutionResult` envelope를 명시한다. Request constructor는 exact supplied resolved `ModelDefinition`과 existing `ModelTurn`을, result constructor는 exact opaque untrusted `output`을 새 frozen Core-owned outer object에 담는다. Nested reference는 clone, deep-freeze, normalize, parse 또는 mutate하지 않는다. Agent module과 existing `ModelRuntime`, `createModelBackedAgentRuntimeExecutor()`, `createAgentModelToolRuntimeExecutor()`는 이 contract를 아직 소비하도록 변경되지 않았다.
 
-이 bounded composition과 execution-contract foundation은 Context assembly, complete normalized Model Request, complete canonical Model Response, Model Gateway, concrete Provider Adapter, Provider SDK integration, Model Capability, complete Model Strategy, Model Router, structured output, timeout, retry, fallback, usage accounting, permission grant/persistence, user/Workspace authorization, Policy, Approval, Task persistence, Memory processing, Audit, multiple Tool turns 또는 Pack lifecycle을 구현하지 않는다. Agent registration, Model resolution, execution-request/result construction, outcome validation, turn construction, allowlist guard 통과와 successful continuation은 Model trust 또는 production Tool/real external Action authority를 부여하지 않는다.
+IMPLEMENTATION-027은 Agent execution contract를 변경하지 않고 Model module에 first provider-independent canonical `ModelResponse` foundation을 추가한다. 이 response는 opaque content 및 structured-output location, ordered Tool-request representation과 narrow provider-independent finish reason을 가지며 Core-owned outer response, Tool-request array 및 Tool-request wrapper만 snapshot/freeze한다. Provider SDK response, `ModelExecutionResult` 및 execution-interpretation `ModelOutcome`과 구분되고 existing Agent Runtime이나 bounded executor는 아직 이를 소비하지 않는다. Response가 multiple Tool requests를 표현할 수 있어도 current maximum one-Tool-turn execution bound는 그대로다.
+
+이 bounded composition과 Model contract foundations은 Context assembly, complete normalized Model Request, actual Provider response normalization, Model Gateway, concrete Provider Adapter, Provider SDK integration, Model Capability, complete Model Strategy, Model Router, structured-output schema validation, timeout, retry, fallback, usage accounting, permission grant/persistence, user/Workspace authorization, Policy, Approval, Task persistence, Memory processing, Audit, multiple Tool execution 또는 Pack lifecycle을 구현하지 않는다. Agent registration, Model resolution, execution-request/result/response construction, outcome validation, turn construction, allowlist guard 통과와 successful continuation은 Model trust 또는 production Tool/real external Action authority를 부여하지 않는다. 특히 Model Response Tool request는 Tool execution authority가 아니다.
 
 ---
 
@@ -1714,6 +1716,8 @@ packages/core/src/agent/
 IMPLEMENTATION-025에서 bounded executor가 Model Runtime에 보내는 initial/continuation meaning은 Model module의 `initial | tool-result` turn contract로 이동했다. 이 명시는 Agent와 Model boundary를 provider-independent하게 유지하지만 complete Agent execution이나 general Model/Tool lifecycle을 의미하지 않는다.
 
 IMPLEMENTATION-026은 Model module에 resolved Model definition과 turn을 결합하는 provider-independent execution request 및 opaque output result contract를 추가한다. 이는 future adapter-facing foundation일 뿐 Agent execution path, Model Runtime input, Model selection 또는 Provider invocation을 변경하지 않는다.
+
+IMPLEMENTATION-027은 Model module에 opaque content/structured output, ordered Tool requests와 narrow finish reason을 가진 first canonical `ModelResponse` foundation을 추가한다. 이는 Provider SDK response, `ModelExecutionResult` 및 execution-level `ModelOutcome`과 별개이며 existing Agent Runtime이나 bounded one-Tool executor에 통합되지 않는다. Response-level Tool request는 Agent allowance, permission 또는 Tool execution authority가 아니다.
 
 ---
 
