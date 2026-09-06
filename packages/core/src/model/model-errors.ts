@@ -26,6 +26,13 @@ export class ModelOutcomeValidationError extends Error {
   }
 }
 
+export class InvalidModelRequestError extends Error {
+  public constructor(message: string) {
+    super(message);
+    this.name = 'InvalidModelRequestError';
+  }
+}
+
 export class InvalidModelResponseError extends Error {
   public constructor(message: string) {
     super(message);
