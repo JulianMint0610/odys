@@ -8,12 +8,19 @@ export {
 export {
   DuplicateModelIdError,
   InvalidModelDefinitionError,
+  InvalidModelRequestError,
   InvalidModelResponseError,
   InvalidModelRuntimeRequestError,
   ModelOutcomeValidationError,
   UnknownModelError,
 } from './model-errors.js';
 export { parseModelOutcome, type ModelOutcome, type ModelToolRequest } from './model-outcome.js';
+export {
+  createModelRequest,
+  type ModelRequest,
+  type ModelRequestInputItem,
+  type ModelRequestTool,
+} from './model-request.js';
 export {
   createModelResponse,
   type ModelFinishReason,
