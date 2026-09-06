@@ -59,6 +59,8 @@ export {
   type ModelExecutionResult,
   type ModelFinishReason,
   type ModelOutcome,
+  type ModelProviderAdapter,
+  type ModelProviderAdapterRequest,
   type ModelRequest,
   type ModelRequestInputItem,
   type ModelRequestTool,

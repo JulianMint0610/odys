@@ -934,7 +934,9 @@ IMPLEMENTATION-027의 first provider-independent canonical `ModelResponse` found
 
 IMPLEMENTATION-028의 canonical `ModelRequest`도 authority boundary가 아니다. Constructor는 instructions, message/Tool-result input과 Model-facing Tool projection의 representation만 검증하며 canonical Tool ID syntax와 duplicate declaration을 확인한다. Tool projection에는 permission/risk/executor state를 포함하지 않고 Registry lookup, Tool input parsing, schema conversion, permission, authorization, Policy 또는 Approval을 수행하지 않는다. 새 request/arrays/input/tool wrappers만 freeze하고 opaque content/output/schema와 supplied valid `ModelResponseToolRequest` reference는 그대로 보존하므로 nested value는 trusted state가 되지 않는다. System/core instructions는 별도 `instructions` field로 표현되지만 construction이 instruction hierarchy를 집행하거나 Tool/external Action authority를 부여하지는 않는다. Current Model/Agent Runtime과 bounded executor는 이 request를 소비하지 않는다.
 
-Actual Provider response normalization, complete Model request-normalization pipeline, Model Gateway, concrete Provider Adapter/SDK, Model Strategy/Router, Context, structured-output schema validation, timeout, retry, fallback, usage accounting, operational metadata, Audit, Task persistence 및 real external Action은 구현되지 않았다.
+IMPLEMENTATION-029의 `ModelProviderAdapter`는 resolved Model identity와 canonical request/response가 future Provider integration boundary를 통과할 수 있게 하는 interface-only contract이며 authorization 또는 execution authority boundary가 아니다. Adapter request에 포함된 `ModelDefinition.provider`와 `providerModelId`는 resolved identity metadata일 뿐 caller가 별도 Provider를 선택하거나 권한을 증명하는 field가 아니다. Contract는 Tool request를 실행하거나 Agent allowance, Tool permission, user/Workspace authorization, Policy, Approval 또는 Audit를 평가하지 않는다.
+
+Actual Provider response conversion, complete Model request-normalization pipeline, Model Gateway, concrete Provider Adapter implementation/SDK, Model Strategy/Router, Context, structured-output schema validation, timeout, retry, fallback, usage accounting, operational metadata, Audit, Task persistence 및 real external Action은 구현되지 않았다.
 
 ---
 

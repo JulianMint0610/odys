@@ -250,6 +250,8 @@ IMPLEMENTATION-027도 Pack contract와 Engineering Pack을 변경하지 않고 C
 
 IMPLEMENTATION-028도 Pack contract와 Engineering Pack을 변경하지 않고 Core Model module에 첫 canonical `ModelRequest` foundation을 추가한다. Instructions, ordered message/Tool-result input, Model-facing Tool projection과 optional opaque output schema만 표현하며 Core-owned request/arrays/input/tool wrappers를 snapshot/freeze한다. Opaque nested references와 supplied valid `ModelResponseToolRequest` identity는 보존한다. 이 foundation은 request-normalization pipeline, Provider Adapter/SDK, Runtime integration, Pack lifecycle 또는 execution authority를 추가하지 않는다.
 
+IMPLEMENTATION-029도 Pack contract와 Engineering Pack을 변경하지 않고 Core Model module에 first provider-independent `ModelProviderAdapter` contract를 추가한다. Exact resolved `ModelDefinition`과 canonical `ModelRequest`를 하나의 request로 받아 asynchronous canonical `ModelResponse`를 반환하는 interface만 정의하며 Pack에 Provider selection, concrete Provider execution, SDK/network access 또는 Tool/external Action authority를 부여하지 않는다. Request normalization, concrete Adapter와 Runtime/Agent/Pack integration은 계속 deferred 상태다.
+
 IMPLEMENTATION-008은 Pack contract를 변경하지 않고 Core에 runtime request validation, registered-Agent resolution, provider-neutral executor dispatch 및 opaque result return만 제공하는 첫 Common Agent Runtime foundation을 추가한다.
 
 나머지 Manifest 항목, `Registered Agents`, `Registered Tools`, Pack Manifest의 `Required Permissions`, Pack-to-Agent 및 Pack-to-Tool registration semantics는 전체 Pack 표준의 목표 contract이며, 실제 Pack capability와 runtime이 구현되는 단계에서 점진적으로 추가한다. `ToolDefinition.requiredPermissions`와 Pack Manifest의 future `Required Permissions`는 서로 다른 contract다.
@@ -635,6 +637,8 @@ IMPLEMENTATION-026의 Model execution envelope도 Core Model module이 소유한
 IMPLEMENTATION-027의 canonical `ModelResponse` foundation도 Core Model module이 소유한다. Pack은 Provider-specific response type을 canonical contract로 사용하거나 response-level Tool request를 allowance, permission 또는 Action authority로 해석하지 않는다. Multiple Tool requests를 표현할 수 있다는 사실도 current one-Tool execution bound를 확장하지 않는다.
 
 IMPLEMENTATION-028의 `ModelRequestTool`은 Core Model request를 위한 `id`, optional `description`, opaque `inputSchema` projection이며 full `ToolDefinition`이나 permission grant가 아니다. Pack은 이 representation을 Tool allowance, authorization 또는 Action authority로 해석하지 않는다. `ModelRequest`는 existing Model execution/turn/response/outcome contract와 별개이며 실제 normalization, Provider invocation 및 Pack-to-Model integration은 구현되지 않았다.
+
+IMPLEMENTATION-029의 Core-owned `ModelProviderAdapter` contract는 future concrete Provider implementation의 dependency direction만 정한다. Pack은 Adapter request를 통해 Provider를 선택하거나 SDK/network execution, permission 또는 external Action authority를 얻지 않으며 current Pack contract와 integration behavior는 변경되지 않는다.
 
 ---
 

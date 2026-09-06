@@ -15,6 +15,10 @@ export {
   UnknownModelError,
 } from './model-errors.js';
 export { parseModelOutcome, type ModelOutcome, type ModelToolRequest } from './model-outcome.js';
+export type {
+  ModelProviderAdapter,
+  ModelProviderAdapterRequest,
+} from './model-provider-adapter.js';
 export {
   createModelRequest,
   type ModelRequest,
