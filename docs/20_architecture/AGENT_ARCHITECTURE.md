@@ -535,6 +535,8 @@ IMPLEMENTATION-028은 Model module에 `instructions`, ordered message/Tool-resul
 
 IMPLEMENTATION-029는 Model module에 resolved `ModelDefinition`과 canonical `ModelRequest`를 받아 asynchronous canonical `ModelResponse`를 반환하는 first provider-independent `ModelProviderAdapter` contract를 추가한다. 이 contract는 Agent Runtime이나 bounded executor에 연결되지 않고 별도의 Provider/model selection input, concrete implementation, Provider SDK 또는 network execution을 추가하지 않는다.
 
+IMPLEMENTATION-030은 exact `ModelTurn`을 canonical `ModelRequest`로 바꾸는 injected provider-independent normalizer와 exact resolved `ModelDefinition` / normalized request를 `ModelProviderAdapter`에 한 번 전달하는 별도의 narrow Model execution composition을 추가한다. Exact canonical `ModelResponse`는 `ModelExecutionResult.output`으로 보존되고 normalizer/Adapter failure는 retry나 fallback 없이 그대로 전파된다. 이 pipeline은 `ModelResponse`를 `ModelOutcome`으로 해석하지 않으며 Agent Runtime, existing Model Runtime 또는 bounded executor에 아직 연결되지 않는다.
+
 이 bounded composition과 Model contract foundations은 Context assembly, complete Model request-normalization pipeline, actual Provider response normalization, Model Gateway, concrete Provider Adapter, Provider SDK integration, Model Capability, complete Model Strategy, Model Router, structured-output schema validation, timeout, retry, fallback, usage accounting, permission grant/persistence, user/Workspace authorization, Policy, Approval, Task persistence, Memory processing, Audit, multiple Tool execution 또는 Pack lifecycle을 구현하지 않는다. Agent registration, Model resolution, execution-request/result 및 canonical request/response construction, outcome validation, turn construction, allowlist guard 통과와 successful continuation은 Model trust 또는 production Tool/real external Action authority를 부여하지 않는다. 특히 Model Response Tool request는 Tool execution authority가 아니다.
 
 ---
@@ -1726,6 +1728,8 @@ IMPLEMENTATION-027은 Model module에 opaque content/structured output, ordered 
 IMPLEMENTATION-028의 canonical `ModelRequest` foundation도 Core Model module에 있으며 future Provider Adapter의 request conversion을 위한 별도 representation이다. 실제 request-normalization pipeline, Provider invocation, Agent execution migration 또는 Tool execution authority는 추가하지 않는다.
 
 IMPLEMENTATION-029의 `ModelProviderAdapter` contract도 Core Model module에 있으며 resolved Model identity와 canonical request/response 사이의 replaceable asynchronous integration seam만 정의한다. Agent execution path와 current runtime bounds는 변경하지 않으며 concrete Adapter/SDK/network integration이나 Action authority를 추가하지 않는다.
+
+IMPLEMENTATION-030의 `ModelRequestNormalizer` / `createModelProviderExecutionExecutor()` composition도 Core Model module에 별도로 존재하며 exact turn, resolved Model, canonical request와 response reference를 순서대로 연결한다. 이는 complete Model Gateway나 Agent integration이 아니고 current one-Tool-turn, maximum two-successful-Model-call 및 no-retry bound를 변경하지 않는다.
 
 ---
 

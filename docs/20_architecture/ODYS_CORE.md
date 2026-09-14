@@ -792,6 +792,10 @@ IMPLEMENTATION-028의 별도 canonical `ModelRequest`는 `instructions`, ordered
 
 IMPLEMENTATION-029의 `ModelProviderAdapterRequest` / `ModelProviderAdapter`는 exact resolved `ModelDefinition`과 canonical `ModelRequest`를 future replaceable Provider implementation에 전달하고 canonical `Promise<ModelResponse>`를 반환하게 하는 first Core-owned adapter contract다. 별도의 Provider identity source, construction/normalization behavior, concrete Adapter, SDK/network execution 또는 Runtime/Agent integration은 추가하지 않으며 existing execution behavior와 authority boundary는 변경되지 않는다.
 
+IMPLEMENTATION-030의 `ModelRequestNormalizer`와 `createModelProviderExecutionExecutor()`는 existing Model foundations의 first narrow provider-independent execution composition이다. Executor는 exact `ModelExecutionRequest.turn`을 normalizer에 한 번 전달하고, successful normalization 뒤 exact resolved `ModelDefinition`과 exact canonical `ModelRequest`를 injected `ModelProviderAdapter`에 한 번 전달한다. Exact canonical `ModelResponse`는 existing `createModelExecutionResult()`의 opaque `output`으로 보존된다. Normalizer 또는 Adapter failure는 wrapping, retry, fallback 없이 그대로 전파되고 earlier normalizer failure는 Adapter invocation을 차단한다.
+
+이 composition은 concrete Provider Adapter/SDK/network execution, complete Model Gateway, Model Strategy/Capability/Router, Provider response conversion, timeout, retry, fallback, usage accounting, authorization, Policy, Approval, Audit, Pack lifecycle 또는 external Action authority를 추가하지 않는다. `ModelResponse`를 `ModelOutcome`으로 해석하지 않고 current `ModelRuntime`, Agent Runtime 및 bounded one-Tool-turn executor에도 통합되지 않으므로 existing maximum two successful Model calls와 no-retry behavior는 유지된다.
+
 ---
 
 ## 18. Model Independence

@@ -936,6 +936,8 @@ IMPLEMENTATION-028의 canonical `ModelRequest`도 authority boundary가 아니�
 
 IMPLEMENTATION-029의 `ModelProviderAdapter`는 resolved Model identity와 canonical request/response가 future Provider integration boundary를 통과할 수 있게 하는 interface-only contract이며 authorization 또는 execution authority boundary가 아니다. Adapter request에 포함된 `ModelDefinition.provider`와 `providerModelId`는 resolved identity metadata일 뿐 caller가 별도 Provider를 선택하거나 권한을 증명하는 field가 아니다. Contract는 Tool request를 실행하거나 Agent allowance, Tool permission, user/Workspace authorization, Policy, Approval 또는 Audit를 평가하지 않는다.
 
+IMPLEMENTATION-030의 provider-independent Model execution composition은 `ModelExecutionRequest`의 exact turn을 canonical `ModelRequest`로 normalize하고 exact resolved Model 및 request를 `ModelProviderAdapter`에 한 번 전달한 뒤 canonical `ModelResponse`를 opaque `ModelExecutionResult.output`으로 보존한다. Successful normalization, Adapter execution 또는 result construction은 user/Workspace authorization, permission grant, Policy approval, Approval, Audit completion, Tool execution authority 또는 production external-Action authority의 증거가 아니다. 특히 `ModelResponse`에 Tool request가 포함되어 있어도 해당 Tool을 실행할 permission이나 authority가 되지 않는다. 이 composition은 Model Gateway, concrete Provider SDK, Model Strategy/Router, Policy, Approval, authorization 또는 production external Action execution을 구현하지 않는다.
+
 Actual Provider response conversion, complete Model request-normalization pipeline, Model Gateway, concrete Provider Adapter implementation/SDK, Model Strategy/Router, Context, structured-output schema validation, timeout, retry, fallback, usage accounting, operational metadata, Audit, Task persistence 및 real external Action은 구현되지 않았다.
 
 ---

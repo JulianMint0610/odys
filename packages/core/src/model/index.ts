@@ -20,6 +20,11 @@ export type {
   ModelProviderAdapterRequest,
 } from './model-provider-adapter.js';
 export {
+  createModelProviderExecutionExecutor,
+  type ModelProviderExecutionExecutor,
+  type ModelRequestNormalizer,
+} from './model-provider-execution-executor.js';
+export {
   createModelRequest,
   type ModelRequest,
   type ModelRequestInputItem,
