@@ -11,6 +11,8 @@ export default tseslint.config(
       '.next/**',
       'coverage/**',
       '.cursor/hooks/graft-hooks.cjs',
+      '.claude/helpers/graft-hooks.cjs',
+      '.claude/helpers/graft-statusline.cjs',
     ],
   },
   eslint.configs.recommended,

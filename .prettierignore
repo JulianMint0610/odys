@@ -12,3 +12,10 @@ workspace/
 # Graft-generated Cursor integration
 .cursor/hooks/graft-hooks.cjs
 .cursor/mcp.json
+
+# Graft-generated Claude Code integration
+.claude/helpers/graft-hooks.cjs
+.claude/helpers/graft-statusline.cjs
+.claude/settings.json
+.claude/settings.local.json
+.claude/skills/graft/SKILL.md
