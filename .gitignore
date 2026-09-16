@@ -17,3 +17,6 @@ pnpm-debug.log*
 
 .codex-bin/
 .pnpm-store/
+
+# graft's local graph cache — regenerable, not committed (run `graft build`).
+/graft/

@@ -8,3 +8,7 @@ pnpm-lock.yaml
 # Local Obsidian knowledge workspace
 .obsidian/
 workspace/
+
+# Graft-generated Cursor integration
+.cursor/hooks/graft-hooks.cjs
+.cursor/mcp.json
