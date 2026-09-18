@@ -12,9 +12,11 @@ export {
   InvalidModelResponseError,
   InvalidModelRuntimeRequestError,
   ModelOutcomeValidationError,
+  ModelResponseInterpretationError,
   UnknownModelError,
 } from './model-errors.js';
 export { parseModelOutcome, type ModelOutcome, type ModelToolRequest } from './model-outcome.js';
+export { interpretModelResponse } from './model-response-interpreter.js';
 export type {
   ModelProviderAdapter,
   ModelProviderAdapterRequest,

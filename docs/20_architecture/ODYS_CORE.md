@@ -796,6 +796,8 @@ IMPLEMENTATION-030의 `ModelRequestNormalizer`와 `createModelProviderExecutionE
 
 이 composition은 concrete Provider Adapter/SDK/network execution, complete Model Gateway, Model Strategy/Capability/Router, Provider response conversion, timeout, retry, fallback, usage accounting, authorization, Policy, Approval, Audit, Pack lifecycle 또는 external Action authority를 추가하지 않는다. `ModelResponse`를 `ModelOutcome`으로 해석하지 않고 current `ModelRuntime`, Agent Runtime 및 bounded one-Tool-turn executor에도 통합되지 않으므로 existing maximum two successful Model calls와 no-retry behavior는 유지된다.
 
+IMPLEMENTATION-031의 standalone `interpretModelResponse()`는 canonical `ModelResponse`를 execution-level `ModelOutcome`으로 명시적으로 해석한다. `stop`은 original response를 `final.output`으로 보존하고, 정확히 하나의 Tool request는 exact Tool ID와 input을 보존한다. 여러 Tool requests 및 `length` / `other`는 `ModelResponseInterpretationError`로 실패하며 성공한 outcome은 existing `parseModelOutcome()`이 구성한다. 이 primitive는 Provider execution, Tool execution 또는 authority를 추가하지 않고 current Runtime/Agent/executor composition에 연결되지 않는다.
+
 ---
 
 ## 18. Model Independence
