@@ -410,6 +410,8 @@ IMPLEMENTATION-030은 `ModelTurn`을 canonical `ModelRequest`로 바꾸는 provi
 
 이 first narrow composition은 concrete Provider Adapter/SDK/network execution, Provider response conversion, complete Model Gateway, Model Strategy/Capability/Router, timeout, retry, fallback, usage accounting, observability, `ModelResponse -> ModelOutcome` interpretation 또는 Runtime/Agent/Pack integration을 구현하지 않는다. Existing Model Runtime과 one-Tool-turn bounded Agent execution의 maximum two successful Model calls 및 no-retry behavior도 변경하지 않으며 successful composition이나 Model Response Tool request는 authorization, Policy, Approval, Audit 또는 Tool/external Action authority를 부여하지 않는다.
 
+IMPLEMENTATION-031은 별도의 provider-independent `interpretModelResponse()` primitive를 추가한다. Canonical `ModelResponse`의 `stop`은 exact response reference를 가진 `final`로, 정확히 하나의 Tool request는 exact Tool ID와 input reference를 가진 `tool-request`로 `parseModelOutcome()`을 통해 투영한다. 여러 Tool requests와 `length` / `other`는 `ModelResponseInterpretationError`로 거부한다. 이 primitive는 Provider를 호출하거나 Registry, Agent allowance, permission을 평가하지 않으며 Model Runtime, Agent Runtime, bounded executor 또는 IMPLEMENTATION-030 composition에 연결되지 않는다.
+
 ---
 
 ## 10. Stable ODYS Model Identifier
@@ -1732,6 +1734,8 @@ concrete provider adapter의 실제 위치는 implementation 단계에서 결정
 
 현재는 이 위치에 최소 `ModelDefinition`, definition/runtime request validation, Registry-owned immutable definition snapshot을 보관하는 instance-local `ModelRegistry`, registered-Model dispatch를 위한 `ModelRuntime` request/result contract와 provider-independent injected executor seam, opaque Model output을 narrow canonical `final | tool-request` execution meaning으로 명시적으로 검증하는 standalone `parseModelOutcome()` primitive가 구현되어 있다. Agent module의 existing staged adapter는 exact Agent executor request를 trusted logical Model resolver와 Model Runtime에 연결하고 exact opaque `ModelRuntimeResult`를 해석 없이 반환한다. 별도의 IMPLEMENTATION-024 bounded executor는 resolver를 invocation당 한 번 호출하고 같은 logical Model ID로 최대 두 번 Model Runtime을 사용한다. 각 opaque output은 parser를 통과하며 initial Tool request는 `AgentToolRuntime`을 통해 실행되고 canonical Tool result가 frozen outer continuation으로 같은 Model에 반환된다. 두 번째 Tool request는 실행하지 않고 명시적으로 실패하며 retry는 없다. 이 one-Tool-turn bound는 current staged implementation limitation이지 permanent Model architecture가 아니다. IMPLEMENTATION-026의 first provider-independent `ModelExecutionRequest` / `ModelExecutionResult`, IMPLEMENTATION-027의 first canonical `ModelResponse`, IMPLEMENTATION-028의 first canonical `ModelRequest` foundation, IMPLEMENTATION-029의 first `ModelProviderAdapter` contract와 IMPLEMENTATION-030의 first narrow provider-independent execution composition도 같은 module에 있지만 current Runtime에는 연결되지 않았다. `ModelExecutionResult`는 계속 opaque하고 `ModelResponse`는 `ModelOutcome`과 별개이며 complete Model Gateway request/response normalization, actual Provider conversion 및 concrete Provider Adapter implementation은 후속 단계다.
 
+현재 같은 Model module에는 IMPLEMENTATION-031의 standalone provider-independent `interpretModelResponse(ModelResponse) → ModelOutcome` primitive도 구현되어 있다. Current `ModelRuntime`, `AgentRuntime` 및 IMPLEMENTATION-030 provider execution composition에는 연결되지 않았다.
+
 IMPLEMENTATION-025 이후 이 frozen outer continuation은 Agent-specific shape가 아니라 Model module의 explicit `tool-result` turn이며 initial call도 explicit `initial` turn을 사용한다. 두 turn 모두 original opaque Agent executor request reference를 `input`으로 유지하고 Tool-result turn은 parsed Tool request와 Tool Runtime result의 exact identity를 보존한다. 이는 execution meaning만 formalize하며 complete Model Request/Response 또는 Provider Adapter를 앞당기지 않는다.
 
 IMPLEMENTATION-026 이후 future Provider Adapter 직전의 execution envelope는 exact resolved `ModelDefinition`과 `ModelTurn`을 가진 request 및 opaque `unknown` output을 가진 result로 명시된다. 두 constructor는 Core-owned frozen outer object만 만들며 existing staged Model Runtime/Agent execution을 변경하거나 Provider execution을 수행하지 않는다.
@@ -1741,6 +1745,8 @@ IMPLEMENTATION-027 이후 future Provider Adapter가 normalize할 첫 canonical 
 IMPLEMENTATION-029 이후 future concrete Provider implementation은 resolved `ModelDefinition`과 canonical `ModelRequest`를 받는 `ModelProviderAdapterRequest`를 `execute()`하고 canonical `Promise<ModelResponse>`를 반환하는 Core contract를 구현할 수 있다. Concrete Adapter, Provider SDK/network execution과 Runtime integration은 아직 존재하지 않는다.
 
 IMPLEMENTATION-030 이후 별도의 provider-independent executor는 exact execution turn을 injected `ModelRequestNormalizer`에 한 번 전달하고 성공한 canonical request와 exact resolved Model을 injected Adapter에 한 번 전달한 뒤 exact canonical response를 opaque `ModelExecutionResult.output`으로 감싼다. 이 composition은 failure를 wrapping하지 않고 retry/fallback 없이 전파하며 current Model Runtime, Agent Runtime 및 bounded Model/Tool executor에는 연결되지 않는다.
+
+IMPLEMENTATION-031 이후 standalone provider-independent `interpretModelResponse()`는 canonical `ModelResponse`의 `stop`을 exact response reference를 output으로 가진 `final`로, 정확히 하나의 Tool request를 exact Tool ID와 input reference를 보존하는 canonical `tool-request`로 해석한다. Successful construction은 `parseModelOutcome()`에 위임하고 multiple Tool requests와 `length` / `other`는 `ModelResponseInterpretationError`로 fail closed한다. 이 primitive는 `ModelRuntime`, `AgentRuntime` 또는 IMPLEMENTATION-030 provider execution composition에 연결되지 않으며 concrete Provider Adapter, Gateway/Strategy/Router 또는 Provider/Tool execution authority를 추가하지 않는다.
 
 ---
 
